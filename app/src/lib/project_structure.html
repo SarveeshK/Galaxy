@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Project Structure - Galaxy</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #1e1e1e;
+            color: #d4d4d4;
+            padding: 20px;
+        }
+
+        h1 {
+            color: #569cd6;
+        }
+
+        ul,
+        #myUL {
+            list-style-type: none;
+        }
+
+        #myUL {
+            margin: 0;
+            padding: 0;
+        }
+
+        .caret {
+            cursor: pointer;
+            user-select: none;
+            color: #dcdcaa;
+            font-weight: bold;
+        }
+
+        .caret::before {
+            content: "\25B6";
+            color: #888;
+            display: inline-block;
+            margin-right: 6px;
+            font-size: 0.8em;
+            transition: transform 0.2s;
+        }
+
+        .caret-down::before {
+            transform: rotate(90deg);
+        }
+
+        .nested {
+            display: none;
+            padding-left: 20px;
+            border-left: 1px solid #333;
+            margin-left: 5px;
+        }
+
+        .active {
+            display: block;
+        }
+
+        .file {
+            color: #9cdcfe;
+        }
+
+        li {
+            margin: 2px 0;
+        }
+
+        .download-btn {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 10px 20px;
+            background-color: #0e639c;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            text-decoration: none;
+        }
+
+        .download-btn:hover {
+            background-color: #1177bb;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>Project Structure: Galaxy</h1>
+    <a href="data:text/html;charset=utf-8,%3Chtml%3E...%3C%2Fhtml%3E" download="project_structure.html"
+        class="download-btn"
+        onclick="this.href='data:text/html;charset=utf-8,'+encodeURIComponent(document.documentElement.outerHTML)">Download
+        HTML</a>
+
+    <ul id="myUL">
+        <li><span class="caret">app/</span>
+            <ul class="nested">
+                <li><span class="caret">public/</span>
+                    <ul class="nested">
+                        <li><span class="file">asteroid-whoosh.mp3</span></li>
+                        <li><span class="file">space-ambient.mp3</span></li>
+                    </ul>
+                </li>
+                <li><span class="caret">src/</span>
+                    <ul class="nested">
+                        <li><span class="caret">components/</span>
+                            <ul class="nested">
+                                <li><span class="caret">ui/</span>
+                                    <ul class="nested">
+                                        <li><span class="file">accordion.tsx</span></li>
+                                        <li><span class="file">alert-dialog.tsx</span></li>
+                                        <li><span class="file">alert.tsx</span></li>
+                                        <li><span class="file">aspect-ratio.tsx</span></li>
+                                        <li><span class="file">avatar.tsx</span></li>
+                                        <li><span class="file">badge.tsx</span></li>
+                                        <li><span class="file">breadcrumb.tsx</span></li>
+                                        <li><span class="file">button-group.tsx</span></li>
+                                        <li><span class="file">button.tsx</span></li>
+                                        <li><span class="file">calendar.tsx</span></li>
+                                        <li><span class="file">card.tsx</span></li>
+                                        <li><span class="file">carousel.tsx</span></li>
+                                        <li><span class="file">chart.tsx</span></li>
+                                        <li><span class="file">checkbox.tsx</span></li>
+                                        <li><span class="file">collapsible.tsx</span></li>
+                                        <li><span class="file">command.tsx</span></li>
+                                        <li><span class="file">context-menu.tsx</span></li>
+                                        <li><span class="file">dialog.tsx</span></li>
+                                        <li><span class="file">drawer.tsx</span></li>
+                                        <li><span class="file">dropdown-menu.tsx</span></li>
+                                        <li><span class="file">empty.tsx</span></li>
+                                        <li><span class="file">field.tsx</span></li>
+                                        <li><span class="file">form.tsx</span></li>
+                                        <li><span class="file">hover-card.tsx</span></li>
+                                        <li><span class="file">input-group.tsx</span></li>
+                                        <li><span class="file">input-otp.tsx</span></li>
+                                        <li><span class="file">input.tsx</span></li>
+                                        <li><span class="file">item.tsx</span></li>
+                                        <li><span class="file">kbd.tsx</span></li>
+                                        <li><span class="file">label.tsx</span></li>
+                                        <li><span class="file">menubar.tsx</span></li>
+                                        <li><span class="file">navigation-menu.tsx</span></li>
+                                        <li><span class="file">pagination.tsx</span></li>
+                                        <li><span class="file">popover.tsx</span></li>
+                                        <li><span class="file">progress.tsx</span></li>
+                                        <li><span class="file">radio-group.tsx</span></li>
+                                        <li><span class="file">resizable.tsx</span></li>
+                                        <li><span class="file">scroll-area.tsx</span></li>
+                                        <li><span class="file">select.tsx</span></li>
+                                        <li><span class="file">separator.tsx</span></li>
+                                        <li><span class="file">sheet.tsx</span></li>
+                                        <li><span class="file">sidebar.tsx</span></li>
+                                        <li><span class="file">skeleton.tsx</span></li>
+                                        <li><span class="file">slider.tsx</span></li>
+                                        <li><span class="file">sonner.tsx</span></li>
+                                        <li><span class="file">spinner.tsx</span></li>
+                                        <li><span class="file">switch.tsx</span></li>
+                                        <li><span class="file">table.tsx</span></li>
+                                        <li><span class="file">tabs.tsx</span></li>
+                                        <li><span class="file">textarea.tsx</span></li>
+                                        <li><span class="file">toggle-group.tsx</span></li>
+                                        <li><span class="file">toggle.tsx</span></li>
+                                        <li><span class="file">tooltip.tsx</span></li>
+                                    </ul>
+                                </li>
+                                <li><span class="file">RadialMenu.tsx</span></li>
+                                <li><span class="file">SoundManager.tsx</span></li>
+                                <li><span class="file">Starfield.tsx</span></li>
+                            </ul>
+                        </li>
+                        <li><span class="caret">hooks/</span>
+                            <ul class="nested">
+                                <li><span class="file">use-mobile.ts</span></li>
+                            </ul>
+                        </li>
+                        <li><span class="caret">lib/</span>
+                            <ul class="nested">
+                                <li><span class="file">utils.ts</span></li>
+                            </ul>
+                        </li>
+                        <li><span class="caret">sections/</span>
+                            <ul class="nested">
+                                <li><span class="file">About.tsx</span></li>
+                                <li><span class="file">Association.tsx</span></li>
+                                <li><span class="file">Contact.tsx</span></li>
+                                <li><span class="file">EventDetail.tsx</span></li>
+                                <li><span class="file">Events.tsx</span></li>
+                                <li><span class="file">FlagshipEvent.tsx</span></li>
+                                <li><span class="file">Hero.tsx</span></li>
+                                <li><span class="file">Login.tsx</span></li>
+                                <li><span class="file">PrizePool.tsx</span></li>
+                                <li><span class="file">Register.tsx</span></li>
+                                <li><span class="file">Schedule.tsx</span></li>
+                                <li><span class="file">Timeline.tsx</span></li>
+                                <li><span class="file">Workshops.tsx</span></li>
+                            </ul>
+                        </li>
+                        <li><span class="file">App.css</span></li>
+                        <li><span class="file">App.tsx</span></li>
+                        <li><span class="file">index.css</span></li>
+                        <li><span class="file">main.tsx</span></li>
+                    </ul>
+                </li>
+                <li><span class="file">components.json</span></li>
+                <li><span class="file">eslint.config.js</span></li>
+                <li><span class="file">index.html</span></li>
+                <li><span class="file">package-lock.json</span></li>
+                <li><span class="file">package.json</span></li>
+                <li><span class="file">postcss.config.js</span></li>
+                <li><span class="file">README.md</span></li>
+                <li><span class="file">tailwind.config.js</span></li>
+                <li><span class="file">tsconfig.app.json</span></li>
+                <li><span class="file">tsconfig.json</span></li>
+                <li><span class="file">tsconfig.node.json</span></li>
+                <li><span class="file">vite.config.ts</span></li>
+            </ul>
+        </li>
+    </ul>
+
+    <script>
+        var toggler = document.getElementsByClassName("caret");
+        var i;
+
+        for (i = 0; i < toggler.length; i++) {
+            toggler[i].addEventListener("click", function () {
+                this.parentElement.querySelector(".nested").classList.toggle("active");
+                this.classList.toggle("caret-down");
+            });
+        }
+
+        // Expand all by default
+        var allNested = document.querySelectorAll('.nested');
+        for (var j = 0; j < allNested.length; j++) {
+            allNested[j].classList.add('active');
+            allNested[j].parentElement.querySelector('.caret').classList.add('caret-down');
+        }
+    </script>
+</body>
+
+</html>
