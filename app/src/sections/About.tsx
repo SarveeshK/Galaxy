@@ -1,5 +1,6 @@
 import { motion } from 'framer-motion';
 import { GraduationCap, Award, Users, Sparkles, Target, Globe, Rocket } from 'lucide-react';
+import ScrollFloat from '../components/ScrollFloat';
 
 const stats = [
   { icon: GraduationCap, value: '21', label: 'UG Programs' },
@@ -38,11 +39,19 @@ export default function About() {
           className="text-center mb-12"
         >
           <div className="flex items-center justify-center gap-2 mb-4">
-            <Sparkles className="w-6 h-6 text-purple-400" />
-            <h2 className="font-orbitron text-4xl md:text-5xl font-bold text-white">
-              About <span className="bg-gradient-to-r from-purple-400 to-pink-500 bg-clip-text text-transparent">Galaxy 2K26</span>
-            </h2>
-            <Sparkles className="w-6 h-6 text-pink-400" />
+            <Sparkles className="w-6 h-6 text-gray-400" />
+            <ScrollFloat
+              animationDuration={1}
+              ease="back.inOut(2)"
+              scrollStart="center bottom+=50%"
+              scrollEnd="bottom bottom-=40%"
+              stagger={0.03}
+              containerClassName="font-orbitron text-4xl md:text-5xl font-bold text-white"
+              textClassName="text-white"
+            >
+              About Galaxy 2K26
+            </ScrollFloat>
+            <Sparkles className="w-6 h-6 text-gray-400" />
           </div>
         </motion.div>
 
@@ -54,7 +63,7 @@ export default function About() {
             transition={{ duration: 0.6 }}
             viewport={{ once: true }}
           >
-            <h3 className="font-orbitron text-2xl md:text-3xl font-bold bg-gradient-to-r from-purple-400 to-pink-500 bg-clip-text text-transparent mb-4">
+            <h3 className="font-orbitron text-2xl md:text-3xl font-bold text-white mb-4">
               GOVERNMENT COLLEGE OF ENGINEERING, ERODE
             </h3>
 
@@ -76,19 +85,19 @@ export default function About() {
 
             <ul className="space-y-3 mb-8">
               <li className="flex items-start gap-3 text-white/70">
-                <div className="w-1.5 h-1.5 rounded-full bg-purple-400 mt-2" />
+                <div className="w-1.5 h-1.5 rounded-full bg-gray-400 mt-2" />
                 <span>Galaxy 2K26 is a National Level Technical Symposium organized by the Electronics and Communication Engineering Association.</span>
               </li>
               <li className="flex items-start gap-3 text-white/70">
-                <div className="w-1.5 h-1.5 rounded-full bg-pink-400 mt-2" />
+                <div className="w-1.5 h-1.5 rounded-full bg-gray-500 mt-2" />
                 <span>The event focuses on solving real challenges within the college ecosystem using technology-driven solutions.</span>
               </li>
               <li className="flex items-start gap-3 text-white/70">
-                <div className="w-1.5 h-1.5 rounded-full bg-cyan-400 mt-2" />
+                <div className="w-1.5 h-1.5 rounded-full bg-gray-300 mt-2" />
                 <span>Problem statements are sourced directly from faculty and administrative departments to ensure real-world relevance.</span>
               </li>
               <li className="flex items-start gap-3 text-white/70">
-                <div className="w-1.5 h-1.5 rounded-full bg-violet-400 mt-2" />
+                <div className="w-1.5 h-1.5 rounded-full bg-white mt-2" />
                 <span>Galaxy promotes innovation, collaboration, and hands-on learning beyond the classroom.</span>
               </li>
             </ul>
@@ -103,9 +112,9 @@ export default function About() {
                   transition={{ delay: index * 0.1 }}
                   viewport={{ once: true }}
                   whileHover={{ scale: 1.05 }}
-                  className="glass rounded-xl p-4 text-center hover:bg-white/10 transition-all border border-white/10 hover:border-purple-500/30"
+                  className="glass rounded-xl p-4 text-center hover:bg-white/10 transition-all border border-white/10 hover:border-white/30"
                 >
-                  <stat.icon className="w-6 h-6 mx-auto text-purple-400 mb-2" />
+                  <stat.icon className="w-6 h-6 mx-auto text-gray-400 mb-2" />
                   <p className="text-2xl font-orbitron font-bold text-white">{stat.value}</p>
                   <p className="text-white/50 text-xs">{stat.label}</p>
                 </motion.div>
@@ -132,11 +141,11 @@ export default function About() {
                 className="glass rounded-2xl p-6 hover:bg-white/10 transition-all group border border-white/10 hover:border-purple-500/30"
               >
                 <div className="flex items-start gap-4">
-                  <div className="w-10 h-10 rounded-lg bg-purple-500/20 flex items-center justify-center flex-shrink-0 group-hover:bg-purple-500/30 transition-colors">
-                    <highlight.icon className="w-5 h-5 text-purple-400" />
+                  <div className="w-10 h-10 rounded-lg bg-white/10 flex items-center justify-center flex-shrink-0 group-hover:bg-white/20 transition-colors">
+                    <highlight.icon className="w-5 h-5 text-gray-300" />
                   </div>
                   <div>
-                    <h4 className="text-white font-semibold text-lg mb-2 group-hover:text-purple-400 transition-colors">{highlight.title}</h4>
+                    <h4 className="text-white font-semibold text-lg mb-2 group-hover:text-gray-200 transition-colors">{highlight.title}</h4>
                     <p className="text-white/60 text-sm leading-relaxed">{highlight.description}</p>
                   </div>
                 </div>
@@ -149,9 +158,9 @@ export default function About() {
               whileInView={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.4 }}
               viewport={{ once: true }}
-              className="glass rounded-2xl p-6 border border-purple-500/30 bg-gradient-to-br from-purple-500/10 to-pink-500/10"
+              className="glass rounded-2xl p-6 border border-white/20 bg-gradient-to-br from-white/5 to-gray-500/5"
             >
-              <h4 className="font-orbitron text-lg font-bold bg-gradient-to-r from-purple-400 to-pink-500 bg-clip-text text-transparent mb-3">
+              <h4 className="font-orbitron text-lg font-bold text-white mb-3">
                 THEME: SPACE & BEYOND
               </h4>
               <p className="text-white/60 text-sm leading-relaxed">

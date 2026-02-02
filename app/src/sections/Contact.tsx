@@ -1,120 +1,96 @@
 import { motion } from 'framer-motion';
-import { Phone, MapPin, Sparkles, Rocket } from 'lucide-react';
-
-const coordinators = [
-  {
-    name: 'Nithish Kumar',
-    phone: '+91 63823 10115',
-    initial: 'NK',
-    color: 'from-purple-500 to-violet-500',
-  },
-  {
-    name: 'Ashwathi S Nair',
-    phone: '+91 91506 39036',
-    initial: 'AN',
-    color: 'from-violet-500 to-fuchsia-500',
-  },
-  {
-    name: 'Azhagu Murugan',
-    phone: '+91 84384 05545',
-    initial: 'AM',
-    color: 'from-fuchsia-500 to-pink-500',
-  },
-  {
-    name: 'Yazhini',
-    phone: '+91 63820 76172',
-    initial: 'Y',
-    color: 'from-pink-500 to-rose-500',
-  },
-];
+import { Mail, MapPin, Phone, Github, Instagram, Twitter, Linkedin, ExternalLink } from 'lucide-react';
 
 export default function Contact() {
   return (
-    <section id="contact" className="relative py-20 px-4">
-      <div className="max-w-5xl mx-auto">
-        {/* Section Header */}
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6 }}
-          viewport={{ once: true }}
-          className="text-center mb-12"
-        >
-          <div className="flex items-center justify-center gap-2 mb-4">
-            <Sparkles className="w-6 h-6 text-purple-400" />
-            <h2 className="font-orbitron text-4xl md:text-5xl font-bold text-white">
-              Contact <span className="bg-gradient-to-r from-purple-400 to-pink-500 bg-clip-text text-transparent">Us</span>
-            </h2>
-            <Sparkles className="w-6 h-6 text-pink-400" />
-          </div>
-          <p className="text-white/60">
-            For queries related to Galaxy 2K26
-          </p>
-        </motion.div>
+    <footer id="contact" className="relative pt-32 pb-12 px-4 bg-black border-t border-white/10">
+      <div className="max-w-7xl mx-auto">
 
-        {/* Contact Cards */}
-        <div className="grid md:grid-cols-2 gap-6 mb-12">
-          {coordinators.map((coordinator, index) => (
-            <motion.div
-              key={coordinator.name}
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ delay: index * 0.1 }}
-              viewport={{ once: true }}
-              whileHover={{ scale: 1.03, y: -5 }}
-              className="glass rounded-2xl p-6 text-center hover:bg-white/10 transition-all group border border-white/10 hover:border-purple-500/30"
-            >
-              <div className={`w-16 h-16 mx-auto mb-4 rounded-full bg-gradient-to-br ${coordinator.color} flex items-center justify-center shadow-lg group-hover:shadow-purple-500/30 transition-shadow`}>
-                <span className="text-white font-bold text-lg">{coordinator.initial}</span>
-              </div>
-              <h3 className="text-white font-semibold text-lg mb-2 group-hover:text-purple-400 transition-colors">{coordinator.name}</h3>
-              <div className="flex items-center justify-center gap-2 text-white/60 text-sm">
-                <Phone className="w-4 h-4" />
-                <span>{coordinator.phone}</span>
-              </div>
-            </motion.div>
-          ))}
+        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-16 mb-24">
+          {/* Brand */}
+          <div className="space-y-6">
+            <h2 className="font-orbitron text-2xl font-bold text-white tracking-wider">GALAXY 2K26</h2>
+            <p className="text-gray-500 text-sm leading-relaxed">
+              The National Level Technical Symposium organized by the Department of ECE.
+            </p>
+            <div className="flex gap-4">
+              <a href="#" className="w-10 h-10 rounded-full border border-white/10 flex items-center justify-center text-gray-400 hover:text-white hover:bg-white/10 transition-all">
+                <Instagram className="w-4 h-4" />
+              </a>
+              <a href="#" className="w-10 h-10 rounded-full border border-white/10 flex items-center justify-center text-gray-400 hover:text-white hover:bg-white/10 transition-all">
+                <Twitter className="w-4 h-4" />
+              </a>
+              <a href="#" className="w-10 h-10 rounded-full border border-white/10 flex items-center justify-center text-gray-400 hover:text-white hover:bg-white/10 transition-all">
+                <Linkedin className="w-4 h-4" />
+              </a>
+              <a href="#" className="w-10 h-10 rounded-full border border-white/10 flex items-center justify-center text-gray-400 hover:text-white hover:bg-white/10 transition-all">
+                <Github className="w-4 h-4" />
+              </a>
+            </div>
+          </div>
+
+          {/* Quick Links */}
+          <div>
+            <h3 className="font-orbitron text-sm font-bold text-white mb-6 uppercase tracking-wider">Navigation</h3>
+            <ul className="space-y-4">
+              {['Events', 'Timeline', 'Register', 'Login'].map((item) => (
+                <li key={item}>
+                  <a href="#" className="text-gray-500 hover:text-white text-sm transition-colors flex items-center gap-2 group">
+                    <span className="w-0 group-hover:w-2 h-px bg-white transition-all duration-300" />
+                    {item}
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          {/* Contact Info */}
+          <div>
+            <h3 className="font-orbitron text-sm font-bold text-white mb-6 uppercase tracking-wider">Contact</h3>
+            <ul className="space-y-4">
+              <li className="flex items-start gap-4 text-sm text-gray-500">
+                <MapPin className="w-5 h-5 text-gray-400 shrink-0" />
+                <span>Government College of Engineering,<br />Erode - 638316</span>
+              </li>
+              <li className="flex items-center gap-4 text-sm text-gray-500">
+                <Mail className="w-5 h-5 text-gray-400 shrink-0" />
+                <a href="mailto:contact@galaxy2k26.com" className="hover:text-white transition-colors">contact@galaxy2k26.com</a>
+              </li>
+              <li className="flex items-center gap-4 text-sm text-gray-500">
+                <Phone className="w-5 h-5 text-gray-400 shrink-0" />
+                <a href="tel:+919876543210" className="hover:text-white transition-colors">+91 98765 43210</a>
+              </li>
+            </ul>
+          </div>
+
+          {/* Coordinators */}
+          <div>
+            <h3 className="font-orbitron text-sm font-bold text-white mb-6 uppercase tracking-wider">Faculty Coordinators</h3>
+            <ul className="space-y-4">
+              <li className="group cursor-pointer">
+                <p className="text-white text-sm font-medium group-hover:text-gray-300 transition-colors">Dr. P. Example</p>
+                <p className="text-gray-600 text-xs mt-1">HOD, Dept of ECE</p>
+              </li>
+              <li className="group cursor-pointer">
+                <p className="text-white text-sm font-medium group-hover:text-gray-300 transition-colors">Prof. S. Sample</p>
+                <p className="text-gray-600 text-xs mt-1">Staff Coordinator</p>
+              </li>
+            </ul>
+          </div>
         </div>
 
-        {/* Location */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.4 }}
-          viewport={{ once: true }}
-          className="glass rounded-2xl p-8 text-center border border-white/10"
-        >
-          <div className="flex items-center justify-center gap-2 mb-4">
-            <MapPin className="w-6 h-6 text-purple-400" />
-            <span className="text-white font-semibold">Venue</span>
-          </div>
-          <p className="text-white/70">
-            GCEE Auditorium<br />
-            Government College of Engineering, Erode<br />
-            Chithode, Erode - 638 316, Tamil Nadu
+        {/* Bottom Bar */}
+        <div className="pt-8 border-t border-white/5 flex flex-col md:flex-row items-center justify-between gap-4">
+          <p className="text-gray-600 text-xs">
+            © 2026 Galaxy Symposium. All rights reserved.
           </p>
-        </motion.div>
-
-        {/* Footer */}
-        <motion.footer
-          initial={{ opacity: 0 }}
-          whileInView={{ opacity: 1 }}
-          transition={{ delay: 0.5 }}
-          viewport={{ once: true }}
-          className="mt-16 pt-8 border-t border-white/10"
-        >
-          <div className="flex flex-col md:flex-row items-center justify-between gap-4">
-            <div className="flex items-center gap-2">
-              <Rocket className="w-5 h-5 text-purple-400" />
-              <p className="text-white/40 text-sm">
-                © 2026 Galaxy 2K26. All rights reserved.
-              </p>
-            </div>
-            <p className="text-white/40 text-sm">
-            </p>
+          <div className="flex gap-8">
+            <a href="#" className="text-gray-600 hover:text-white text-xs transition-colors">Privacy Policy</a>
+            <a href="#" className="text-gray-600 hover:text-white text-xs transition-colors">Terms of Service</a>
           </div>
-        </motion.footer>
+        </div>
+
       </div>
-    </section>
+    </footer>
   );
 }

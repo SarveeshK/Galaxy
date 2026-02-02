@@ -6,25 +6,28 @@
 
 @layer base {
   :root {
-    --background: 0 0% 0%;
-    --foreground: 0 0% 100%;
+    --background: 0 0% 3%;
+    --foreground: 0 0% 95%;
     --card: 0 0% 5%;
-    --card-foreground: 0 0% 100%;
+    --card-foreground: 0 0% 95%;
     --popover: 0 0% 5%;
-    --popover-foreground: 0 0% 100%;
-    --primary: 260 70% 55%;
-    --primary-foreground: 0 0% 100%;
-    --secondary: 280 80% 55%;
+    --popover-foreground: 0 0% 95%;
+    --primary: 0 0% 90%;
+    /* Silver/White */
+    --primary-foreground: 0 0% 0%;
+    --secondary: 0 0% 20%;
+    /* Gunmetal */
     --secondary-foreground: 0 0% 100%;
-    --muted: 0 0% 15%;
+    --muted: 0 0% 10%;
     --muted-foreground: 0 0% 60%;
-    --accent: 190 90% 50%;
-    --accent-foreground: 0 0% 0%;
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 0 0% 98%;
-    --border: 0 0% 20%;
+    --accent: 210 10% 20%;
+    /* Deep Blue-Grey */
+    --accent-foreground: 0 0% 100%;
+    --destructive: 0 0% 30%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 0 0% 15%;
     --input: 0 0% 15%;
-    --ring: 260 70% 55%;
+    --ring: 0 0% 80%;
     --radius: 0.75rem;
   }
 }
@@ -49,79 +52,73 @@
   font-family: 'Orbitron', sans-serif;
 }
 
-/* Galaxy Glowing text effects */
+/* Metallic Text Glow */
 .text-glow {
-  text-shadow: 0 0 20px rgba(139, 92, 246, 0.8),
-    0 0 40px rgba(139, 92, 246, 0.5),
-    0 0 60px rgba(139, 92, 246, 0.3);
+  text-shadow: 0 0 10px rgba(255, 255, 255, 0.5),
+    0 0 20px rgba(255, 255, 255, 0.3),
+    0 0 30px rgba(255, 255, 255, 0.1);
 }
 
-.text-glow-purple {
-  text-shadow: 0 0 20px rgba(168, 85, 247, 0.8),
-    0 0 40px rgba(168, 85, 247, 0.5),
-    0 0 60px rgba(168, 85, 247, 0.3);
+.text-glow-silver {
+  text-shadow: 0 0 10px rgba(192, 192, 192, 0.5),
+    0 0 20px rgba(192, 192, 192, 0.3);
 }
 
-.text-glow-cyan {
-  text-shadow: 0 0 20px rgba(6, 182, 212, 0.8),
-    0 0 40px rgba(6, 182, 212, 0.5),
-    0 0 60px rgba(6, 182, 212, 0.3);
-}
-
-.text-glow-pink {
-  text-shadow: 0 0 20px rgba(236, 72, 153, 0.8),
-    0 0 40px rgba(236, 72, 153, 0.5),
-    0 0 60px rgba(236, 72, 153, 0.3);
-}
-
-/* Gradient text - Galaxy theme */
+/* Gradient text - Metallic Theme */
 .gradient-text {
-  background: linear-gradient(135deg, #a855f7, #3b82f6, #ec4899);
+  background: linear-gradient(135deg, #e2e8f0, #94a3b8, #64748b);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
 }
 
 .gradient-text-galaxy {
-  background: linear-gradient(135deg, #8b5cf6, #06b6d4, #f472b6);
+  background: linear-gradient(135deg, #ffffff, #cbd5e1, #94a3b8);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
 }
 
-/* Glassmorphism */
+/* Glassmorphism - Tech/Industrial */
+/* Glassmorphism - Premium */
 .glass {
-  background: rgba(255, 255, 255, 0.03);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
+  background: rgba(255, 255, 255, 0.02);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
   border: 1px solid rgba(255, 255, 255, 0.08);
-  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.5);
 }
 
 .glass-premium {
-  background: linear-gradient(135deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0.01) 100%);
+  background: radial-gradient(circle at top left, rgba(255, 255, 255, 0.05), transparent 60%),
+    rgba(20, 20, 20, 0.4);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
   border: 1px solid rgba(255, 255, 255, 0.1);
-  box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+  box-shadow:
+    0 20px 40px -10px rgba(0, 0, 0, 0.5),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
 }
 
 .glass-strong {
-  background: rgba(255, 255, 255, 0.05);
-  backdrop-filter: blur(20px);
-  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(10, 10, 10, 0.8);
+  backdrop-filter: blur(24px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
 }
 
-/* Starfield animation */
+/* Animations */
 @keyframes twinkle {
 
   0%,
   100% {
-    opacity: 0.3;
+    opacity: 0.2;
+    transform: scale(0.8);
   }
 
   50% {
     opacity: 1;
+    transform: scale(1.2);
   }
 }
 
@@ -129,11 +126,15 @@
 
   0%,
   100% {
-    transform: translateY(0);
+    transform: translateY(0) rotate(0deg);
   }
 
-  50% {
-    transform: translateY(-10px);
+  33% {
+    transform: translateY(-10px) rotate(1deg);
+  }
+
+  66% {
+    transform: translateY(5px) rotate(-1deg);
   }
 }
 
@@ -141,11 +142,11 @@
 
   0%,
   100% {
-    box-shadow: 0 0 20px rgba(139, 92, 246, 0.4);
+    box-shadow: 0 0 15px rgba(255, 255, 255, 0.05);
   }
 
   50% {
-    box-shadow: 0 0 40px rgba(139, 92, 246, 0.8);
+    box-shadow: 0 0 30px rgba(255, 255, 255, 0.15);
   }
 }
 
@@ -175,6 +176,51 @@
   animation: galaxy-rotate 60s linear infinite;
 }
 
+/* Aurora Animations */
+@keyframes aurora-flow {
+  0% {
+    transform: translate(0, 0) scale(1);
+  }
+
+  33% {
+    transform: translate(10%, -10%) scale(1.1);
+  }
+
+  66% {
+    transform: translate(-5%, 15%) scale(0.9);
+  }
+
+  100% {
+    transform: translate(0, 0) scale(1);
+  }
+}
+
+@keyframes aurora-flow-reverse {
+  0% {
+    transform: translate(0, 0) scale(1);
+  }
+
+  33% {
+    transform: translate(-10%, 15%) scale(1.2);
+  }
+
+  66% {
+    transform: translate(15%, -5%) scale(0.8);
+  }
+
+  100% {
+    transform: translate(0, 0) scale(1);
+  }
+}
+
+.animate-aurora-flow {
+  animation: aurora-flow 20s infinite ease-in-out;
+}
+
+.animate-aurora-flow-reverse {
+  animation: aurora-flow-reverse 25s infinite ease-in-out;
+}
+
 /* Custom scrollbar - Galaxy theme */
 ::-webkit-scrollbar {
   width: 8px;
@@ -185,12 +231,12 @@
 }
 
 ::-webkit-scrollbar-thumb {
-  background: linear-gradient(180deg, #8b5cf6, #3b82f6, #ec4899);
+  background: linear-gradient(180deg, #94a3b8, #e2e8f0, #475569);
   border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: linear-gradient(180deg, #a78bfa, #60a5fa, #f472b6);
+  background: linear-gradient(180deg, #cbd5e1, #f8fafc, #64748b);
 }
 
 /* Button glow effect - Galaxy */

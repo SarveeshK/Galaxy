@@ -1,59 +1,56 @@
 import { motion } from 'framer-motion';
-import { Cpu, Radio, Zap, Sparkles } from 'lucide-react';
+import { Network, Cpu, Wifi, Globe, Zap, Database } from 'lucide-react';
 
 const partners = [
-  { name: 'IEEE', icon: Cpu, fullName: 'IEEE Student Branch' },
-  { name: 'ECEA', icon: Radio, fullName: 'ECE Association' },
-  { name: 'INNOVATION', icon: Zap, fullName: 'Innovation Cell' },
+  { name: 'IEEE', icon: Globe },
+  { name: 'IETE', icon: Wifi },
+  { name: 'ISTE', icon: Network },
+  { name: 'IEI', icon: Zap },
+  { name: 'CSI', icon: Cpu },
+  { name: 'ACM', icon: Database },
 ];
 
 export default function Association() {
   return (
-    <section id="association" className="relative py-16 px-4">
-      <div className="max-w-4xl mx-auto">
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6 }}
-          viewport={{ once: true }}
-          className="text-center"
-        >
-          <div className="flex items-center justify-center gap-2 mb-8">
-            <Sparkles className="w-5 h-5 text-purple-400" />
-            <p className="text-white/60 text-sm tracking-[0.3em] font-orbitron">
-              IN ASSOCIATION WITH
+    <section id="association" className="relative py-24 px-4 border-y border-white/5 bg-white/[0.02]">
+      <div className="max-w-7xl mx-auto">
+
+        <div className="flex flex-col md:flex-row items-center justify-between gap-12">
+          {/* Text Side */}
+          <motion.div
+            initial={{ opacity: 0, x: -30 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            className="md:w-1/3 text-center md:text-left"
+          >
+            <h3 className="font-orbitron text-3xl font-bold text-white mb-4">
+              STRATEGIC <br />
+              <span className="text-gray-500">PARTNERS</span>
+            </h3>
+            <p className="text-gray-400 leading-relaxed text-sm">
+              Collaborating with leading technical bodies to foster innovation and excellence in engineering.
             </p>
-            <Sparkles className="w-5 h-5 text-pink-400" />
-          </div>
-          
-          <div className="flex flex-wrap items-center justify-center gap-8 md:gap-16">
+          </motion.div>
+
+          {/* Grid Side */}
+          <div className="md:w-2/3 grid grid-cols-3 md:grid-cols-6 gap-8 items-center justify-items-center">
             {partners.map((partner, index) => (
               <motion.div
-                key={partner.name}
-                initial={{ opacity: 0, scale: 0.8 }}
+                key={index}
+                initial={{ opacity: 0, scale: 0.5 }}
                 whileInView={{ opacity: 1, scale: 1 }}
-                transition={{ delay: index * 0.2 }}
-                viewport={{ once: true }}
-                whileHover={{ scale: 1.1, y: -5 }}
-                className="group cursor-pointer"
+                transition={{ delay: index * 0.05 }}
+                whileHover={{ y: -5 }}
+                className="group flex flex-col items-center gap-3"
               >
-                <div className="flex flex-col items-center gap-4">
-                  <div className="w-20 h-20 md:w-24 md:h-24 rounded-2xl glass flex items-center justify-center group-hover:bg-purple-500/10 transition-all duration-300 border border-white/10 group-hover:border-purple-400/40 shadow-lg group-hover:shadow-purple-500/20">
-                    <partner.icon className="w-10 h-10 md:w-12 md:h-12 text-white/50 group-hover:text-purple-400 transition-colors" />
-                  </div>
-                  <div className="text-center">
-                    <p className="text-white/80 font-orbitron text-sm tracking-wider group-hover:text-purple-400 transition-colors">
-                      {partner.name}
-                    </p>
-                    <p className="text-white/40 text-xs mt-1">
-                      {partner.fullName}
-                    </p>
-                  </div>
+                <div className="w-16 h-16 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center group-hover:bg-white/10 group-hover:border-white/30 transition-all duration-300">
+                  <partner.icon className="w-8 h-8 text-gray-500 group-hover:text-white transition-colors" />
                 </div>
+                <span className="font-orbitron text-[10px] tracking-widest text-gray-600 group-hover:text-white transition-colors">{partner.name}</span>
               </motion.div>
             ))}
           </div>
-        </motion.div>
+        </div>
+
       </div>
     </section>
   );

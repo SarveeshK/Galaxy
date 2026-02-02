@@ -1,0 +1,22 @@
+.scroll-float {
+    overflow: hidden;
+    display: inline-block;
+    margin: 0;
+    padding: 0;
+    vertical-align: bottom;
+    /* Fix alignment with other text */
+}
+
+.scroll-float-text {
+    display: inline-block;
+    white-space: pre;
+    /* Preserve spaces */
+    line-height: 1.2;
+    /* Adjust as needed */
+}
+
+.char {
+    display: inline-block;
+    transform-style: preserve-3d;
+    backface-visibility: hidden;
+}

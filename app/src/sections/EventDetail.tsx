@@ -23,7 +23,7 @@ const eventData: Record<string, {
     name: 'QUESTX',
     tagline: 'FUN AND CHALLENGING ACTIVITIES TO BOOST CREATIVITY, ANALYTICAL SKILLS, AND TEAMWORK',
     teamSize: '4 Members',
-    date: 'Feb 13',
+    date: 'Feb 27',
     time: '10:00 AM - 3:00 PM',
     venue: 'Classrooms',
     rounds: [
@@ -34,14 +34,14 @@ const eventData: Record<string, {
       { name: 'Coordinator 1', phone: '9876543210' },
       { name: 'Coordinator 2', phone: '9876543211' },
     ],
-    color: 'from-purple-500 to-violet-500',
+    color: 'from-gray-100 to-gray-300',
     icon: '🔍',
   },
   'forcecoders': {
     name: 'FORCECODERS',
     tagline: 'CODE LIKE TOURIST. HACK LIKE A GRANDMASTER.',
     teamSize: 'Individual',
-    date: 'Feb 13',
+    date: 'Feb 27',
     time: '1:30 PM - 4:00 PM',
     venue: 'Computer Center',
     rounds: [
@@ -51,14 +51,14 @@ const eventData: Record<string, {
     coordinators: [
       { name: 'Coordinator 1', phone: '9876543210' },
     ],
-    color: 'from-violet-500 to-fuchsia-500',
+    color: 'from-gray-300 to-gray-400',
     icon: '⚡',
   },
   'codemania': {
     name: 'CODEMANIA',
     tagline: 'BEAT THE CLOCK. BEAT THE RIVALS IN BIDS.',
     teamSize: '4 Members',
-    date: 'Feb 13',
+    date: 'Feb 27',
     time: '10:00 AM - 3:00 PM',
     venue: 'Computer Center',
     rounds: [
@@ -68,14 +68,14 @@ const eventData: Record<string, {
     coordinators: [
       { name: 'Coordinator 1', phone: '9876543210' },
     ],
-    color: 'from-fuchsia-500 to-pink-500',
+    color: 'from-gray-400 to-gray-500',
     icon: '💻',
   },
   'nexus': {
     name: 'NEXUS',
     tagline: 'MARVEL-THEMED BEGINNER-FRIENDLY CYBERSECURITY CTF WITH MISSION-BASED CHALLENGES',
     teamSize: '3 Members',
-    date: 'Feb 14',
+    date: 'Feb 27',
     time: '9:00 AM - 12:30 PM',
     venue: 'AI and Cloud Computing Labs',
     rounds: [
@@ -84,14 +84,14 @@ const eventData: Record<string, {
     coordinators: [
       { name: 'Coordinator 1', phone: '9876543210' },
     ],
-    color: 'from-pink-500 to-rose-500',
+    color: 'from-gray-500 to-gray-600',
     icon: '🛡️',
   },
   'gitwars': {
     name: 'GIT WARS',
     tagline: 'CLONE. COMMIT. CONQUER.',
     teamSize: '3 Members',
-    date: 'Feb 14',
+    date: 'Feb 27',
     time: '9:00 AM - 12:30 PM',
     venue: 'Classrooms',
     rounds: [
@@ -101,14 +101,14 @@ const eventData: Record<string, {
     coordinators: [
       { name: 'Coordinator 1', phone: '9876543210' },
     ],
-    color: 'from-rose-500 to-orange-500',
+    color: 'from-gray-600 to-gray-500',
     icon: '🌌',
   },
   'openquiz': {
     name: 'OPEN QUIZ',
     tagline: 'TECH IN MOVIES, WHEEL OF TECH, CODE AUCTION.',
     teamSize: '3 Members',
-    date: 'Feb 13',
+    date: 'Feb 27',
     time: '10:00 AM - 12:30 PM',
     venue: 'D Block Conference Hall',
     rounds: [
@@ -118,14 +118,14 @@ const eventData: Record<string, {
     coordinators: [
       { name: 'Coordinator 1', phone: '9876543210' },
     ],
-    color: 'from-orange-500 to-amber-500',
+    color: 'from-gray-500 to-gray-300',
     icon: '🎯',
   },
   'ai-trends': {
     name: 'AI AND EMERGING TRENDS',
     tagline: 'PAPER PRESENTATION ON CUTTING-EDGE AI TECHNOLOGIES',
     teamSize: '2 Members',
-    date: 'Feb 13',
+    date: 'Feb 27',
     time: '10:00 AM - 3:00 PM',
     venue: 'Seminar Hall',
     rounds: [
@@ -135,7 +135,7 @@ const eventData: Record<string, {
     coordinators: [
       { name: 'Coordinator 1', phone: '9876543210' },
     ],
-    color: 'from-cyan-500 to-blue-500',
+    color: 'from-gray-300 to-gray-200',
     icon: '🤖',
   },
 };
@@ -153,7 +153,7 @@ export default function EventDetail({ eventId, onBack, onRegister }: EventDetail
           onClick={onBack}
           whileHover={{ scale: 1.05, x: -5 }}
           whileTap={{ scale: 0.95 }}
-          className="mb-8 flex items-center gap-2 px-4 py-2 rounded-full glass text-white/70 hover:text-white hover:bg-white/10 transition-all border border-white/10 hover:border-purple-500/30"
+          className="mb-8 flex items-center gap-2 px-4 py-2 rounded-full glass text-white/70 hover:text-white hover:bg-white/10 transition-all border border-white/10 hover:border-white/30"
         >
           <ArrowLeft className="w-4 h-4" />
           <span className="text-sm font-orbitron">BACK</span>
@@ -166,11 +166,11 @@ export default function EventDetail({ eventId, onBack, onRegister }: EventDetail
           className="text-center mb-12"
         >
           <div className="flex items-center justify-center gap-2 mb-4">
-            <Sparkles className="w-5 h-5 text-purple-400" />
+            <Sparkles className="w-5 h-5 text-gray-400" />
             <p className="text-white/60 text-sm tracking-[0.3em] font-orbitron">
               NON TECHNICAL
             </p>
-            <Sparkles className="w-5 h-5 text-pink-400" />
+            <Sparkles className="w-5 h-5 text-gray-400" />
           </div>
           <h1 className="font-orbitron text-4xl md:text-6xl font-black text-white mb-4">
             {event.name}
@@ -190,24 +190,24 @@ export default function EventDetail({ eventId, onBack, onRegister }: EventDetail
             className="space-y-4"
           >
             {/* Team Size */}
-            <motion.div 
+            <motion.div
               whileHover={{ scale: 1.02 }}
-              className="glass rounded-2xl p-6 border border-white/10 hover:border-purple-500/30 transition-all"
+              className="glass rounded-2xl p-6 border border-white/10 hover:border-white/30 transition-all"
             >
               <div className="flex items-center gap-3 mb-2">
-                <Users className="w-5 h-5 text-purple-400" />
+                <Users className="w-5 h-5 text-gray-400" />
                 <span className="text-white/60 text-xs tracking-wider">TEAM SIZE</span>
               </div>
               <p className="text-white text-xl font-orbitron">{event.teamSize}</p>
             </motion.div>
 
             {/* Date & Time */}
-            <motion.div 
+            <motion.div
               whileHover={{ scale: 1.02 }}
-              className="glass rounded-2xl p-6 border border-white/10 hover:border-pink-500/30 transition-all"
+              className="glass rounded-2xl p-6 border border-white/10 hover:border-white/30 transition-all"
             >
               <div className="flex items-center gap-3 mb-2">
-                <Calendar className="w-5 h-5 text-pink-400" />
+                <Calendar className="w-5 h-5 text-gray-400" />
                 <span className="text-white/60 text-xs tracking-wider">DATE AND TIME</span>
               </div>
               <p className="text-white text-xl font-orbitron">{event.date}</p>
@@ -218,12 +218,12 @@ export default function EventDetail({ eventId, onBack, onRegister }: EventDetail
             </motion.div>
 
             {/* Venue */}
-            <motion.div 
+            <motion.div
               whileHover={{ scale: 1.02 }}
-              className="glass rounded-2xl p-6 border border-white/10 hover:border-cyan-500/30 transition-all"
+              className="glass rounded-2xl p-6 border border-white/10 hover:border-white/30 transition-all"
             >
               <div className="flex items-center gap-3 mb-2">
-                <MapPin className="w-5 h-5 text-cyan-400" />
+                <MapPin className="w-5 h-5 text-gray-400" />
                 <span className="text-white/60 text-xs tracking-wider">VENUE</span>
               </div>
               <p className="text-white text-xl font-orbitron">{event.venue}</p>
@@ -250,7 +250,7 @@ export default function EventDetail({ eventId, onBack, onRegister }: EventDetail
             transition={{ delay: 0.3 }}
             className="lg:col-span-1"
           >
-            <motion.div 
+            <motion.div
               whileHover={{ scale: 1.02 }}
               className={`aspect-[3/4] rounded-3xl bg-gradient-to-br ${event.color} flex items-center justify-center relative overflow-hidden border border-white/10`}
             >
@@ -269,7 +269,7 @@ export default function EventDetail({ eventId, onBack, onRegister }: EventDetail
               onClick={onRegister}
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
-              className="w-full mt-6 py-4 rounded-xl bg-gradient-to-r from-purple-600 via-pink-500 to-cyan-500 text-white font-orbitron tracking-wider font-bold hover:shadow-lg hover:shadow-purple-500/50 transition-all duration-300"
+              className="w-full mt-6 py-4 rounded-xl bg-gradient-to-r from-gray-700 via-gray-600 to-gray-500 text-white font-orbitron tracking-wider font-bold hover:shadow-lg hover:shadow-white/20 transition-all duration-300"
             >
               REGISTER NOW
             </motion.button>
@@ -283,7 +283,7 @@ export default function EventDetail({ eventId, onBack, onRegister }: EventDetail
           >
             <div className="flex items-center justify-between mb-6">
               <span className="text-white/60 text-xs tracking-wider">ROUNDS</span>
-              <span className="bg-gradient-to-r from-purple-400 to-pink-500 bg-clip-text text-transparent text-sm font-semibold">{event.rounds.length} Rounds</span>
+              <span className="bg-gradient-to-r from-gray-400 to-gray-600 bg-clip-text text-transparent text-sm font-semibold">{event.rounds.length} Rounds</span>
             </div>
 
             <div className="space-y-4">
@@ -294,14 +294,14 @@ export default function EventDetail({ eventId, onBack, onRegister }: EventDetail
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.5 + i * 0.1 }}
                   whileHover={{ scale: 1.02, x: 5 }}
-                  className="glass rounded-2xl p-6 group hover:bg-white/10 transition-all cursor-pointer border border-white/10 hover:border-purple-500/30"
+                  className="glass rounded-2xl p-6 group hover:bg-white/10 transition-all cursor-pointer border border-white/10 hover:border-white/30"
                 >
                   <div className="flex items-start gap-4">
-                    <div className="w-10 h-10 rounded-full bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center flex-shrink-0">
+                    <div className="w-10 h-10 rounded-full bg-gradient-to-br from-gray-500 to-gray-700 flex items-center justify-center flex-shrink-0">
                       <span className="text-white font-bold text-sm">R{i + 1}</span>
                     </div>
                     <div className="flex-1">
-                      <h4 className="text-white font-orbitron font-bold mb-2 group-hover:text-purple-400 transition-colors">
+                      <h4 className="text-white font-orbitron font-bold mb-2 group-hover:text-gray-300 transition-colors">
                         {round.name}
                       </h4>
                       <p className="text-white/60 text-sm leading-relaxed">
@@ -315,10 +315,10 @@ export default function EventDetail({ eventId, onBack, onRegister }: EventDetail
             </div>
 
             {/* Learn More */}
-            <motion.button 
+            <motion.button
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
-              className="w-full mt-6 py-4 rounded-xl glass text-white font-orbitron tracking-wider hover:bg-white/10 transition-all flex items-center justify-center gap-2 group border border-white/10 hover:border-purple-500/30"
+              className="w-full mt-6 py-4 rounded-xl glass text-white font-orbitron tracking-wider hover:bg-white/10 transition-all flex items-center justify-center gap-2 group border border-white/10 hover:border-white/30"
             >
               LEARN MORE
               <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />

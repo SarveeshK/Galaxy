@@ -26,17 +26,17 @@ export default function Register({ onBack, onLogin }: RegisterProps) {
       {/* Register Card */}
       <div className="glass-strong rounded-3xl p-8 relative overflow-hidden border border-white/10">
         {/* Glow Effect */}
-        <div className="absolute -top-20 -right-20 w-40 h-40 bg-purple-500/20 rounded-full blur-3xl" />
-        <div className="absolute -bottom-20 -left-20 w-40 h-40 bg-pink-500/20 rounded-full blur-3xl" />
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-60 h-60 bg-cyan-500/10 rounded-full blur-3xl" />
+        <div className="absolute -top-20 -right-20 w-40 h-40 bg-gray-500/20 rounded-full blur-3xl" />
+        <div className="absolute -bottom-20 -left-20 w-40 h-40 bg-slate-500/20 rounded-full blur-3xl" />
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-60 h-60 bg-zinc-500/10 rounded-full blur-3xl" />
 
         <div className="relative z-10">
           {/* Header */}
           <div className="text-center mb-8">
-            <motion.div 
+            <motion.div
               whileHover={{ rotate: 360 }}
               transition={{ duration: 0.5 }}
-              className="w-16 h-16 mx-auto mb-4 rounded-full bg-gradient-to-br from-purple-600 via-pink-500 to-cyan-500 flex items-center justify-center shadow-lg shadow-purple-500/30"
+              className="w-16 h-16 mx-auto mb-4 rounded-full bg-gradient-to-br from-gray-600 via-slate-500 to-zinc-500 flex items-center justify-center shadow-lg shadow-white/10"
             >
               <Rocket className="w-8 h-8 text-white" />
             </motion.div>
@@ -51,7 +51,7 @@ export default function Register({ onBack, onLogin }: RegisterProps) {
               type="button"
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
-              className="w-full py-4 rounded-xl glass flex items-center justify-center gap-3 text-white hover:bg-white/10 transition-all group border border-white/10 hover:border-purple-500/30"
+              className="w-full py-4 rounded-xl glass flex items-center justify-center gap-3 text-white hover:bg-white/10 transition-all group border border-white/10 hover:border-white/30"
             >
               <Chrome className="w-5 h-5 group-hover:scale-110 transition-transform" />
               <span className="font-orbitron tracking-wider">CONTINUE WITH GOOGLE</span>
@@ -69,7 +69,7 @@ export default function Register({ onBack, onLogin }: RegisterProps) {
               type="button"
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
-              className="w-full py-4 rounded-xl bg-gradient-to-r from-purple-600 via-pink-500 to-cyan-500 text-white font-orbitron tracking-wider font-bold hover:shadow-lg hover:shadow-purple-500/50 transition-all duration-300 flex items-center justify-center gap-3"
+              className="w-full py-4 rounded-xl bg-gradient-to-r from-gray-700 via-gray-600 to-gray-500 text-white font-orbitron tracking-wider font-bold hover:shadow-lg hover:shadow-white/20 transition-all duration-300 flex items-center justify-center gap-3"
             >
               <Mail className="w-5 h-5" />
               REGISTER WITH EMAIL
@@ -81,19 +81,19 @@ export default function Register({ onBack, onLogin }: RegisterProps) {
             <p className="text-white/60 text-xs text-center mb-3">BENEFITS OF REGISTERING</p>
             <div className="space-y-2">
               <div className="flex items-center gap-2 text-white/70 text-sm">
-                <Sparkles className="w-3 h-3 text-purple-400" />
+                <Sparkles className="w-3 h-3 text-gray-400" />
                 <span>Access to all events and workshops</span>
               </div>
               <div className="flex items-center gap-2 text-white/70 text-sm">
-                <Sparkles className="w-3 h-3 text-pink-400" />
+                <Sparkles className="w-3 h-3 text-slate-400" />
                 <span>Exclusive event notifications</span>
               </div>
               <div className="flex items-center gap-2 text-white/70 text-sm">
-                <Sparkles className="w-3 h-3 text-cyan-400" />
+                <Sparkles className="w-3 h-3 text-zinc-400" />
                 <span>Certificate of participation</span>
               </div>
               <div className="flex items-center gap-2 text-white/70 text-sm">
-                <Sparkles className="w-3 h-3 text-violet-400" />
+                <Sparkles className="w-3 h-3 text-stone-400" />
                 <span>Chance to win exciting prizes</span>
               </div>
             </div>
@@ -105,7 +105,7 @@ export default function Register({ onBack, onLogin }: RegisterProps) {
               Already have an account?{' '}
               <button
                 onClick={onLogin}
-                className="text-purple-400 hover:text-pink-400 transition-colors font-orbitron"
+                className="text-gray-400 hover:text-white transition-colors font-orbitron"
               >
                 LOGIN
               </button>

@@ -7,9 +7,17 @@ export default function SoundManager() {
 
   useEffect(() => {
     // Create audio element
-    audioRef.current = new Audio('/space-ambient.mp3');
-    audioRef.current.loop = true;
-    audioRef.current.volume = 0.5;
+    const audio = new Audio('/space-ambient.mp3');
+    audio.loop = true;
+    audio.volume = 0.8;
+    audioRef.current = audio;
+
+    // Force loop on end just in case
+    const handleEnded = () => {
+      audio.currentTime = 0;
+      audio.play().catch(console.error);
+    };
+    audio.addEventListener('ended', handleEnded);
 
     // Try to play immediately
     const playAudio = () => {
@@ -37,6 +45,7 @@ export default function SoundManager() {
       document.removeEventListener('click', playAudio);
       document.removeEventListener('keydown', playAudio);
       if (audioRef.current) {
+        audioRef.current.removeEventListener('ended', handleEnded);
         audioRef.current.pause();
         audioRef.current = null;
       }

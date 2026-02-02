@@ -9,7 +9,6 @@ import {
   Info,
   Phone,
   X,
-  LogIn,
   UserPlus,
   Menu,
   Sparkles
@@ -18,19 +17,18 @@ import {
 interface RadialMenuProps {
   onClose: () => void;
   onNavigate: (section: string) => void;
-  onAuthNavigate: (view: 'home' | 'login' | 'register') => void;
+  onAuthNavigate: (view: 'home' | 'register') => void;
 }
 
 const menuItems = [
-  { icon: Home, label: 'HOME', section: 'hero', angle: 0, color: 'from-purple-500 to-violet-500' },
-  { icon: Calendar, label: 'EVENTS', section: 'events', angle: 40, color: 'from-violet-500 to-fuchsia-500' },
-  { icon: Image, label: 'POSTER', section: 'flagship', angle: 80, color: 'from-fuchsia-500 to-pink-500' },
-  { icon: Clock, label: 'TIMELINE', section: 'timeline', angle: 120, color: 'from-pink-500 to-rose-500' },
-  { icon: Wrench, label: 'WORKSHOPS', section: 'workshops', angle: 160, color: 'from-rose-500 to-orange-500' },
-  { icon: Trophy, label: 'PRIZES', section: 'prize-pool', angle: 200, color: 'from-orange-500 to-amber-500' },
-  { icon: Info, label: 'ABOUT', section: 'about', angle: 240, color: 'from-cyan-500 to-blue-500' },
-  { icon: Phone, label: 'CONTACT', section: 'contact', angle: 280, color: 'from-blue-500 to-indigo-500' },
-  { icon: Sparkles, label: 'ASSOCIATION', section: 'association', angle: 320, color: 'from-indigo-500 to-purple-500' },
+  { icon: Home, label: 'HOME', section: 'hero', angle: 0, color: 'from-slate-100 to-slate-400' }, // Silver
+  { icon: Calendar, label: 'EVENTS', section: 'events', angle: 40, color: 'from-gray-300 to-gray-500' }, // Steel
+  { icon: Clock, label: 'TIMELINE', section: 'timeline', angle: 120, color: 'from-slate-500 to-slate-700' }, // Slate
+  { icon: Wrench, label: 'WORKSHOPS', section: 'workshops', angle: 160, color: 'from-gray-600 to-gray-500' }, // Chrome
+  { icon: Trophy, label: 'PRIZES', section: 'prize-pool', angle: 200, color: 'from-zinc-500 to-zinc-400' }, // Aluminum
+  { icon: Info, label: 'ABOUT', section: 'about', angle: 240, color: 'from-slate-400 to-slate-300' }, // Platinum
+  { icon: Phone, label: 'CONTACT', section: 'contact', angle: 280, color: 'from-gray-300 to-gray-200' }, // Light Steel
+  { icon: Sparkles, label: 'ASSOCIATION', section: 'association', angle: 320, color: 'from-zinc-200 to-zinc-100' }, // White Metal
 ];
 
 export default function RadialMenu({ onClose, onNavigate, onAuthNavigate }: RadialMenuProps) {
@@ -71,20 +69,20 @@ export default function RadialMenu({ onClose, onNavigate, onAuthNavigate }: Radi
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      className="fixed inset-0 z-[100] flex items-center justify-center bg-black/90 backdrop-blur-md"
+      className="fixed inset-0 z-[100] flex items-center justify-center bg-black/80 backdrop-blur-xl"
       onClick={onClose}
     >
-      <div className="absolute inset-0 aurora-bg pointer-events-none" />
+      <div className="absolute inset-0 pointer-events-none" />
 
       {/* Keyboard Hint */}
       <motion.div
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.3 }}
-        className="absolute top-8 left-1/2 -translate-x-1/2 glass rounded-full px-6 py-2 flex items-center gap-3 border border-purple-500/30"
+        className="absolute top-8 left-1/2 -translate-x-1/2 glass rounded-full px-6 py-2 flex items-center gap-3 border border-white/20"
       >
-        <Menu className="w-4 h-4 text-purple-400" />
-        <span className="text-white/70 text-sm">Press <span className="text-purple-400 font-bold keyboard-hint">Q</span> to toggle menu</span>
+        <Menu className="w-4 h-4 text-white" />
+        <span className="text-white/70 text-sm">Press <span className="text-white font-bold keyboard-hint">Q</span> to toggle menu</span>
       </motion.div>
 
       {/* SVG Radial Menu */}
@@ -97,7 +95,7 @@ export default function RadialMenu({ onClose, onNavigate, onAuthNavigate }: Radi
         style={{ width: size, height: size }}
         onClick={(e) => e.stopPropagation()}
       >
-        <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`} className="overflow-visible filter drop-shadow-[0_0_15px_rgba(139,92,246,0.2)]">
+        <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`} className="overflow-visible filter drop-shadow-[0_0_15px_rgba(255,255,255,0.1)]">
           {menuItems.map((item, index) => {
             // Label stays at the center angle of the sector
             const midDeg = (index * itemAngle) - 90;
@@ -119,15 +117,15 @@ export default function RadialMenu({ onClose, onNavigate, onAuthNavigate }: Radi
               >
                 <path
                   d={createSectorPath(index)}
-                  className="fill-black/40 stroke-white/10 transition-all duration-300 group-hover:fill-purple-900/60 group-hover:stroke-purple-400/80"
+                  className="fill-white/5 stroke-white/10 transition-all duration-300 group-hover:fill-white/20 group-hover:stroke-white/50"
                   strokeWidth="1"
                 />
 
                 {/* Sector Icon & Text */}
                 <foreignObject x={labelX - 30} y={labelY - 30} width="60" height="60" className="pointer-events-none">
                   <div className="w-full h-full flex flex-col items-center justify-center">
-                    <item.icon className="w-5 h-5 text-white/70 mb-1 group-hover:text-purple-400 transition-colors duration-300" />
-                    <span className="text-[9px] font-orbitron text-white/70 group-hover:text-white transition-colors duration-300 tracking-wider text-center leading-tight">
+                    <item.icon className="w-5 h-5 text-gray-400 mb-1 group-hover:text-white transition-colors duration-300" />
+                    <span className="text-[9px] font-orbitron text-gray-400 group-hover:text-white transition-colors duration-300 tracking-wider text-center leading-tight">
                       {item.label}
                     </span>
                   </div>
@@ -143,9 +141,9 @@ export default function RadialMenu({ onClose, onNavigate, onAuthNavigate }: Radi
           animate={{ scale: 1 }}
           transition={{ delay: 0.2 }}
           onClick={onClose}
-          className="absolute top-1/2 left-1/2 w-16 h-16 -ml-8 -mt-8 rounded-full bg-black border border-purple-500/30 flex items-center justify-center hover:bg-purple-900/20 transition-all z-20 group shadow-[0_0_30px_rgba(168,85,247,0.3)]"
+          className="absolute top-1/2 left-1/2 w-16 h-16 -ml-8 -mt-8 rounded-full bg-black border border-white/20 flex items-center justify-center hover:bg-white/10 transition-all z-20 group shadow-[0_0_30px_rgba(255,255,255,0.1)]"
         >
-          <X className="w-6 h-6 text-purple-400 group-hover:rotate-90 transition-transform duration-300" />
+          <X className="w-6 h-6 text-white/70 group-hover:rotate-90 transition-transform duration-300" />
         </motion.button>
       </motion.div>
 
@@ -157,15 +155,8 @@ export default function RadialMenu({ onClose, onNavigate, onAuthNavigate }: Radi
         className="absolute bottom-10 left-1/2 -translate-x-1/2 flex gap-4"
       >
         <button
-          onClick={() => onAuthNavigate('login')}
-          className="flex items-center gap-2 px-8 py-3 rounded-full glass hover:bg-purple-500/20 transition-all group border border-white/10 hover:border-purple-400/30"
-        >
-          <LogIn className="w-4 h-4 text-purple-400 group-hover:text-white" />
-          <span className="text-sm text-white/70 group-hover:text-white font-orbitron tracking-wider">LOGIN</span>
-        </button>
-        <button
           onClick={() => onAuthNavigate('register')}
-          className="flex items-center gap-2 px-8 py-3 rounded-full bg-gradient-to-r from-purple-600 to-pink-600 hover:shadow-lg hover:shadow-purple-500/40 transition-all text-white font-orbitron tracking-wider"
+          className="flex items-center gap-2 px-8 py-3 rounded-full bg-gradient-to-r from-gray-700 via-gray-600 to-gray-500 hover:shadow-lg hover:shadow-white/20 transition-all text-white font-orbitron tracking-wider"
         >
           <UserPlus className="w-4 h-4" />
           <span className="text-sm">REGISTER</span>
