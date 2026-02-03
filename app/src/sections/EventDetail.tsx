@@ -37,106 +37,182 @@ const eventData: Record<string, {
     color: 'from-gray-100 to-gray-300',
     icon: '🔍',
   },
-  'forcecoders': {
-    name: 'FORCECODERS',
-    tagline: 'CODE LIKE TOURIST. HACK LIKE A GRANDMASTER.',
-    teamSize: 'Individual',
-    date: 'Feb 27',
-    time: '1:30 PM - 4:00 PM',
-    venue: 'Computer Center',
-    rounds: [
-      { name: 'Coding Phase', description: 'Solve fast, code clean, survive the leaderboard.' },
-      { name: 'Hacking Phase', description: 'Exploit weaknesses and defend your logic.' },
-    ],
-    coordinators: [
-      { name: 'Coordinator 1', phone: '9876543210' },
-    ],
-    color: 'from-gray-300 to-gray-400',
-    icon: '⚡',
-  },
-  'codemania': {
-    name: 'CODEMANIA',
-    tagline: 'BEAT THE CLOCK. BEAT THE RIVALS IN BIDS.',
+  'project-war': {
+    name: 'PROJECT WAR',
+    tagline: 'SHOWCASE YOUR INNOVATIVE PROJECTS AND COMPETE FOR GLORY',
     teamSize: '4 Members',
     date: 'Feb 27',
     time: '10:00 AM - 3:00 PM',
-    venue: 'Computer Center',
+    venue: 'Project Lab',
     rounds: [
-      { name: 'Tech Spectrum', description: 'Spot the tech. Spin the wheel. Stay in the game.' },
-      { name: 'BidRush', description: 'Bid smart. Predict right. Win big.' },
+      { name: 'Project Demo', description: 'Present your working prototype to the judges.' },
+      { name: 'Q&A Session', description: 'Defend your project methodology and implementation.' },
     ],
     coordinators: [
-      { name: 'Coordinator 1', phone: '9876543210' },
+      { name: 'Shek allavudhin batsha S', phone: '8778236418' },
+      { name: 'Shunmuga Lakshmi V', phone: '8825977538' },
     ],
-    color: 'from-gray-400 to-gray-500',
-    icon: '💻',
+    color: 'from-blue-400 to-blue-600',
+    icon: '🛠️',
   },
-  'nexus': {
-    name: 'NEXUS',
-    tagline: 'MARVEL-THEMED BEGINNER-FRIENDLY CYBERSECURITY CTF WITH MISSION-BASED CHALLENGES',
-    teamSize: '3 Members',
-    date: 'Feb 27',
-    time: '9:00 AM - 12:30 PM',
-    venue: 'AI and Cloud Computing Labs',
-    rounds: [
-      { name: 'Infinity Stone Missions', description: 'Capture the flags and restore balance to the system.' },
-    ],
-    coordinators: [
-      { name: 'Coordinator 1', phone: '9876543210' },
-    ],
-    color: 'from-gray-500 to-gray-600',
-    icon: '🛡️',
-  },
-  'gitwars': {
-    name: 'GIT WARS',
-    tagline: 'CLONE. COMMIT. CONQUER.',
-    teamSize: '3 Members',
-    date: 'Feb 27',
-    time: '9:00 AM - 12:30 PM',
-    venue: 'Classrooms',
-    rounds: [
-      { name: 'Code Charades', description: 'Act fast, decode words, earn your advantage.' },
-      { name: 'Flash Memory', description: 'Choose wisely or crash into uncertainty.' },
-    ],
-    coordinators: [
-      { name: 'Coordinator 1', phone: '9876543210' },
-    ],
-    color: 'from-gray-600 to-gray-500',
-    icon: '🌌',
-  },
-  'openquiz': {
-    name: 'OPEN QUIZ',
-    tagline: 'TECH IN MOVIES, WHEEL OF TECH, CODE AUCTION.',
-    teamSize: '3 Members',
-    date: 'Feb 27',
-    time: '10:00 AM - 12:30 PM',
-    venue: 'D Block Conference Hall',
-    rounds: [
-      { name: 'Tech Spectrum', description: 'Spot the tech. Spin the wheel. Stay in the game.' },
-      { name: 'BidRush', description: 'Bid smart. Predict right. Win big.' },
-    ],
-    coordinators: [
-      { name: 'Coordinator 1', phone: '9876543210' },
-    ],
-    color: 'from-gray-500 to-gray-300',
-    icon: '🎯',
-  },
-  'ai-trends': {
-    name: 'AI AND EMERGING TRENDS',
-    tagline: 'PAPER PRESENTATION ON CUTTING-EDGE AI TECHNOLOGIES',
+  'paper-presentation': {
+    name: 'PAPER PRESENTATION',
+    tagline: 'PRESENT YOUR RESEARCH AND IDEAS TO A PANEL OF EXPERTS',
     teamSize: '2 Members',
     date: 'Feb 27',
     time: '10:00 AM - 3:00 PM',
     venue: 'Seminar Hall',
     rounds: [
-      { name: 'Paper Submission', description: 'Submit your research paper on AI and emerging trends.' },
-      { name: 'Presentation', description: 'Present your findings to expert panel.' },
+      { name: 'Presentation', description: 'Present your technical paper with visual aids.' },
     ],
     coordinators: [
-      { name: 'Coordinator 1', phone: '9876543210' },
+      { name: 'Michael raj A', phone: '7010617647' },
+      { name: 'Jayashree D', phone: '9566272714' },
     ],
-    color: 'from-gray-300 to-gray-200',
+    color: 'from-purple-400 to-purple-600',
+    icon: '📝',
+  },
+  'ai-prompt-battle': {
+    name: 'AI PROMPT BATTLE',
+    tagline: 'MASTER THE ART OF PROMPTING IN THIS AI SHOWDOWN',
+    teamSize: 'Individual',
+    date: 'Feb 27',
+    time: '1:30 PM - 4:00 PM',
+    venue: 'Computer Center',
+    rounds: [
+      { name: 'Prompt Engineering', description: 'Generate the best outputs using AI tools.' },
+    ],
+    coordinators: [
+      { name: 'Sanjay K', phone: '9042469959' },
+      { name: 'Abitha A', phone: '9123551977' },
+    ],
+    color: 'from-yellow-400 to-orange-500',
+    icon: '🧠',
+  },
+  'arduino-hackathon': {
+    name: 'ARDUINO HACKATHON',
+    tagline: 'BUILD AND PROGRAM EMBEDDED SYSTEMS IN A RACE AGAINST TIME',
+    teamSize: '3 Members',
+    date: 'Feb 27',
+    time: '10:00 AM - 3:00 PM',
+    venue: 'Embedded Systems Lab',
+    rounds: [
+      { name: 'Circuit Building', description: 'Design and assemble the required circuit.' },
+      { name: 'Coding & Execution', description: 'Program the Arduino to achieve the task.' },
+    ],
+    coordinators: [
+      { name: 'Mohammed Thoufiq A', phone: '8838651916' },
+      { name: 'Arunthathi M', phone: '9025478135' },
+    ],
+    color: 'from-green-400 to-emerald-600',
     icon: '🤖',
+  },
+  'circuit-debugging': {
+    name: 'CIRCUIT DEBUGGING',
+    tagline: 'FIND FAULTS AND FIX CIRCUITS TO PROVE YOUR HARDWARE SKILLS',
+    teamSize: '2 Members',
+    date: 'Feb 27',
+    time: '10:00 AM - 1:00 PM',
+    venue: 'Electronics Lab',
+    rounds: [
+      { name: 'Fault Finding', description: 'Identify errors in the given circuit diagram.' },
+      { name: 'Practical Debugging', description: 'Fix the hardware circuit to make it work.' },
+    ],
+    coordinators: [
+      { name: 'Gnaneshkanthan S', phone: '9361696966' },
+      { name: 'Jayashree S', phone: '8667373245' },
+    ],
+    color: 'from-red-400 to-rose-600',
+    icon: '🔌',
+  },
+  'ipl-auction': {
+    name: 'IPL AUCTION',
+    tagline: 'STRATEGIZE AND BUILD YOUR DREAM TEAM IN THIS AUCTION SIMULATION',
+    teamSize: '4 Members',
+    date: 'Feb 27',
+    time: '10:00 AM - 3:00 PM',
+    venue: 'Auditorium',
+    rounds: [
+      { name: 'Budget Allocation', description: 'Manage your virtual budget to buy players.' },
+      { name: 'Team Building', description: 'Assemble the best possible team within constraints.' },
+    ],
+    coordinators: [
+      { name: 'Tharun Kumar P', phone: '9363037379' },
+      { name: 'Thahifa Fathima A', phone: '9500974615' },
+    ],
+    color: 'from-indigo-400 to-blue-500',
+    icon: '🏏',
+  },
+  'hintdrop': {
+    name: 'HINTDROP',
+    tagline: 'FOLLOW THE CLUES AND SOLVE THE MYSTERY',
+    teamSize: '3 Members',
+    date: 'Feb 27',
+    time: '10:00 AM - 1:00 PM',
+    venue: 'Campus Grounds',
+    rounds: [
+      { name: 'Clue Hunting', description: 'Find hidden clues across the location.' },
+      { name: 'Puzzle Solving', description: 'Decode the clues to reach the final destination.' },
+    ],
+    coordinators: [
+      { name: 'Sowresh R', phone: '7845321588' },
+      { name: 'Bafina A', phone: '9585805225' },
+    ],
+    color: 'from-pink-400 to-rose-500',
+    icon: '🧩',
+  },
+  'short-film': {
+    name: 'SHORT FILM',
+    tagline: 'EXPRESS YOUR CREATIVITY THROUGH THE LENS',
+    teamSize: 'Team of 4-6',
+    date: 'Feb 27',
+    time: '1:30 PM - 4:00 PM',
+    venue: 'Main Auditorium',
+    rounds: [
+      { name: 'Screening', description: 'Showcase your short film to the audience and judges.' },
+      { name: 'Critique', description: 'Receive feedback and scores based on storytelling and technicality.' },
+    ],
+    coordinators: [
+      { name: 'Sudharshan A', phone: '7695827386' },
+      { name: 'Dharani S', phone: '7826949987' },
+    ],
+    color: 'from-amber-400 to-orange-500',
+    icon: '🎬',
+  },
+  'spin-and-win': {
+    name: 'SPIN AND WIN',
+    tagline: 'TRY YOUR LUCK AND WIN EXCITING PRIZES',
+    teamSize: 'Individual',
+    date: 'Feb 27',
+    time: 'All Day',
+    venue: 'Stalls Area',
+    rounds: [
+      { name: 'Spin the Wheel', description: 'Spin the wheel and test your fortune.' },
+    ],
+    coordinators: [
+      { name: 'Kaviselvam E', phone: '9585381455' },
+      { name: 'Catherin Jersha J S', phone: '7305620340' },
+    ],
+    color: 'from-cyan-400 to-blue-500',
+    icon: '🎡',
+  },
+  'photography': {
+    name: 'PHOTOGRAPHY',
+    tagline: 'CAPTURE THE MOMENT AND SHOWCASE YOUR PERSPECTIVE',
+    teamSize: 'Individual',
+    date: 'Feb 27',
+    time: 'All Day',
+    venue: 'Campus',
+    rounds: [
+      { name: 'Capture', description: 'Take photos based on the given theme.' },
+      { name: 'Showcase', description: 'Submit your best shots for evaluation.' },
+    ],
+    coordinators: [
+      { name: 'Sivakumar L', phone: '9043267073' },
+      { name: 'Kayalvizhi V', phone: '9360387845' },
+    ],
+    color: 'from-teal-400 to-green-500',
+    icon: '📸',
   },
 };
 
@@ -230,7 +306,10 @@ export default function EventDetail({ eventId, onBack, onRegister }: EventDetail
             </motion.div>
 
             {/* Coordinators */}
-            <div className="glass rounded-2xl p-6 border border-white/10">
+            <motion.div
+              whileHover={{ scale: 1.02 }}
+              className="glass rounded-2xl p-6 border border-white/10 hover:border-white/30 transition-all"
+            >
               <span className="text-white/60 text-xs tracking-wider block mb-4">COORDINATORS</span>
               <div className="space-y-3">
                 {event.coordinators.map((coord, i) => (
@@ -240,7 +319,7 @@ export default function EventDetail({ eventId, onBack, onRegister }: EventDetail
                   </div>
                 ))}
               </div>
-            </div>
+            </motion.div>
           </motion.div>
 
           {/* Center - Event Poster */}

@@ -14,13 +14,13 @@ export default function Timeline() {
 
   const schedule = [
     {
-      date: 'FEB 01',
+      date: 'FEB 27',
       time: '10:00 AM',
       title: 'REGISTRATION OPENS',
       description: 'Registration opens for all events and workshops via Google Forms.',
     },
     {
-      date: 'FEB 20',
+      date: 'FEB 27',
       time: '11:59 PM',
       title: 'REGISTRATION CLOSES',
       description: 'Last date to register for all events. No spot registrations available.',
@@ -87,17 +87,19 @@ export default function Timeline() {
                   className="ml-12 md:ml-0 md:w-1/2 md:px-12"
                 >
                   <SpotlightCard className="w-full p-6 md:p-8" spotlightColor="rgba(255, 255, 255, 0.1)">
-                    {/* Time Badge - Floating */}
-                    <div className="absolute top-6 right-6 flex items-center gap-2 px-3 py-1 rounded-full bg-white/5 border border-white/10">
-                      <Clock className="w-3 h-3 text-purple-400" />
-                      <span className="text-xs font-orbitron text-gray-300">{item.time}</span>
-                    </div>
 
                     <div className="flex flex-col gap-4">
-                      {/* Date */}
-                      <span className="text-sm font-bold text-gray-500 tracking-wider uppercase">
-                        {item.date}
-                      </span>
+                      {/* Date & Time Row */}
+                      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-white/5 pb-4 mb-2">
+                        <span className="text-sm font-bold text-gray-500 tracking-wider uppercase">
+                          {item.date}
+                        </span>
+
+                        <div className="flex items-center gap-2 px-3 py-1 rounded-full bg-white/5 border border-white/10 w-fit">
+                          <Clock className="w-3 h-3 text-purple-400" />
+                          <span className="text-xs font-orbitron text-gray-300">{item.time}</span>
+                        </div>
+                      </div>
 
                       {/* Title */}
                       <h3 className="font-orbitron text-xl md:text-2xl font-bold text-white group-hover:text-purple-300 transition-colors">

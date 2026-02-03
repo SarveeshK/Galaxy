@@ -141,7 +141,13 @@ void main(){
 }`;
 
 interface MetallicPaintProps {
-    imageSrc: string;
+    imageSrc?: string;
+    text?: string;
+    font?: string;
+    fontSize?: number;
+    fontWeight?: string | number;
+    letterSpacing?: number;
+
     seed?: number;
     scale?: number;
     refraction?: number;
@@ -162,7 +168,87 @@ interface MetallicPaintProps {
     distortion?: number;
     contour?: number;
     tintColor?: string;
-    className?: string; // Added className
+}
+
+function processImageData(imageData: ImageData): ImageData {
+    const width = imageData.width;
+    const height = imageData.height;
+    const data = imageData.data;
+    const size = width * height;
+    const alphaValues = new Float32Array(size);
+    const shapeMask = new Uint8Array(size);
+    const boundaryMask = new Uint8Array(size);
+
+    for (let i = 0; i < size; i++) {
+        const idx = i * 4;
+        const r = data[idx],
+            g = data[idx + 1],
+            b = data[idx + 2],
+            a = data[idx + 3];
+        const isBackground = (r > 250 && g > 250 && b > 250 && a === 255) || a < 5;
+        alphaValues[i] = isBackground ? 0 : a / 255;
+        shapeMask[i] = alphaValues[i] > 0.1 ? 1 : 0;
+    }
+
+    for (let y = 0; y < height; y++) {
+        for (let x = 0; x < width; x++) {
+            const idx = y * width + x;
+            if (!shapeMask[idx]) continue;
+            if (
+                x === 0 ||
+                x === width - 1 ||
+                y === 0 ||
+                y === height - 1 ||
+                !shapeMask[idx - 1] ||
+                !shapeMask[idx + 1] ||
+                !shapeMask[idx - width] ||
+                !shapeMask[idx + width]
+            ) {
+                boundaryMask[idx] = 1;
+            }
+        }
+    }
+
+    const u = new Float32Array(size);
+    const ITERATIONS = 100; // Reduced for performance check
+    const C = 0.01;
+    const omega = 1.85;
+
+    for (let iter = 0; iter < ITERATIONS; iter++) {
+        for (let y = 1; y < height - 1; y++) {
+            for (let x = 1; x < width - 1; x++) {
+                const idx = y * width + x;
+                if (!shapeMask[idx] || boundaryMask[idx]) continue;
+                const sum =
+                    (shapeMask[idx + 1] ? u[idx + 1] : 0) +
+                    (shapeMask[idx - 1] ? u[idx - 1] : 0) +
+                    (shapeMask[idx + width] ? u[idx + width] : 0) +
+                    (shapeMask[idx - width] ? u[idx - width] : 0);
+                const newVal = (C + sum) / 4;
+                u[idx] = omega * newVal + (1 - omega) * u[idx];
+            }
+        }
+    }
+
+    let maxVal = 0;
+    for (let i = 0; i < size; i++) if (u[i] > maxVal) maxVal = u[i];
+    if (maxVal === 0) maxVal = 1;
+
+    const canvas = document.createElement('canvas');
+    canvas.width = width;
+    canvas.height = height;
+    const ctx = canvas.getContext('2d')!;
+    const outData = ctx.createImageData(width, height);
+
+    for (let i = 0; i < size; i++) {
+        const px = i * 4;
+        const depth = u[i] / maxVal;
+        const gray = Math.round(255 * (1 - depth * depth));
+        outData.data[px] = outData.data[px + 1] = outData.data[px + 2] = gray;
+        outData.data[px + 3] = Math.round(alphaValues[i] * 255);
+    }
+
+    return outData;
 }
 
 function processImage(img: HTMLImageElement): ImageData {
@@ -194,79 +280,7 @@ function processImage(img: HTMLImageElement): ImageData {
     const ctx = canvas.getContext('2d')!;
     ctx.drawImage(img, 0, 0, width, height);
 
-    const imageData = ctx.getImageData(0, 0, width, height);
-    const data = imageData.data;
-    const size = width * height;
-    const alphaValues = new Float32Array(size);
-    const shapeMask = new Uint8Array(size);
-    const boundaryMask = new Uint8Array(size);
-
-    for (let i = 0; i < size; i++) {
-        const idx = i * 4;
-        const r = data[idx],
-            g = data[idx + 1],
-            b = data[idx + 2],
-            a = data[idx + 3];
-        // Keep alpha if it's there, but handle transparency
-        const isBackground = (a < 5); // Simple alpha check
-        alphaValues[i] = isBackground ? 0 : a / 255;
-        shapeMask[i] = alphaValues[i] > 0.1 ? 1 : 0;
-    }
-    // Rest of processing logic as provided...
-    for (let y = 0; y < height; y++) {
-        for (let x = 0; x < width; x++) {
-            const idx = y * width + x;
-            if (!shapeMask[idx]) continue;
-            if (
-                x === 0 ||
-                x === width - 1 ||
-                y === 0 ||
-                y === height - 1 ||
-                !shapeMask[idx - 1] ||
-                !shapeMask[idx + 1] ||
-                !shapeMask[idx - width] ||
-                !shapeMask[idx + width]
-            ) {
-                boundaryMask[idx] = 1;
-            }
-        }
-    }
-
-    const u = new Float32Array(size);
-    const ITERATIONS = 200;
-    const C = 0.01;
-    const omega = 1.85;
-
-    for (let iter = 0; iter < ITERATIONS; iter++) {
-        for (let y = 1; y < height - 1; y++) {
-            for (let x = 1; x < width - 1; x++) {
-                const idx = y * width + x;
-                if (!shapeMask[idx] || boundaryMask[idx]) continue;
-                const sum =
-                    (shapeMask[idx + 1] ? u[idx + 1] : 0) +
-                    (shapeMask[idx - 1] ? u[idx - 1] : 0) +
-                    (shapeMask[idx + width] ? u[idx + width] : 0) +
-                    (shapeMask[idx - width] ? u[idx - width] : 0);
-                const newVal = (C + sum) / 4;
-                u[idx] = omega * newVal + (1 - omega) * u[idx];
-            }
-        }
-    }
-
-    let maxVal = 0;
-    for (let i = 0; i < size; i++) if (u[i] > maxVal) maxVal = u[i];
-    if (maxVal === 0) maxVal = 1;
-
-    const outData = ctx.createImageData(width, height);
-    for (let i = 0; i < size; i++) {
-        const px = i * 4;
-        const depth = u[i] / maxVal;
-        const gray = Math.round(255 * (1 - depth * depth));
-        outData.data[px] = outData.data[px + 1] = outData.data[px + 2] = gray;
-        outData.data[px + 3] = Math.round(alphaValues[i] * 255);
-    }
-
-    return outData;
+    return processImageData(ctx.getImageData(0, 0, width, height));
 }
 
 function hexToRgb(hex: string): [number, number, number] {
@@ -278,6 +292,11 @@ function hexToRgb(hex: string): [number, number, number] {
 
 export default function MetallicPaint({
     imageSrc,
+    text,
+    font = 'Orbitron, sans-serif',
+    fontSize = 120,
+    fontWeight = 900,
+    letterSpacing = 0,
     seed = 42,
     scale = 4,
     refraction = 0.01,
@@ -297,8 +316,7 @@ export default function MetallicPaint({
     mouseAnimation = false,
     distortion = 1,
     contour = 0.2,
-    tintColor = '#feb3ff',
-    className = ''
+    tintColor = '#feb3ff'
 }: MetallicPaintProps) {
     const canvasRef = useRef<HTMLCanvasElement>(null);
     const glRef = useRef<WebGL2RenderingContext | null>(null);
@@ -308,7 +326,6 @@ export default function MetallicPaint({
     const animTimeRef = useRef(0);
     const lastTimeRef = useRef(0);
     const rafRef = useRef<number | null>(null);
-    const imgDataRef = useRef<ImageData | null>(null);
     const speedRef = useRef(speed);
     const mouseRef = useRef({ x: 0.5, y: 0.5, targetX: 0.5, targetY: 0.5 });
     const mouseAnimRef = useRef(mouseAnimation);
@@ -402,7 +419,6 @@ export default function MetallicPaint({
         gl.uniform1f(uniforms.u_ratio, 1);
 
         textureRef.current = tex;
-        imgDataRef.current = imgData;
     }, []);
 
     useEffect(() => {
@@ -412,7 +428,7 @@ export default function MetallicPaint({
         const gl = glRef.current;
         if (!canvas || !gl) return;
 
-        const side = 1000 * (window.devicePixelRatio || 1); // Use window reference safely
+        const side = 1000 * (window.devicePixelRatio || 1);
         canvas.width = side;
         canvas.height = side;
         gl.viewport(0, 0, side, side);
@@ -427,6 +443,7 @@ export default function MetallicPaint({
         };
     }, [initGL]);
 
+    // Handle Image Source
     useEffect(() => {
         if (!ready || !imageSrc) return;
 
@@ -440,6 +457,57 @@ export default function MetallicPaint({
         };
         img.src = imageSrc;
     }, [ready, imageSrc, uploadTexture]);
+
+    // Handle Text Source (Generates image data from text)
+    useEffect(() => {
+        if (!ready || !text) return;
+
+        // Only if imageSrc is not present, use text
+        if (imageSrc) return;
+
+        setTextureReady(false);
+
+        // Create text canvas
+        const offscreen = document.createElement('canvas');
+        // Estimate size
+        const estWidth = (fontSize || 100) * text.length; // rough estimate
+        const estHeight = (fontSize || 100) * 2;
+
+        offscreen.width = estWidth;
+        offscreen.height = estHeight;
+        const ctx = offscreen.getContext('2d');
+        if (ctx) {
+            ctx.fillStyle = 'black'; // Background transparent/black logic - actually code expects transparent BG?
+            // Code expects: "black fill color to allow the metallic effect to show through"? 
+            // Wait, processImage expects alpha for shapeMask.
+            // And the instruction says: "It should have a black fill color to allow..."
+            // Let's check processImageData:
+            // isBackground = (r > 250 && g > 250 && b > 250 && a === 255) || a < 5;
+            // So transparent (a < 5) is background. White/Bright is background.
+            // Content should be darker or just normal.
+            // Let's draw text in black on transparent.
+            ctx.clearRect(0, 0, estWidth, estHeight);
+            ctx.font = `${fontWeight} ${fontSize}px ${font}`;
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillStyle = 'black';
+            ctx.fillText(text, estWidth / 2, estHeight / 2);
+
+            const imgData = ctx.getImageData(0, 0, estWidth, estHeight);
+
+            // Process it
+            // Note: we need to invert/ensure alpha is set correctly for the processor
+            // processor: alphaValues[i] = isBackground ? 0 : a / 255;
+            // If we draw black text on transparent:
+            // Black: r=0,g=0,b=0,a=255. isBackground = (false) || false = false. alpha = 1. -> Shape. Correct.
+            // Transparent: a=0. isBackground = true. alpha = 0. -> No shape. Correct.
+
+            const processed = processImageData(imgData);
+            uploadTexture(processed);
+            setTextureReady(true);
+        }
+
+    }, [ready, text, font, fontSize, fontWeight, imageSrc, uploadTexture]);
 
     useEffect(() => {
         const gl = glRef.current;
@@ -470,13 +538,24 @@ export default function MetallicPaint({
         gl.uniform3f(u.u_tint, tint[0], tint[1], tint[2]);
     }, [
         ready,
-        // Add all props to dependency if they change often, strictly speaking
-        // but here sticking to what provided code likely intends. 
-        // Actually provided code omits props in deps for optimization or oversight. 
-        // I'll leave as is but add fundamental ones.
-        seed, scale, refraction, blur, liquid, brightness, contrast, angle, fresnel,
-        lightColor, darkColor, patternSharpness, waveAmplitude, noiseScale, chromaticSpread,
-        distortion, contour, tintColor
+        seed,
+        scale,
+        refraction,
+        blur,
+        liquid,
+        brightness,
+        contrast,
+        angle,
+        fresnel,
+        lightColor,
+        darkColor,
+        patternSharpness,
+        waveAmplitude,
+        noiseScale,
+        chromaticSpread,
+        distortion,
+        contour,
+        tintColor
     ]);
 
     useEffect(() => {
@@ -522,5 +601,5 @@ export default function MetallicPaint({
         };
     }, [ready, textureReady]);
 
-    return <canvas ref={canvasRef} className={`paint-container ${className}`} />;
+    return <canvas ref={canvasRef} className="paint-container" />;
 }

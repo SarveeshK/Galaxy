@@ -35,7 +35,7 @@ export default function PrizePool() {
         </div>
 
         {/* Main Vault Display */}
-        <div className="grid lg:grid-cols-2 gap-8 items-center">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
 
           {/* Total Prize Pool */}
           <motion.div
@@ -49,17 +49,17 @@ export default function PrizePool() {
               glareOpacity={0.2}
               borderRadius="2.5rem"
             >
-              <div className="glass-premium rounded-[2.5rem] p-12 relative overflow-hidden group border border-white/10 flex flex-col justify-center h-full">
+              <div className="glass-premium rounded-[2.5rem] p-8 md:p-12 relative overflow-hidden group border border-white/10 flex flex-col justify-center h-full text-center md:text-left">
                 <div className="absolute top-0 right-0 p-8 opacity-20 group-hover:opacity-40 transition-opacity duration-500">
                   <Sparkles className="w-32 h-32 text-white" />
                 </div>
 
-                <p className="font-orbitron text-sm tracking-[0.3em] text-gray-500 mb-4 uppercase">Total Valuation</p>
-                <div className="flex items-baseline gap-2">
-                  <span className="font-orbitron text-7xl md:text-9xl font-black text-white tracking-tighter">
+                <p className="font-orbitron text-xs md:text-sm tracking-[0.3em] text-gray-500 mb-4 uppercase">Total Valuation</p>
+                <div className="flex items-baseline gap-2 justify-center md:justify-start">
+                  <span className="font-orbitron text-5xl md:text-9xl font-black text-white tracking-tighter">
                     ₹40<span className="text-gray-500">K</span>
                   </span>
-                  <span className="text-2xl md:text-4xl text-gray-500 font-bold">+</span>
+                  <span className="text-xl md:text-4xl text-gray-500 font-bold">+</span>
                 </div>
                 <div className="mt-8 flex items-center gap-4 text-green-400 bg-green-400/10 px-4 py-2 rounded-full w-fit">
                   <TrendingUp className="w-4 h-4" />

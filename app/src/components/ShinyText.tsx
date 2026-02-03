@@ -1,4 +1,4 @@
-import { useState, useCallback, useEffect, useRef } from 'react';
+import React, { useState, useCallback, useEffect, useRef } from 'react';
 import { motion, useMotionValue, useAnimationFrame, useTransform } from 'framer-motion';
 import './ShinyText.css';
 
@@ -16,7 +16,7 @@ interface ShinyTextProps {
     delay?: number;
 }
 
-const ShinyText = ({
+const ShinyText: React.FC<ShinyTextProps> = ({
     text,
     disabled = false,
     speed = 2,
@@ -28,7 +28,7 @@ const ShinyText = ({
     pauseOnHover = false,
     direction = 'left',
     delay = 0
-}: ShinyTextProps) => {
+}) => {
     const [isPaused, setIsPaused] = useState(false);
     const progress = useMotionValue(0);
     const elapsedRef = useRef(0);
@@ -54,6 +54,7 @@ const ShinyText = ({
 
         elapsedRef.current += deltaTime;
 
+        // Animation goes from 0 to 100
         if (yoyo) {
             const cycleDuration = animationDuration + delayDuration;
             const fullCycle = cycleDuration * 2;
@@ -94,7 +95,8 @@ const ShinyText = ({
         directionRef.current = direction === 'left' ? 1 : -1;
         elapsedRef.current = 0;
         progress.set(0);
-    }, [direction, progress]);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [direction]);
 
     // Transform: p=0 -> 150% (shine off right), p=100 -> -50% (shine off left)
     const backgroundPosition = useTransform(progress, p => `${150 - p * 2}% center`);
@@ -107,15 +109,13 @@ const ShinyText = ({
         if (pauseOnHover) setIsPaused(false);
     }, [pauseOnHover]);
 
-    const gradientStyle = {
+    const gradientStyle: React.CSSProperties = {
         backgroundImage: `linear-gradient(${spread}deg, ${color} 0%, ${color} 35%, ${shineColor} 50%, ${color} 65%, ${color} 100%)`,
         backgroundSize: '200% auto',
         WebkitBackgroundClip: 'text',
-        backgroundClip: 'text', // Standard property
-        WebkitTextFillColor: 'transparent',
-        // Fallback for non-text-clip browsers could be added here if color logic was different,
-        // but typically we assume modern browser support for background-clip: text.
-    } as React.CSSProperties;
+        backgroundClip: 'text',
+        WebkitTextFillColor: 'transparent'
+    };
 
     return (
         <motion.span

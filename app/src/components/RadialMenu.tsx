@@ -1,17 +1,15 @@
 import { motion } from 'framer-motion';
+import { useState, useEffect } from 'react';
 import {
   Home,
   Calendar,
   Clock,
   Wrench,
-  Image,
-  Trophy,
-  Info,
   Phone,
   X,
   UserPlus,
   Menu,
-  Sparkles
+  Info
 } from 'lucide-react';
 
 interface RadialMenuProps {
@@ -24,27 +22,29 @@ const menuItems = [
   { icon: Home, label: 'HOME', section: 'hero', angle: 0, color: 'from-slate-100 to-slate-400' }, // Silver
   { icon: Calendar, label: 'EVENTS', section: 'events', angle: 40, color: 'from-gray-300 to-gray-500' }, // Steel
   { icon: Clock, label: 'TIMELINE', section: 'timeline', angle: 120, color: 'from-slate-500 to-slate-700' }, // Slate
-  { icon: Wrench, label: 'WORKSHOPS', section: 'workshops', angle: 160, color: 'from-gray-600 to-gray-500' }, // Chrome
-  { icon: Trophy, label: 'PRIZES', section: 'prize-pool', angle: 200, color: 'from-zinc-500 to-zinc-400' }, // Aluminum
   { icon: Info, label: 'ABOUT', section: 'about', angle: 240, color: 'from-slate-400 to-slate-300' }, // Platinum
   { icon: Phone, label: 'CONTACT', section: 'contact', angle: 280, color: 'from-gray-300 to-gray-200' }, // Light Steel
-  { icon: Sparkles, label: 'ASSOCIATION', section: 'association', angle: 320, color: 'from-zinc-200 to-zinc-100' }, // White Metal
 ];
 
 export default function RadialMenu({ onClose, onNavigate, onAuthNavigate }: RadialMenuProps) {
-  const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const handleResize = () => setIsMobile(window.innerWidth < 768);
+    handleResize(); // Initial check
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
   const size = isMobile ? 320 : 500;
   const center = size / 2;
   const innerRadius = isMobile ? 40 : 60;
   const outerRadius = isMobile ? 150 : 240;
+  // Recalculate itemAngle based on *current* length (will be less after removal)
   const itemAngle = 360 / menuItems.length;
 
   const createSectorPath = (index: number) => {
-    // Offset by -90- (itemAngle/2) to center the first item at the top? 
-    // Actually, usually 0 is right. We want the first item at top ( -90 degrees). 
-    // And we want the item CENTERED at that angle. 
-    // So the wedge should go from (Angle - Step/2) to (Angle + Step/2).
-
+    // Start degrees: Shift -90 (top) and then offset by half an item angle to center the segment
     const startDeg = (index * itemAngle) - 90 - (itemAngle / 2);
     const endDeg = (index * itemAngle) - 90 + (itemAngle / 2);
 
@@ -60,7 +60,7 @@ export default function RadialMenu({ onClose, onNavigate, onAuthNavigate }: Radi
     const x4 = center + innerRadius * Math.cos(endAngle);
     const y4 = center + innerRadius * Math.sin(endAngle);
 
-    // Large arc flag: if angle > 180, use 1. Here angle is 40, so 0.
+    // Large arc flag: 0 because 360/5 = 72 < 180
     return `M ${x1} ${y1} L ${x2} ${y2} A ${outerRadius} ${outerRadius} 0 0 1 ${x3} ${y3} L ${x4} ${y4} A ${innerRadius} ${innerRadius} 0 0 0 ${x1} ${y1} Z`;
   };
 
@@ -79,7 +79,7 @@ export default function RadialMenu({ onClose, onNavigate, onAuthNavigate }: Radi
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.3 }}
-        className="absolute top-8 left-1/2 -translate-x-1/2 glass rounded-full px-6 py-2 flex items-center gap-3 border border-white/20"
+        className="absolute top-8 left-1/2 -translate-x-1/2 glass rounded-full px-6 py-2 hidden md:flex items-center gap-3 border border-white/20"
       >
         <Menu className="w-4 h-4 text-white" />
         <span className="text-white/70 text-sm">Press <span className="text-white font-bold keyboard-hint">Q</span> to toggle menu</span>
@@ -87,17 +87,16 @@ export default function RadialMenu({ onClose, onNavigate, onAuthNavigate }: Radi
 
       {/* SVG Radial Menu */}
       <motion.div
-        initial={{ scale: 0, rotate: -180 }}
-        animate={{ scale: 1, rotate: 0 }}
-        exit={{ scale: 0, rotate: 180 }}
-        transition={{ type: 'spring', damping: 25, stiffness: 200 }}
+        initial={{ scale: 0.8, opacity: 0 }}
+        animate={{ scale: 1, opacity: 1 }}
+        exit={{ scale: 0.8, opacity: 0 }}
+        transition={{ type: 'spring', damping: 20, stiffness: 100 }}
         className="relative"
         style={{ width: size, height: size }}
         onClick={(e) => e.stopPropagation()}
       >
         <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`} className="overflow-visible filter drop-shadow-[0_0_15px_rgba(255,255,255,0.1)]">
           {menuItems.map((item, index) => {
-            // Label stays at the center angle of the sector
             const midDeg = (index * itemAngle) - 90;
             const midAngle = midDeg * (Math.PI / 180);
 
@@ -110,7 +109,7 @@ export default function RadialMenu({ onClose, onNavigate, onAuthNavigate }: Radi
                 key={item.label}
                 initial={{ opacity: 0, scale: 0 }}
                 animate={{ opacity: 1, scale: 1 }}
-                transition={{ delay: index * 0.03 + 0.1 }}
+                transition={{ delay: index * 0.05 + 0.1 }}
                 onClick={() => onNavigate(item.section)}
                 className="cursor-pointer group"
                 whileHover={{ scale: 1.05, originX: center + 'px', originY: center + 'px', zIndex: 10 }}

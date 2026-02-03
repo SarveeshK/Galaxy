@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion';
-import { GraduationCap, Award, Users, Sparkles, Target, Globe, Rocket } from 'lucide-react';
+import { GraduationCap, Award, Users, Target, Globe, Rocket } from 'lucide-react';
 import ScrollFloat from '../components/ScrollFloat';
 
 const stats = [
@@ -26,6 +26,10 @@ const highlights = [
   },
 ];
 
+// ... (existing imports)
+
+// ...
+
 export default function About() {
   return (
     <section id="about" className="relative py-20 px-4">
@@ -39,19 +43,32 @@ export default function About() {
           className="text-center mb-12"
         >
           <div className="flex items-center justify-center gap-2 mb-4">
-            <Sparkles className="w-6 h-6 text-gray-400" />
-            <ScrollFloat
-              animationDuration={1}
-              ease="back.inOut(2)"
-              scrollStart="center bottom+=50%"
-              scrollEnd="bottom bottom-=40%"
-              stagger={0.03}
-              containerClassName="font-orbitron text-4xl md:text-5xl font-bold text-white"
-              textClassName="text-white"
-            >
-              About Galaxy 2K26
-            </ScrollFloat>
-            <Sparkles className="w-6 h-6 text-gray-400" />
+            <div className="hidden md:block">
+              <ScrollFloat
+                animationDuration={1}
+                ease="back.inOut(2)"
+                scrollStart="top bottom-=10%"
+                scrollEnd="bottom bottom-=40%"
+                stagger={0.03}
+                containerClassName="font-orbitron text-4xl md:text-5xl font-bold text-white"
+                textClassName="text-white"
+              >
+                About Galaxy 2K26
+              </ScrollFloat>
+            </div>
+            <div className="block md:hidden">
+              <ScrollFloat
+                animationDuration={1}
+                ease="back.inOut(2)"
+                scrollStart="top bottom-=10%"
+                scrollEnd="bottom bottom-=40%"
+                stagger={0.03}
+                containerClassName="font-orbitron text-4xl font-bold text-white"
+                textClassName="text-white"
+              >
+                About us
+              </ScrollFloat>
+            </div>
           </div>
         </motion.div>
 
@@ -62,10 +79,13 @@ export default function About() {
             whileInView={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.6 }}
             viewport={{ once: true }}
+            className="text-center lg:text-left"
           >
-            <h3 className="font-orbitron text-2xl md:text-3xl font-bold text-white mb-4">
+            <h3 className="font-orbitron text-2xl md:text-3xl font-bold text-white mb-6">
               GOVERNMENT COLLEGE OF ENGINEERING, ERODE
             </h3>
+
+
 
             <p className="text-white/70 mb-6 leading-relaxed">
               The college was established in 1984 under Institute of Road and Transport by the Tamil Nadu State Transport Corporation. In 2021, the college was transferred to under the governance of Directorate of Technical Education (DoTE) and subsequently renamed as Government College of Engineering, Erode.
@@ -83,21 +103,21 @@ export default function About() {
               This Institute is functioning as the Zonal Headquarters for Zone-XI (Erode Zone) of Anna University monitoring the Engineering colleges affiliated to Anna University in Erode district and part of Namakkal, Tiruppur and Salem districts.
             </p>
 
-            <ul className="space-y-3 mb-8">
+            <ul className="space-y-3 mb-8 text-left inline-block">
               <li className="flex items-start gap-3 text-white/70">
-                <div className="w-1.5 h-1.5 rounded-full bg-gray-400 mt-2" />
+                <div className="w-1.5 h-1.5 rounded-full bg-gray-400 mt-2 flex-shrink-0" />
                 <span>Galaxy 2K26 is a National Level Technical Symposium organized by the Electronics and Communication Engineering Association.</span>
               </li>
               <li className="flex items-start gap-3 text-white/70">
-                <div className="w-1.5 h-1.5 rounded-full bg-gray-500 mt-2" />
+                <div className="w-1.5 h-1.5 rounded-full bg-gray-500 mt-2 flex-shrink-0" />
                 <span>The event focuses on solving real challenges within the college ecosystem using technology-driven solutions.</span>
               </li>
               <li className="flex items-start gap-3 text-white/70">
-                <div className="w-1.5 h-1.5 rounded-full bg-gray-300 mt-2" />
+                <div className="w-1.5 h-1.5 rounded-full bg-gray-300 mt-2 flex-shrink-0" />
                 <span>Problem statements are sourced directly from faculty and administrative departments to ensure real-world relevance.</span>
               </li>
               <li className="flex items-start gap-3 text-white/70">
-                <div className="w-1.5 h-1.5 rounded-full bg-white mt-2" />
+                <div className="w-1.5 h-1.5 rounded-full bg-white mt-2 flex-shrink-0" />
                 <span>Galaxy promotes innovation, collaboration, and hands-on learning beyond the classroom.</span>
               </li>
             </ul>

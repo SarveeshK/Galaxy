@@ -1,13 +1,16 @@
 import { motion } from 'framer-motion';
-import { ChevronDown, Sparkles } from 'lucide-react';
-import ThreeDText from '../components/ThreeDText';
-import MetallicText from '../components/MetallicText';
+import { ChevronDown } from 'lucide-react';
+import { useState } from 'react';
+import ShinyText from '../components/ShinyText';
+
 
 interface HeroProps {
   onRegister: () => void;
 }
 
 export default function Hero({ onRegister }: HeroProps) {
+  const [isFlipped, setIsFlipped] = useState(false);
+
   return (
     <section id="hero" className="relative min-h-screen flex flex-col items-center justify-center px-4 overflow-hidden">
 
@@ -25,7 +28,10 @@ export default function Hero({ onRegister }: HeroProps) {
           {/* GCEE Logo - Interactive Flippable */}
           <motion.div
             className="w-32 h-32 md:w-40 md:h-40 relative group perspective-1000 cursor-pointer"
+            initial={false}
+            animate={{ rotateY: isFlipped ? 180 : 0, scale: isFlipped ? 1.1 : 1 }}
             whileHover={{ rotateY: 180, scale: 1.1 }}
+            onTap={() => setIsFlipped(!isFlipped)}
             transition={{ type: "spring", stiffness: 200, damping: 10 }}
             style={{ transformStyle: "preserve-3d" }}
           >
@@ -43,27 +49,34 @@ export default function Hero({ onRegister }: HeroProps) {
         </motion.div>
 
         {/* College Name - 3D Effect */}
-        <div className="mb-6">
-          <ThreeDText
-            text="GOVERNMENT COLLEGE OF ENGINEERING, ERODE"
-            className="text-lg md:text-2xl lg:text-3xl tracking-wider opacity-80 text-gray-300"
-          />
+        <div className="mb-6 relative group">
+          <div className="absolute -inset-1 bg-gradient-to-r from-blue-500/20 via-purple-500/20 to-pink-500/20 rounded-lg blur opacity-0 group-hover:opacity-75 transition duration-1000"></div>
+          <h1 className="relative font-orbitron text-xl md:text-3xl lg:text-4xl font-extrabold tracking-wider text-center px-4 leading-relaxed text-metallic-premium mb-2">
+            GOVERNMENT COLLEGE OF ENGINEERING, ERODE
+          </h1>
         </div>
 
 
-
-        <div className="relative mb-4 flex justify-center">
-          <MetallicText
+        <div className="flex flex-col items-center justify-center space-y-0 md:space-y-[-2rem] mb-8 z-20">
+          <ShinyText
             text="GALAXY"
-            fontSize={120}
-            fontWeight={900}
-            className="w-full h-auto cursor-pointer"
-            lightColor="#ffffff"
-            darkColor="#434343"
-            chromaticSpread={1.5}
-            liquid={0.8}
-            speed={0.2}
-            mouseAnimation={true}
+            disabled={false}
+            speed={3}
+            className="select-none font-orbitron font-black text-6xl md:text-[150px] lg:text-[180px] tracking-wider drop-shadow-[0_0_35px_rgba(100,100,255,0.4)] md:drop-shadow-[0_0_60px_rgba(100,100,255,0.6)] z-10 text-center leading-none"
+            color="#e2e8f0"
+            shineColor="#ffffff"
+            spread={120}
+            direction="right"
+          />
+          <ShinyText
+            text="2K26"
+            disabled={false}
+            speed={3}
+            className="select-none font-orbitron font-bold text-5xl md:text-[100px] lg:text-[120px] tracking-[0.2em] drop-shadow-[0_0_25px_rgba(255,255,255,0.3)] z-0 text-center transform scale-y-90"
+            color="#94a3b8"
+            shineColor="#ffffff"
+            spread={120}
+            direction="left"
           />
         </div>
 
@@ -76,7 +89,7 @@ export default function Hero({ onRegister }: HeroProps) {
           className="font-orbitron text-xl md:text-3xl lg:text-4xl font-bold mb-10 text-center"
         >
           <span className="text-transparent bg-clip-text bg-gradient-to-r from-gray-500 via-white to-gray-500 uppercase tracking-[0.3em] drop-shadow-lg">
-            The beginning of new era
+            THE BEGINNING OF AI ERA
           </span>
         </motion.h2>
 
@@ -106,19 +119,6 @@ export default function Hero({ onRegister }: HeroProps) {
           NATIONAL LEVEL TECHNICAL SYMPOSIUM
         </motion.p>
 
-        {/* Association */}
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.8 }}
-          className="mb-8"
-        >
-          <p className="text-white/30 text-xs tracking-[0.3em] mb-2">POWERED BY</p>
-          <p className="text-gray-200 text-lg md:text-xl font-semibold tracking-wide">
-            Electronics and Communication Engineering Association
-          </p>
-        </motion.div>
-
         {/* Date */}
         <motion.p
           initial={{ opacity: 0, y: 20 }}
@@ -142,8 +142,7 @@ export default function Hero({ onRegister }: HeroProps) {
           >
             <div className="absolute inset-0 w-1 bg-white transition-all duration-[250ms] ease-out group-hover:w-full opacity-5" />
             <span className="relative flex items-center gap-3">
-              <Sparkles className="w-4 h-4 text-gray-400 group-hover:text-white transition-colors duration-300" />
-              INITIALIZE REGISTRATION
+              REGISTER NOW
             </span>
           </button>
         </motion.div>
@@ -154,7 +153,7 @@ export default function Hero({ onRegister }: HeroProps) {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: 1.3 }}
-        className="absolute bottom-8 left-1/2 -translate-x-1/2"
+        className="absolute bottom-1 left-1/2 -translate-x-1/2"
       >
         <motion.div
           animate={{ y: [0, 10, 0] }}

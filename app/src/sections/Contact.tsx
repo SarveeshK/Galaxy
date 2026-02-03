@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion';
-import { Mail, MapPin, Phone, Github, Instagram, Twitter, Linkedin, ExternalLink } from 'lucide-react';
+import { Mail, MapPin, Phone, Instagram, Youtube } from 'lucide-react';
 
 export default function Contact() {
   return (
@@ -14,17 +14,11 @@ export default function Contact() {
               The National Level Technical Symposium organized by the Department of ECE.
             </p>
             <div className="flex gap-4">
-              <a href="#" className="w-10 h-10 rounded-full border border-white/10 flex items-center justify-center text-gray-400 hover:text-white hover:bg-white/10 transition-all">
-                <Instagram className="w-4 h-4" />
+              <a href="https://www.instagram.com/gce._.galaxy26?igsh=bTg4Ym1ucnV6NWtw" target="_blank" rel="noopener noreferrer" className="w-10 h-10 rounded-full border border-white/10 flex items-center justify-center text-gray-400 hover:text-white hover:bg-white/10 transition-all">
+                <Instagram className="w-5 h-5" />
               </a>
-              <a href="#" className="w-10 h-10 rounded-full border border-white/10 flex items-center justify-center text-gray-400 hover:text-white hover:bg-white/10 transition-all">
-                <Twitter className="w-4 h-4" />
-              </a>
-              <a href="#" className="w-10 h-10 rounded-full border border-white/10 flex items-center justify-center text-gray-400 hover:text-white hover:bg-white/10 transition-all">
-                <Linkedin className="w-4 h-4" />
-              </a>
-              <a href="#" className="w-10 h-10 rounded-full border border-white/10 flex items-center justify-center text-gray-400 hover:text-white hover:bg-white/10 transition-all">
-                <Github className="w-4 h-4" />
+              <a href="https://youtube.com/@galaxyece_gcee?si=yT44m4tvgZmTTQdo" target="_blank" rel="noopener noreferrer" className="w-10 h-10 rounded-full border border-white/10 flex items-center justify-center text-gray-400 hover:text-white hover:bg-white/10 transition-all">
+                <Youtube className="w-5 h-5" />
               </a>
             </div>
           </div>
@@ -33,7 +27,7 @@ export default function Contact() {
           <div>
             <h3 className="font-orbitron text-sm font-bold text-white mb-6 uppercase tracking-wider">Navigation</h3>
             <ul className="space-y-4">
-              {['Events', 'Timeline', 'Register', 'Login'].map((item) => (
+              {['Events', 'Timeline', 'Register'].map((item) => (
                 <li key={item}>
                   <a href="#" className="text-gray-500 hover:text-white text-sm transition-colors flex items-center gap-2 group">
                     <span className="w-0 group-hover:w-2 h-px bg-white transition-all duration-300" />
@@ -54,7 +48,7 @@ export default function Contact() {
               </li>
               <li className="flex items-center gap-4 text-sm text-gray-500">
                 <Mail className="w-5 h-5 text-gray-400 shrink-0" />
-                <a href="mailto:contact@galaxy2k26.com" className="hover:text-white transition-colors">contact@galaxy2k26.com</a>
+                <a href="mailto:galaxyece2k26@gmail.com" className="hover:text-white transition-colors">galaxyece2k26@gmail.com</a>
               </li>
               <li className="flex items-center gap-4 text-sm text-gray-500">
                 <Phone className="w-5 h-5 text-gray-400 shrink-0" />

@@ -1,65 +1,113 @@
 import { motion } from 'framer-motion';
-import { ArrowRight, Code, Users, GitBranch, Zap, FileQuestion, Shield, Sparkles } from 'lucide-react';
+import { ArrowRight, Code, Users, GitBranch, Zap, FileQuestion, Shield } from 'lucide-react';
 import SpotlightCard from '../components/SpotlightCard';
 import ScrollFloat from '../components/ScrollFloat';
 
 interface EventsProps {
-  onEventClick: (eventId: 'questx' | 'forcecoders' | 'codemania' | 'nexus' | 'gitwars' | 'openquiz' | 'ai-trends') => void;
+  onEventClick: (eventId: string) => void;
 }
 
 const events = [
+  // Technical Events
   {
-    id: 'questx' as const,
-    name: 'QUESTX',
-    type: 'NON TECHNICAL',
-    description: 'Fun challenges to boost creativity and teamwork',
-    icon: Users,
-    color: 'from-gray-100 to-gray-300',
+    id: 'project-war',
+    name: 'PROJECT WAR',
+    type: 'TECHNICAL',
+    description: 'Showcase your innovative projects and compete for glory',
+    icon: Code,
+    color: 'from-blue-400 to-blue-600',
     size: 'large',
   },
   {
-    id: 'forcecoders' as const,
-    name: 'FORCECODERS',
+    id: 'paper-presentation',
+    name: 'PAPER PRESENTATION',
     type: 'TECHNICAL',
-    description: 'Code like tourist, hack like grandmaster',
-    icon: Code,
-    color: 'from-gray-300 to-gray-400',
-    size: 'small',
-  },
-  {
-    id: 'codemania' as const,
-    name: 'CODEMANIA',
-    type: 'TECHNICAL',
-    description: 'Beat the clock, beat the rivals in bids',
-    icon: Zap,
-    color: 'from-gray-400 to-gray-500',
-    size: 'small',
-  },
-  {
-    id: 'gitwars' as const,
-    name: 'GIT WARS',
-    type: 'NON TECHNICAL',
-    description: 'Clone. Commit. Conquer.',
-    icon: GitBranch,
-    color: 'from-gray-600 to-gray-500',
-    size: 'small',
-  },
-  {
-    id: 'nexus' as const,
-    name: 'NEXUS',
-    type: 'TECHNICAL',
-    description: 'Marvel-themed cybersecurity CTF',
-    icon: Shield,
-    color: 'from-gray-500 to-gray-400',
-    size: 'small',
-  },
-  {
-    id: 'openquiz' as const,
-    name: 'OPEN QUIZ',
-    type: 'QUIZ',
-    description: 'Tech in movies, wheel of tech, code auction',
+    description: 'Present your research and ideas to a panel of experts',
     icon: FileQuestion,
-    color: 'from-gray-400 to-gray-300',
+    color: 'from-purple-400 to-purple-600',
+    size: 'small',
+  },
+  {
+    id: 'ai-prompt-battle',
+    name: 'AI PROMPT BATTLE',
+    type: 'TECHNICAL',
+    description: 'Master the art of prompting in this AI showdown',
+    icon: Zap,
+    color: 'from-yellow-400 to-orange-500',
+    size: 'small',
+  },
+  {
+    id: 'arduino-hackathon',
+    name: 'ARDUINO HACKATHON',
+    type: 'TECHNICAL',
+    description: 'Build and program embedded systems in a race against time',
+    icon: GitBranch,
+    color: 'from-green-400 to-emerald-600',
+    size: 'small',
+  },
+  {
+    id: 'circuit-debugging',
+    name: 'CIRCUIT DEBUGGING',
+    type: 'TECHNICAL',
+    description: 'Find faults and fix circuits to prove your hardware skills',
+    icon: Shield,
+    color: 'from-red-400 to-rose-600',
+    size: 'small',
+  },
+
+  // Non-Technical Events
+  {
+    id: 'ipl-auction',
+    name: 'IPL AUCTION',
+    type: 'NON TECHNICAL',
+    description: 'Strategize and build your dream team in this auction simulation',
+    icon: Users,
+    color: 'from-indigo-400 to-blue-500',
+    size: 'large',
+  },
+  {
+    id: 'hintdrop',
+    name: 'HINTDROP',
+    type: 'NON TECHNICAL',
+    description: 'Follow the clues and solve the mystery',
+    icon: Zap,
+    color: 'from-pink-400 to-rose-500',
+    size: 'small',
+  },
+  {
+    id: 'short-film',
+    name: 'SHORT FILM',
+    type: 'NON TECHNICAL',
+    description: 'Express your creativity through the lens',
+    icon: Users, // Using Users as a placeholder for film/camera if better icon not available or imported
+    color: 'from-amber-400 to-orange-500',
+    size: 'small',
+  },
+  {
+    id: 'spin-and-win',
+    name: 'SPIN AND WIN',
+    type: 'NON TECHNICAL',
+    description: 'Try your luck and win exciting prizes',
+    icon: Zap,
+    color: 'from-cyan-400 to-blue-500',
+    size: 'small',
+  },
+  {
+    id: 'stranger-things',
+    name: 'STRANGER THINGS',
+    type: 'NON TECHNICAL',
+    description: 'Enter the upside down in this themed event',
+    icon: Shield,
+    color: 'from-red-500 to-black', // or a dark theme
+    size: 'small',
+  },
+  {
+    id: 'photography',
+    name: 'PHOTOGRAPHY',
+    type: 'NON TECHNICAL',
+    description: 'Capture the moment and showcase your perspective',
+    icon: Users, // Placeholder
+    color: 'from-teal-400 to-green-500',
     size: 'medium',
   },
 ];
@@ -131,7 +179,6 @@ export default function Events({ onEventClick }: EventsProps) {
           className="text-center mb-16"
         >
           <div className="flex items-center justify-center gap-2 mb-4">
-            <Sparkles className="w-6 h-6 text-gray-400" />
             <ScrollFloat
               animationDuration={1}
               ease="back.inOut(2)"
@@ -143,7 +190,6 @@ export default function Events({ onEventClick }: EventsProps) {
             >
               EVENTS
             </ScrollFloat>
-            <Sparkles className="w-6 h-6 text-gray-400" />
           </div>
           <p className="text-white/60 text-lg tracking-wider">
             Explore our lineup of exciting events
