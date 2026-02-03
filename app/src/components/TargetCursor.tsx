@@ -2,14 +2,6 @@ import React, { useEffect, useRef, useCallback, useMemo } from 'react';
 import { gsap } from 'gsap';
 import './TargetCursor.css';
 
-// Import SoundManager hook/context or just use a simple audio playback if easier.
-// Since we want to bundle everything in, we'll use a simple Audio object for now
-// or assume a sound file exists. I'll use a click sound data URI for simplicity/self-containment
-// or rely on the project's sound assets.
-// Let's us a simple beep/click URI.
-
-const CLICK_SOUND = "data:audio/wav;base64,UklGRl9vT1dBUX...";// Placeholder logic, I will implement a simple function.
-
 export interface TargetCursorProps {
     targetSelector?: string;
     spinDuration?: number;
@@ -19,7 +11,7 @@ export interface TargetCursorProps {
 }
 
 const TargetCursor: React.FC<TargetCursorProps> = ({
-    targetSelector = '.cursor-target', // Updated default selector but will likely pass 'a, button, .cursor-pointer' etc
+    targetSelector = '.cursor-target',
     spinDuration = 2,
     hideDefaultCursor = true,
     hoverDuration = 0.2,
@@ -34,37 +26,6 @@ const TargetCursor: React.FC<TargetCursorProps> = ({
     const targetCornerPositionsRef = useRef<{ x: number; y: number }[] | null>(null);
     const tickerFnRef = useRef<(() => void) | null>(null);
     const activeStrengthRef = useRef({ current: 0 });
-
-    // Sound effect
-    const audioRef = useRef<HTMLAudioElement | null>(null);
-
-    useEffect(() => {
-        audioRef.current = new Audio('/sounds/click.mp3'); // Assuming we can use existing or I'll create one.
-        // Fallback to a synthesizer beep if file not found would be complex, so let's try to use what we have or just skip if no file.
-        // Better: Create a simple oscillator beep
-    }, []);
-
-    const playSound = useCallback(() => {
-        // Simple oscillator beep for "tech" feel
-        try {
-            const AudioContext = window.AudioContext || (window as any).webkitAudioContext;
-            if (AudioContext) {
-                const ctx = new AudioContext();
-                const osc = ctx.createOscillator();
-                const gain = ctx.createGain();
-                osc.connect(gain);
-                gain.connect(ctx.destination);
-                osc.frequency.setValueAtTime(800, ctx.currentTime);
-                osc.frequency.exponentialRampToValueAtTime(300, ctx.currentTime + 0.1);
-                gain.gain.setValueAtTime(0.1, ctx.currentTime);
-                gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.1);
-                osc.start();
-                osc.stop(ctx.currentTime + 0.1);
-            }
-        } catch (e) {
-            // Ignore
-        }
-    }, []);
 
     const isMobile = useMemo(() => {
         const hasTouchScreen = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
@@ -169,7 +130,6 @@ const TargetCursor: React.FC<TargetCursorProps> = ({
         window.addEventListener('scroll', scrollHandler, { passive: true });
 
         const mouseDownHandler = () => {
-            playSound(); // Play sound on click
             if (!dotRef.current) return;
             gsap.to(dotRef.current, { scale: 0.7, duration: 0.3 });
             gsap.to(cursorRef.current, { scale: 0.9, duration: 0.2 });
@@ -206,9 +166,6 @@ const TargetCursor: React.FC<TargetCursorProps> = ({
             }
 
             activeTarget = target;
-
-            // Play hover sound subtly? Maybe too noisy. Let's stick to click for now, or maybe a very soft hover tick.
-            // playSound(); 
 
             const corners = Array.from(cornersRef.current);
             corners.forEach(corner => gsap.killTweensOf(corner));
@@ -308,7 +265,7 @@ const TargetCursor: React.FC<TargetCursorProps> = ({
             targetCornerPositionsRef.current = null;
             activeStrengthRef.current.current = 0;
         };
-    }, [targetSelector, spinDuration, moveCursor, constants, hideDefaultCursor, isMobile, hoverDuration, parallaxOn, playSound]);
+    }, [targetSelector, spinDuration, moveCursor, constants, hideDefaultCursor, isMobile, hoverDuration, parallaxOn]);
 
     useEffect(() => {
         if (isMobile || !cursorRef.current || !spinTl.current) return;

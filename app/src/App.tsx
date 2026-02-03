@@ -1,8 +1,8 @@
 import { useState, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import ClickSpark from './components/ClickSpark';
-import Galaxy from './components/Galaxy';
-import SoundManager from './components/SoundManager';
+import Aurora from './components/Aurora';
+import SplashCursor from './components/SplashCursor';
 
 import RadialMenu from './components/RadialMenu';
 import Hero from './sections/Hero';
@@ -23,6 +23,8 @@ function App() {
   const [selectedEvent, setSelectedEvent] = useState<EventType>(null);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
+
+
   // Keyboard shortcut handler
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -32,10 +34,7 @@ function App() {
       if (e.key === 'Escape') {
         setIsMenuOpen(false);
       }
-      if (e.key === ' ' && e.target === document.body) {
-        e.preventDefault();
-        // Space toggles sound - handled by SoundManager
-      }
+
     };
 
     window.addEventListener('keydown', handleKeyDown);
@@ -50,7 +49,7 @@ function App() {
 
   const handleNavigate = (view: View) => {
     if (view === 'register') {
-      window.open('https://forms.google.com/placeholder-galaxy2k26', '_blank');
+      window.open('https://forms.gle/p1649cmXujVPsz56A', '_blank');
       return;
     }
     setCurrentView(view);
@@ -83,24 +82,35 @@ function App() {
     >
       <div className="relative min-h-screen bg-black overflow-x-hidden">
 
-        {/* Galaxy Background */}
+        {/* Aurora Background */}
         <div className="fixed inset-0 z-0 pointer-events-none">
-          <Galaxy
-            mouseInteraction={true}
-            glowIntensity={0.3}
-            speed={0.7}
-            hueShift={140}
-            transparent={false}
+          <Aurora
+            colorStops={["#7cff67", "#B19EEF", "#5227FF"]}
+            blend={0.5}
+            amplitude={1.0}
+            speed={1}
           />
         </div>
-
-        {/* Note: SplashCursor removed as requested */}
 
         {/* Grid Pattern Overlay */}
         <div className="fixed inset-0 grid-pattern pointer-events-none z-[1]" />
 
-        {/* Sound Manager */}
-        <SoundManager />
+        {/* Interactive Splash Effect */}
+        <div className="fixed inset-0 z-[2] pointer-events-none">
+          <SplashCursor
+            SIM_RESOLUTION={128}
+            DYE_RESOLUTION={1280}
+            DENSITY_DISSIPATION={5}
+            VELOCITY_DISSIPATION={3}
+            PRESSURE={0.2}
+            CURL={17}
+            SPLAT_RADIUS={0.05}
+            SPLAT_FORCE={3000}
+            COLOR_UPDATE_SPEED={5}
+          />
+        </div>
+
+
 
         {/* Menu Button */}
         <motion.button
@@ -111,8 +121,6 @@ function App() {
           className="fixed top-6 left-6 z-50 w-10 h-10 md:w-14 md:h-14 rounded-full bg-white/10 backdrop-blur-md border border-white/20 flex items-center justify-center shadow-lg hover:bg-white/20 transition-all hover:scale-110 group"
         >
           <Menu className="w-5 h-5 md:w-6 md:h-6 text-white group-hover:rotate-90 transition-transform duration-300" />
-
-          {/* Glow ring */}
           <span className="absolute inset-0 rounded-full border border-white/30 animate-pulse" />
         </motion.button>
 
@@ -137,8 +145,6 @@ function App() {
           title="Go to Top"
         >
           <Home className="w-5 h-5 md:w-6 md:h-6 text-white group-hover:text-white transition-colors" />
-
-          {/* Glow ring */}
           <span className="absolute inset-0 rounded-full border border-white/30 animate-pulse" />
         </motion.button>
 

@@ -353,25 +353,6 @@
   box-shadow: 0 0 30px rgba(139, 92, 246, 0.2);
 }
 
-/* Sound button animation */
-@keyframes sound-wave {
-
-  0%,
-  100% {
-    transform: scale(1);
-    opacity: 0.5;
-  }
-
-  50% {
-    transform: scale(1.2);
-    opacity: 0;
-  }
-}
-
-.sound-wave {
-  animation: sound-wave 2s ease-in-out infinite;
-}
-
 /* Keyboard hint */
 .keyboard-hint {
   font-family: 'Orbitron', monospace;

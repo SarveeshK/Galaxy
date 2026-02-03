@@ -4,7 +4,6 @@ import {
   Home,
   Calendar,
   Clock,
-  Wrench,
   Phone,
   X,
   UserPlus,
@@ -74,12 +73,11 @@ export default function RadialMenu({ onClose, onNavigate, onAuthNavigate }: Radi
     >
       <div className="absolute inset-0 pointer-events-none" />
 
-      {/* Keyboard Hint */}
       <motion.div
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.3 }}
-        className="absolute top-8 left-1/2 -translate-x-1/2 glass rounded-full px-6 py-2 hidden md:flex items-center gap-3 border border-white/20"
+        className="absolute top-8 left-1/2 -translate-x-1/2 glass rounded-full px-6 py-2 flex items-center gap-3 border border-white/20"
       >
         <Menu className="w-4 h-4 text-white" />
         <span className="text-white/70 text-sm">Press <span className="text-white font-bold keyboard-hint">Q</span> to toggle menu</span>
@@ -146,19 +144,18 @@ export default function RadialMenu({ onClose, onNavigate, onAuthNavigate }: Radi
         </motion.button>
       </motion.div>
 
-      {/* Auth Buttons */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.4 }}
-        className="absolute bottom-10 left-1/2 -translate-x-1/2 flex gap-4"
+        className="absolute bottom-10 left-1/2 -translate-x-1/2"
       >
         <button
           onClick={() => onAuthNavigate('register')}
-          className="flex items-center gap-2 px-8 py-3 rounded-full bg-gradient-to-r from-gray-700 via-gray-600 to-gray-500 hover:shadow-lg hover:shadow-white/20 transition-all text-white font-orbitron tracking-wider"
+          className="px-12 py-3 rounded-full bg-gradient-to-r from-gray-800 via-gray-700 to-gray-600 border border-white/10 hover:border-white/30 text-white font-orbitron tracking-[0.2em] text-sm flex items-center gap-3 hover:shadow-[0_0_30px_rgba(255,255,255,0.1)] transition-all hover:scale-105 active:scale-95"
         >
           <UserPlus className="w-4 h-4" />
-          <span className="text-sm">REGISTER</span>
+          <span>REGISTER</span>
         </button>
       </motion.div>
     </motion.div>
