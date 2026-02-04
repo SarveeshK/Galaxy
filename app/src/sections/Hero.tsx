@@ -6,9 +6,10 @@ import ShinyText from '../components/ShinyText';
 
 interface HeroProps {
   onRegister: () => void;
+  onViewEvents: () => void;
 }
 
-export default function Hero({ onRegister }: HeroProps) {
+export default function Hero({ onRegister, onViewEvents }: HeroProps) {
   const [isFlipped, setIsFlipped] = useState(false);
 
   return (
@@ -50,7 +51,7 @@ export default function Hero({ onRegister }: HeroProps) {
 
         {/* College Name - 3D Effect */}
         <div className="mb-6 relative group">
-          <div className="absolute -inset-1 bg-gradient-to-r from-blue-500/20 via-purple-500/20 to-pink-500/20 rounded-lg blur opacity-0 group-hover:opacity-75 transition duration-1000"></div>
+          <div className="absolute -inset-1 bg-gradient-to-r from-slate-500/20 via-gray-200/20 to-slate-500/20 rounded-lg blur opacity-0 group-hover:opacity-75 transition duration-1000"></div>
           <h1 className="relative font-orbitron text-xl md:text-3xl lg:text-4xl font-extrabold tracking-wider text-center px-4 leading-relaxed text-metallic-premium mb-2">
             GOVERNMENT COLLEGE OF ENGINEERING, ERODE
           </h1>
@@ -67,7 +68,7 @@ export default function Hero({ onRegister }: HeroProps) {
             <img
               src="/galaxy-title-new.png"
               alt="GALAXY"
-              className="w-full h-auto object-contain drop-shadow-[0_0_35px_rgba(100,100,255,0.4)]"
+              className="w-full h-auto object-contain drop-shadow-[0_0_35px_rgba(255,255,255,0.2)]"
             />
           </motion.div>
           <ShinyText
@@ -75,7 +76,7 @@ export default function Hero({ onRegister }: HeroProps) {
             disabled={false}
             speed={3}
             className="select-none font-orbitron font-bold text-5xl md:text-[100px] lg:text-[120px] tracking-[0.2em] drop-shadow-[0_0_25px_rgba(255,255,255,0.3)] z-0 text-center transform scale-y-90"
-            color="#94a3b8"
+            color="#e2e8f0" // Slate 200 (Silver)
             shineColor="#ffffff"
             spread={120}
             direction="left"
@@ -90,7 +91,7 @@ export default function Hero({ onRegister }: HeroProps) {
           transition={{ delay: 0.6, duration: 1.5, ease: "circOut" }}
           className="font-orbitron text-xl md:text-3xl lg:text-4xl font-bold mb-10 text-center"
         >
-          <span className="text-transparent bg-clip-text bg-gradient-to-r from-gray-500 via-white to-gray-500 uppercase tracking-[0.3em] drop-shadow-lg">
+          <span className="text-transparent bg-clip-text bg-gradient-to-r from-slate-400 via-white to-slate-400 uppercase tracking-[0.3em] drop-shadow-lg">
             THE BEGINNING OF AI ERA
           </span>
         </motion.h2>
@@ -106,7 +107,7 @@ export default function Hero({ onRegister }: HeroProps) {
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.9, duration: 0.8 }}
-          className="font-orbitron text-base md:text-lg text-gray-400 mb-12 tracking-widest uppercase"
+          className="font-orbitron text-base md:text-lg text-slate-300 mb-12 tracking-widest uppercase"
         >
           Engineering The Future Intelligence
         </motion.p>
@@ -145,6 +146,16 @@ export default function Hero({ onRegister }: HeroProps) {
             <div className="absolute inset-0 w-1 bg-white transition-all duration-[250ms] ease-out group-hover:w-full opacity-5" />
             <span className="relative flex items-center gap-3">
               REGISTER NOW
+            </span>
+          </button>
+
+          <button
+            onClick={onViewEvents}
+            className="group relative px-12 py-5 overflow-hidden rounded-lg border border-white/20 bg-transparent text-white font-orbitron tracking-[0.2em] text-lg font-bold uppercase transition-all duration-300 hover:bg-white/10 hover:border-white/40 hover:shadow-[0_0_40px_rgba(255,255,255,0.2)]"
+          >
+            <div className="absolute inset-0 w-1 bg-white transition-all duration-[250ms] ease-out group-hover:w-full opacity-5" />
+            <span className="relative flex items-center gap-3">
+              VIEW EVENTS
             </span>
           </button>
         </motion.div>

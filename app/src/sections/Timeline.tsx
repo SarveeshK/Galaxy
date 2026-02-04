@@ -50,7 +50,7 @@ export default function Timeline() {
           className="text-center mb-24 relative z-10"
         >
           <h2 className="font-orbitron text-4xl md:text-6xl font-black text-white mb-4">
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-gray-400 via-white to-gray-400 drop-shadow-[0_0_15px_rgba(255,255,255,0.3)]">TIMELINE</span>
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-slate-300 via-white to-slate-300 drop-shadow-[0_0_15px_rgba(255,255,255,0.3)]">TIMELINE</span>
           </h2>
           <div className="h-1 w-24 bg-white/20 mx-auto rounded-full" />
         </motion.div>
@@ -91,18 +91,18 @@ export default function Timeline() {
                     <div className="flex flex-col gap-4">
                       {/* Date & Time Row */}
                       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-white/5 pb-4 mb-2">
-                        <span className="text-sm font-bold text-gray-500 tracking-wider uppercase">
+                        <span className="text-sm font-bold text-slate-300 tracking-wider uppercase">
                           {item.date}
                         </span>
 
                         <div className="flex items-center gap-2 px-3 py-1 rounded-full bg-white/5 border border-white/10 w-fit">
-                          <Clock className="w-3 h-3 text-purple-400" />
-                          <span className="text-xs font-orbitron text-gray-300">{item.time}</span>
+                          <Clock className="w-3 h-3 text-slate-300" />
+                          <span className="text-xs font-orbitron text-slate-300">{item.time}</span>
                         </div>
                       </div>
 
                       {/* Title */}
-                      <h3 className="font-orbitron text-xl md:text-2xl font-bold text-white group-hover:text-purple-300 transition-colors">
+                      <h3 className="font-orbitron text-xl md:text-2xl font-bold text-white group-hover:text-slate-200 transition-colors">
                         {item.title}
                       </h3>
 
@@ -112,7 +112,7 @@ export default function Timeline() {
                       </p>
 
                       {/* Location or Extra Info */}
-                      <div className="flex items-center gap-2 text-xs text-gray-500 mt-2">
+                      <div className="flex items-center gap-2 text-xs text-slate-500 mt-2">
                         <MapPin className="w-3 h-3" />
                         <span>Main Auditorium</span>
                       </div>

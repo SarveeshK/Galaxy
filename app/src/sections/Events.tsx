@@ -18,6 +18,7 @@ const events = [
     icon: Code,
     color: 'from-blue-400 to-blue-600',
     size: 'large',
+    price: 200,
   },
   {
     id: 'paper-presentation',
@@ -27,15 +28,7 @@ const events = [
     icon: FileQuestion,
     color: 'from-purple-400 to-purple-600',
     size: 'small',
-  },
-  {
-    id: 'ai-prompt-battle',
-    name: 'AI PROMPT BATTLE',
-    type: 'TECHNICAL',
-    description: 'Master the art of prompting in this AI showdown',
-    icon: Zap,
-    color: 'from-yellow-400 to-orange-500',
-    size: 'small',
+    price: 200,
   },
   {
     id: 'arduino-hackathon',
@@ -45,6 +38,7 @@ const events = [
     icon: GitBranch,
     color: 'from-green-400 to-emerald-600',
     size: 'small',
+    price: 200,
   },
   {
     id: 'circuit-debugging',
@@ -54,9 +48,30 @@ const events = [
     icon: Shield,
     color: 'from-red-400 to-rose-600',
     size: 'small',
+    price: 200,
+  },
+  {
+    id: 'chase-and-build',
+    name: 'CHASE AND BUILD',
+    type: 'TECHNICAL',
+    description: 'A thrilling event to test your speed and building skills',
+    icon: Zap, // Placeholder icon
+    color: 'from-teal-400 to-green-500',
+    size: 'medium',
+    price: 200,
   },
 
   // Non-Technical Events
+  {
+    id: 'ai-prompt-battle',
+    name: 'AI PROMPT BATTLE',
+    type: 'NON TECHNICAL',
+    description: 'Master the art of prompting in this AI showdown',
+    icon: Zap,
+    color: 'from-yellow-400 to-orange-500',
+    size: 'small',
+    price: 100,
+  },
   {
     id: 'ipl-auction',
     name: 'IPL AUCTION',
@@ -65,6 +80,7 @@ const events = [
     icon: Users,
     color: 'from-indigo-400 to-blue-500',
     size: 'large',
+    price: 100,
   },
   {
     id: 'hintdrop',
@@ -74,15 +90,17 @@ const events = [
     icon: Zap,
     color: 'from-pink-400 to-rose-500',
     size: 'small',
+    price: 100,
   },
   {
     id: 'short-film',
     name: 'SHORT FILM',
     type: 'NON TECHNICAL',
     description: 'Express your creativity through the lens',
-    icon: Users, // Using Users as a placeholder for film/camera if better icon not available or imported
+    icon: Users,
     color: 'from-amber-400 to-orange-500',
     size: 'small',
+    price: 100,
   },
   {
     id: 'spin-and-win',
@@ -92,6 +110,7 @@ const events = [
     icon: Zap,
     color: 'from-cyan-400 to-blue-500',
     size: 'small',
+    price: 100,
   },
   {
     id: 'stranger-things',
@@ -99,17 +118,9 @@ const events = [
     type: 'NON TECHNICAL',
     description: 'Enter the upside down in this themed event',
     icon: Shield,
-    color: 'from-red-500 to-black', // or a dark theme
+    color: 'from-red-500 to-black',
     size: 'small',
-  },
-  {
-    id: 'photography',
-    name: 'PHOTOGRAPHY',
-    type: 'NON TECHNICAL',
-    description: 'Capture the moment and showcase your perspective',
-    icon: Users, // Placeholder
-    color: 'from-teal-400 to-green-500',
-    size: 'medium',
+    price: 100,
   },
 ];
 
@@ -159,10 +170,15 @@ export default function Events({ onEventClick }: EventsProps) {
               {event.description}
             </p>
 
-            {/* Action (Hidden by default, reveal on hover or just subtle) */}
-            <div className="flex items-center gap-2 text-white/30 group-hover:text-white transition-colors text-xs font-orbitron tracking-widest mt-auto">
-              <span>EXPLORE</span>
-              <ArrowRight className="w-3 h-3 transform group-hover:translate-x-1 transition-transform" />
+            {/* Action & Price */}
+            <div className="mt-auto flex items-center justify-between">
+              <div className="flex items-center gap-2 text-white/30 group-hover:text-white transition-colors text-xs font-orbitron tracking-widest">
+                <span>EXPLORE</span>
+                <ArrowRight className="w-3 h-3 transform group-hover:translate-x-1 transition-transform" />
+              </div>
+              <div className="text-white/50 font-orbitron font-bold text-sm bg-white/5 px-2 py-1 rounded border border-white/10 group-hover:border-white/30 transition-colors">
+                ₹{(event as any).price}
+              </div>
             </div>
           </div>
         </SpotlightCard>

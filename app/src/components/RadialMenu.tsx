@@ -7,7 +7,6 @@ import {
   Phone,
   X,
   UserPlus,
-  Menu,
   Info
 } from 'lucide-react';
 
@@ -18,11 +17,9 @@ interface RadialMenuProps {
 }
 
 const menuItems = [
-  { icon: Home, label: 'HOME', section: 'hero', angle: 0, color: 'from-slate-100 to-slate-400' }, // Silver
-  { icon: Calendar, label: 'EVENTS', section: 'events', angle: 40, color: 'from-gray-300 to-gray-500' }, // Steel
-  { icon: Clock, label: 'TIMELINE', section: 'timeline', angle: 120, color: 'from-slate-500 to-slate-700' }, // Slate
-  { icon: Info, label: 'ABOUT', section: 'about', angle: 240, color: 'from-slate-400 to-slate-300' }, // Platinum
-  { icon: Phone, label: 'CONTACT', section: 'contact', angle: 280, color: 'from-gray-300 to-gray-200' }, // Light Steel
+  { icon: Home, label: 'HOME', section: 'home', angle: 0, color: 'from-slate-100 to-slate-400' },
+  { icon: Calendar, label: 'EVENTS', section: 'events', angle: 120, color: 'from-gray-300 to-gray-500' },
+  { icon: Info, label: 'ABOUT', section: 'about', angle: 240, color: 'from-slate-400 to-slate-300' },
 ];
 
 export default function RadialMenu({ onClose, onNavigate, onAuthNavigate }: RadialMenuProps) {
@@ -68,20 +65,10 @@ export default function RadialMenu({ onClose, onNavigate, onAuthNavigate }: Radi
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      className="fixed inset-0 z-[100] flex items-center justify-center bg-black/80 backdrop-blur-xl"
+      className="fixed inset-0 z-[100] flex flex-col items-center justify-center bg-black/80 backdrop-blur-xl"
       onClick={onClose}
     >
       <div className="absolute inset-0 pointer-events-none" />
-
-      <motion.div
-        initial={{ opacity: 0, y: -20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.3 }}
-        className="absolute top-8 left-1/2 -translate-x-1/2 glass rounded-full px-6 py-2 flex items-center gap-3 border border-white/20"
-      >
-        <Menu className="w-4 h-4 text-white" />
-        <span className="text-white/70 text-sm">Press <span className="text-white font-bold keyboard-hint">Q</span> to toggle menu</span>
-      </motion.div>
 
       {/* SVG Radial Menu */}
       <motion.div
@@ -148,7 +135,7 @@ export default function RadialMenu({ onClose, onNavigate, onAuthNavigate }: Radi
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.4 }}
-        className="absolute bottom-10 left-1/2 -translate-x-1/2"
+        className="mt-12"
       >
         <button
           onClick={() => onAuthNavigate('register')}
