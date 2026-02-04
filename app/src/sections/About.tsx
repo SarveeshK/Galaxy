@@ -3,9 +3,9 @@ import { GraduationCap, Award, Users, Target, Globe, Rocket } from 'lucide-react
 import ScrollFloat from '../components/ScrollFloat';
 
 const stats = [
-  { icon: GraduationCap, value: '21', label: 'UG Programs' },
+  { icon: GraduationCap, value: '8', label: 'UG Programs' },
   { icon: Award, value: '40+', label: 'Years of Excellence' },
-  { icon: Users, value: '5000+', label: 'Students' },
+  { icon: Users, value: '2000+', label: 'Students' },
 ];
 
 const highlights = [

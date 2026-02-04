@@ -1,217 +1,165 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import ClickSpark from './components/ClickSpark';
-import Aurora from './components/Aurora';
-import SplashCursor from './components/SplashCursor';
+import Galaxy from './components/Galaxy';
 
-import RadialMenu from './components/RadialMenu';
+import Navbar from './components/Navbar';
+import Footer from './components/Footer';
+
 import Hero from './sections/Hero';
-// import FlagshipEvent from './sections/FlagshipEvent';
+import About from './sections/About';
 import Events from './sections/Events';
 import Timeline from './sections/Timeline';
-import About from './sections/About';
 import Register from './sections/Register';
 import EventDetail from './sections/EventDetail';
-import Contact from './sections/Contact';
-import { Menu, Home } from 'lucide-react';
+import LocateUs from './sections/LocateUs';
 
-type View = 'home' | 'register' | 'event-detail';
-type EventType = string | null;
+type View = 'home' | 'events' | 'about' | 'event-detail' | 'register';
 
 function App() {
   const [currentView, setCurrentView] = useState<View>('home');
-  const [selectedEvent, setSelectedEvent] = useState<EventType>(null);
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [selectedEventId, setSelectedEventId] = useState<string | null>(null);
 
-
-
-  // Keyboard shortcut handler
+  // Scroll to top on view change
   useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'q' || e.key === 'Q') {
-        setIsMenuOpen(prev => !prev);
-      }
-      if (e.key === 'Escape') {
-        setIsMenuOpen(false);
-      }
+    window.scrollTo(0, 0);
+  }, [currentView]);
 
-    };
-
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
-  }, []);
-
-  const handleEventClick = (eventId: EventType) => {
-    setSelectedEvent(eventId);
+  const handleEventClick = (id: string) => {
+    setSelectedEventId(id);
     setCurrentView('event-detail');
-    window.scrollTo(0, 0);
   };
 
-  const handleNavigate = (view: View) => {
-    if (view === 'register') {
-      window.open('https://forms.gle/p1649cmXujVPsz56A', '_blank');
-      return;
-    }
+  const handleBack = () => {
+    setSelectedEventId(null);
+    setCurrentView('events'); // Go back to events list
+  };
+
+  const handleNavigate = (view: 'home' | 'events' | 'about') => {
+    setSelectedEventId(null);
     setCurrentView(view);
-    setIsMenuOpen(false);
-    window.scrollTo(0, 0);
-  };
-
-  const handleMenuNavigate = useCallback((section: string) => {
-    setIsMenuOpen(false);
-    setCurrentView('home');
-    setTimeout(() => {
-      const element = document.getElementById(section);
-      if (element) {
-        element.scrollIntoView({ behavior: 'smooth' });
-      }
-    }, 100);
-  }, []);
-
-  const scrollToTop = () => {
-    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   return (
-    <ClickSpark
-      sparkColor='#fff'
-      sparkSize={10}
-      sparkRadius={15}
-      sparkCount={8}
-      duration={400}
-    >
-      <div className="relative min-h-screen bg-black overflow-x-hidden">
+    <div className="relative min-h-screen bg-black text-white selection:bg-purple-500/30">
 
-        {/* Aurora Background */}
-        <div className="fixed inset-0 z-0 pointer-events-none">
-          <Aurora
-            colorStops={["#7cff67", "#B19EEF", "#5227FF"]}
-            blend={0.5}
-            amplitude={1.0}
-            speed={1}
-          />
-        </div>
-
-        {/* Grid Pattern Overlay */}
-        <div className="fixed inset-0 grid-pattern pointer-events-none z-[1]" />
-
-        {/* Interactive Splash Effect */}
-        <div className="fixed inset-0 z-[2] pointer-events-none">
-          <SplashCursor
-            SIM_RESOLUTION={128}
-            DYE_RESOLUTION={1280}
-            DENSITY_DISSIPATION={5}
-            VELOCITY_DISSIPATION={3}
-            PRESSURE={0.2}
-            CURL={17}
-            SPLAT_RADIUS={0.05}
-            SPLAT_FORCE={3000}
-            COLOR_UPDATE_SPEED={5}
-          />
-        </div>
-
-
-
-        {/* Menu Button */}
-        <motion.button
-          initial={{ opacity: 0, scale: 0 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ delay: 1 }}
-          onClick={() => setIsMenuOpen(true)}
-          className="fixed top-6 left-6 z-50 w-10 h-10 md:w-14 md:h-14 rounded-full bg-white/10 backdrop-blur-md border border-white/20 flex items-center justify-center shadow-lg hover:bg-white/20 transition-all hover:scale-110 group"
-        >
-          <Menu className="w-5 h-5 md:w-6 md:h-6 text-white group-hover:rotate-90 transition-transform duration-300" />
-          <span className="absolute inset-0 rounded-full border border-white/30 animate-pulse" />
-        </motion.button>
-
-        {/* Keyboard Hint */}
-        <motion.div
-          initial={{ opacity: 0, x: -20 }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={{ delay: 1.5 }}
-          className="fixed top-24 left-6 z-40 glass rounded-lg px-3 py-2 hidden md:flex items-center gap-2 border border-white/10"
-        >
-          <span className="text-white/50 text-xs">Press</span>
-          <span className="text-white font-bold keyboard-hint text-sm">Q</span>
-          <span className="text-white/50 text-xs">for menu</span>
-        </motion.div>
-
-        <motion.button
-          initial={{ opacity: 0, scale: 0 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ delay: 1.2 }}
-          onClick={scrollToTop}
-          className="fixed top-6 right-6 z-50 w-10 h-10 md:w-14 md:h-14 rounded-full bg-white/10 backdrop-blur-md border border-white/20 flex items-center justify-center shadow-lg hover:bg-white/20 transition-all hover:scale-110 group"
-          title="Go to Top"
-        >
-          <Home className="w-5 h-5 md:w-6 md:h-6 text-white group-hover:text-white transition-colors" />
-          <span className="absolute inset-0 rounded-full border border-white/30 animate-pulse" />
-        </motion.button>
-
-        {/* Radial Menu */}
-        <AnimatePresence>
-          {isMenuOpen && (
-            <RadialMenu
-              onClose={() => setIsMenuOpen(false)}
-              onNavigate={handleMenuNavigate}
-              onAuthNavigate={handleNavigate}
-            />
-          )}
-        </AnimatePresence>
-
-        {/* Main Content */}
-        <AnimatePresence mode="wait">
-          {currentView === 'home' && (
-            <motion.main
-              key="home"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              className="relative z-10"
-            >
-              <Hero onRegister={() => handleNavigate('register')} />
-              <Events onEventClick={handleEventClick} />
-              <Timeline />
-              <About />
-              <Contact />
-            </motion.main>
-          )}
-
-          {currentView === 'register' && (
-            <motion.div
-              key="register"
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -20 }}
-              className="relative z-10 min-h-screen flex items-center justify-center p-4"
-            >
-              <Register
-                onBack={() => handleNavigate('home')}
-                onLogin={() => { }} // No-op since login is removed
-              />
-            </motion.div>
-          )}
-
-          {currentView === 'event-detail' && selectedEvent && (
-            <motion.div
-              key="event-detail"
-              initial={{ opacity: 0, x: 100 }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: -100 }}
-              className="relative z-10"
-            >
-              <EventDetail
-                eventId={selectedEvent}
-                onBack={() => handleNavigate('home')}
-                onRegister={() => handleNavigate('register')}
-              />
-            </motion.div>
-          )}
-        </AnimatePresence>
+      {/* Galaxy Background */}
+      <div className="fixed inset-0 z-0 pointer-events-none">
+        <Galaxy
+          mouseRepulsion
+          mouseInteraction
+          density={1}
+          glowIntensity={0.1}
+          saturation={0}
+          hueShift={140}
+          twinkleIntensity={0.2}
+          rotationSpeed={0}
+          repulsionStrength={1.5}
+          autoCenterRepulsion={0}
+          starSpeed={0.4}
+          speed={1}
+        />
       </div>
-    </ClickSpark>
+
+      <ClickSpark
+        sparkColor='#fff'
+        sparkSize={10}
+        sparkRadius={15}
+        sparkCount={8}
+        duration={400}
+      />
+
+      {/* Navbar - Visible on all pages except maybe explicit full screens if needed, but keeping it always on is standard */}
+      <Navbar currentView={currentView === 'event-detail' ? 'events' : currentView} onNavigate={handleNavigate} />
+
+      <AnimatePresence mode="wait">
+        {currentView === 'home' && (
+          <motion.div
+            key="home"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.5 }}
+          >
+            <main>
+              <Hero onRegister={() => setCurrentView('register')} />
+              <Timeline />
+              <LocateUs />
+            </main>
+            <Footer onNavigate={handleNavigate} />
+          </motion.div>
+        )}
+
+        {currentView === 'events' && (
+          <motion.div
+            key="events"
+            initial={{ opacity: 0, x: 20 }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: -20 }}
+            transition={{ duration: 0.5 }}
+            className="pt-24" // Spacing for navbar
+          >
+            <Events onEventClick={handleEventClick} />
+            <Footer onNavigate={handleNavigate} />
+          </motion.div>
+        )}
+
+        {currentView === 'about' && (
+          <motion.div
+            key="about"
+            initial={{ opacity: 0, x: 20 }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: -20 }}
+            transition={{ duration: 0.5 }}
+            className="pt-24 min-h-screen flex flex-col justify-between"
+          >
+            <About />
+            <Footer onNavigate={handleNavigate} />
+          </motion.div>
+        )}
+
+        {currentView === 'event-detail' && selectedEventId && (
+          <motion.div
+            key="event-detail"
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.95 }}
+            transition={{ duration: 0.3 }}
+            className="fixed inset-0 z-50 overflow-y-auto bg-black/50 backdrop-blur-md"
+          >
+            <EventDetail
+              eventId={selectedEventId}
+              onBack={handleBack}
+              onRegister={() => setCurrentView('register')}
+            />
+          </motion.div>
+        )}
+
+        {currentView === 'register' && (
+          <motion.div
+            key="register"
+            initial={{ opacity: 0, y: 50 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 50 }}
+            className="fixed inset-0 z-50 overflow-y-auto bg-black/50 backdrop-blur-md"
+          >
+            <div className="p-4 pt-20"> {/* Add padding for close button if needed or just navbar */}
+              <button
+                onClick={() => setCurrentView('home')}
+                className="fixed top-6 right-6 z-50 px-6 py-2 bg-white/10 rounded-full backdrop-blur-md border border-white/20 hover:bg-white/20 transition-all font-orbitron text-sm"
+              >
+                CLOSE
+              </button>
+              <Register
+                onBack={() => setCurrentView('home')}
+                onLogin={() => { }} // No-op for now
+              />
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
   );
 }
 
 export default App;
-

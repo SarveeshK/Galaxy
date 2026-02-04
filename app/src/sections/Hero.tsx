@@ -57,17 +57,19 @@ export default function Hero({ onRegister }: HeroProps) {
         </div>
 
 
-        <div className="flex flex-col items-center justify-center space-y-0 md:space-y-[-2rem] mb-8 z-20">
-          <ShinyText
-            text="GALAXY"
-            disabled={false}
-            speed={3}
-            className="select-none font-orbitron font-black text-6xl md:text-[150px] lg:text-[180px] tracking-wider drop-shadow-[0_0_35px_rgba(100,100,255,0.4)] md:drop-shadow-[0_0_60px_rgba(100,100,255,0.6)] z-10 text-center leading-none"
-            color="#e2e8f0"
-            shineColor="#ffffff"
-            spread={120}
-            direction="right"
-          />
+        <div className="flex flex-col items-center justify-center mb-8 z-20">
+          <motion.div
+            initial={{ scale: 0.8, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            transition={{ duration: 1, ease: "easeOut" }}
+            className="w-full max-w-5xl mx-auto px-4 mb-4 z-10"
+          >
+            <img
+              src="/galaxy-title-new.png"
+              alt="GALAXY"
+              className="w-full h-auto object-contain drop-shadow-[0_0_35px_rgba(100,100,255,0.4)]"
+            />
+          </motion.div>
           <ShinyText
             text="2K26"
             disabled={false}
@@ -138,7 +140,7 @@ export default function Hero({ onRegister }: HeroProps) {
         >
           <button
             onClick={onRegister}
-            className="group relative px-12 py-5 overflow-hidden rounded-none border border-white/10 bg-white/5 text-white font-orbitron tracking-[0.2em] text-sm uppercase transition-all duration-300 hover:bg-white/10 hover:border-white/30 hover:shadow-[0_0_40px_rgba(255,255,255,0.1)]"
+            className="group relative px-12 py-5 overflow-hidden rounded-lg border border-white/20 bg-white/10 backdrop-blur-md text-white font-orbitron tracking-[0.2em] text-lg font-bold uppercase transition-all duration-300 hover:bg-white/20 hover:border-white/40 hover:shadow-[0_0_40px_rgba(255,255,255,0.2)]"
           >
             <div className="absolute inset-0 w-1 bg-white transition-all duration-[250ms] ease-out group-hover:w-full opacity-5" />
             <span className="relative flex items-center gap-3">

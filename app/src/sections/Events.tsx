@@ -2,6 +2,7 @@ import { motion } from 'framer-motion';
 import { ArrowRight, Code, Users, GitBranch, Zap, FileQuestion, Shield } from 'lucide-react';
 import SpotlightCard from '../components/SpotlightCard';
 import ScrollFloat from '../components/ScrollFloat';
+import StarBorder from '../components/StarBorder';
 
 interface EventsProps {
   onEventClick: (eventId: string) => void;
@@ -131,39 +132,41 @@ export default function Events({ onEventClick }: EventsProps) {
         ${event.size === 'medium' ? 'md:col-span-1' : ''}
       `}
     >
-      <SpotlightCard className="h-full p-6 md:p-8 group" spotlightColor="rgba(255, 255, 255, 0.15)">
-        <div className="flex flex-col h-full">
-          {/* Header: Icon + Title */}
-          <div className="flex items-center gap-4 mb-6">
-            <div className={`
-              w-12 h-12 rounded-xl flex items-center justify-center 
-              bg-gradient-to-br from-white/10 to-transparent border border-white/5
-              group-hover:scale-110 transition-transform duration-300
-            `}>
-              <event.icon className="w-6 h-6 text-gray-400 group-hover:text-white transition-colors" />
+      <StarBorder as="div" className="w-full h-full" color={event.color.split(' ')[1].replace('to-', '')} speed="5s">
+        <SpotlightCard className="h-full p-6 md:p-8 group" spotlightColor="rgba(255, 255, 255, 0.15)">
+          <div className="flex flex-col h-full">
+            {/* Header: Icon + Title */}
+            <div className="flex items-center gap-4 mb-6">
+              <div className={`
+                w-12 h-12 rounded-xl flex items-center justify-center 
+                bg-gradient-to-br from-white/10 to-transparent border border-white/5
+                group-hover:scale-110 transition-transform duration-300
+                `}>
+                <event.icon className="w-6 h-6 text-gray-400 group-hover:text-white transition-colors" />
+              </div>
+              <div>
+                <h3 className="font-orbitron text-xl font-bold text-white tracking-wide group-hover:text-purple-300 transition-colors">
+                  {event.name}
+                </h3>
+                <span className="text-[10px] uppercase tracking-[0.2em] text-white/40">
+                  {event.type}
+                </span>
+              </div>
             </div>
-            <div>
-              <h3 className="font-orbitron text-xl font-bold text-white tracking-wide group-hover:text-purple-300 transition-colors">
-                {event.name}
-              </h3>
-              <span className="text-[10px] uppercase tracking-[0.2em] text-white/40">
-                {event.type}
-              </span>
+
+            {/* Description */}
+            <p className="text-gray-400 text-sm leading-relaxed mb-6 flex-grow">
+              {event.description}
+            </p>
+
+            {/* Action (Hidden by default, reveal on hover or just subtle) */}
+            <div className="flex items-center gap-2 text-white/30 group-hover:text-white transition-colors text-xs font-orbitron tracking-widest mt-auto">
+              <span>EXPLORE</span>
+              <ArrowRight className="w-3 h-3 transform group-hover:translate-x-1 transition-transform" />
             </div>
           </div>
-
-          {/* Description */}
-          <p className="text-gray-400 text-sm leading-relaxed mb-6 flex-grow">
-            {event.description}
-          </p>
-
-          {/* Action (Hidden by default, reveal on hover or just subtle) */}
-          <div className="flex items-center gap-2 text-white/30 group-hover:text-white transition-colors text-xs font-orbitron tracking-widest mt-auto">
-            <span>EXPLORE</span>
-            <ArrowRight className="w-3 h-3 transform group-hover:translate-x-1 transition-transform" />
-          </div>
-        </div>
-      </SpotlightCard>
+        </SpotlightCard>
+      </StarBorder>
     </motion.div>
   );
 

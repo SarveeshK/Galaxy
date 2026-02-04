@@ -1,5 +1,7 @@
 import { motion } from 'framer-motion';
 import { ArrowLeft, Users, Calendar, MapPin, ChevronRight, Clock, Sparkles } from 'lucide-react';
+import TiltedCard from '../components/TiltedCard';
+import SpotlightCard from '../components/SpotlightCard';
 
 interface EventDetailProps {
   eventId: string;
@@ -18,8 +20,14 @@ const eventData: Record<string, {
   coordinators: { name: string; phone: string }[];
   color: string;
   icon: string;
+  posterImage?: string;
+  description?: string;
 }> = {
   'questx': {
+    // ...
+    // I need to be careful with the target content matching.
+    // I will target the type definition block.
+
     name: 'QUESTX',
     tagline: 'FUN AND CHALLENGING ACTIVITIES TO BOOST CREATIVITY, ANALYTICAL SKILLS, AND TEAMWORK',
     teamSize: '4 Members',
@@ -142,11 +150,17 @@ const eventData: Record<string, {
     ],
     color: 'from-indigo-400 to-blue-500',
     icon: '🏏',
+    posterImage: '/ipl-auction-poster.jpg',
+    description: `Experience the thrill of a live IPL-style auction where teams compete in real-time bidding.
+
+Test your cricket knowledge, strategy, and decision-making skills under pressure.
+
+Build a strong team, outbid your rivals, and prove your auction mastery.`,
   },
   'hintdrop': {
     name: 'HINTDROP',
     tagline: 'FOLLOW THE CLUES AND SOLVE THE MYSTERY',
-    teamSize: '3 Members',
+    teamSize: '3-4 Members',
     date: 'Feb 27',
     time: '10:00 AM - 1:00 PM',
     venue: 'Campus Grounds',
@@ -160,11 +174,15 @@ const eventData: Record<string, {
     ],
     color: 'from-pink-400 to-rose-500',
     icon: '🧩',
+    posterImage: '/hintdrop-poster.jpg',
+    description: `Hint Drop is not about what you know, but how smartly you say it. Easy to play, hard to master, where every clue counts and only the sharpest teams rise to the top.
+
+Simple to Play! Thrilling to Win!`,
   },
   'short-film': {
     name: 'SHORT FILM',
     tagline: 'EXPRESS YOUR CREATIVITY THROUGH THE LENS',
-    teamSize: 'Team of 4-6',
+    teamSize: 'Max 3 members per team',
     date: 'Feb 27',
     time: '1:30 PM - 4:00 PM',
     venue: 'Main Auditorium',
@@ -178,11 +196,17 @@ const eventData: Record<string, {
     ],
     color: 'from-amber-400 to-orange-500',
     icon: '🎬',
+    posterImage: '/short-film-poster.jpg',
+    description: `Short Film Showcase
+
+▫️Unleash your creativity in a quick-fire film challenge. Easy to enter, tough to stand out—where storytelling shines and the best ideas captivate all.
+
+Simple to Submit`,
   },
   'spin-and-win': {
     name: 'SPIN AND WIN',
-    tagline: 'TRY YOUR LUCK AND WIN EXCITING PRIZES',
-    teamSize: 'Individual',
+    tagline: 'WHERE LUCK MEETS STRATEGY',
+    teamSize: '3 Members',
     date: 'Feb 27',
     time: 'All Day',
     venue: 'Stalls Area',
@@ -194,7 +218,11 @@ const eventData: Record<string, {
       { name: 'Catherin Jersha J S', phone: '7305620340' },
     ],
     color: 'from-cyan-400 to-blue-500',
-    icon: '🎡',
+    icon: '🎰',
+    posterImage: '/spin-and-win-poster.jpg',
+    description: `Spin and Win is all about luck meeting skill! Teams face the thrill of the spinner, where every turn decides their challenge. Easy, Medium, or Hard—no one knows what’s coming next. Quick thinking, teamwork, and speed are the keys.
+
+Simple to Play! Exciting to Conquer!`,
   },
   'photography': {
     name: 'PHOTOGRAPHY',
@@ -327,21 +355,41 @@ export default function EventDetail({ eventId, onBack, onRegister }: EventDetail
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.3 }}
-            className="lg:col-span-1"
+            className="lg:col-span-1 mb-12 lg:mb-0"
           >
-            <motion.div
-              whileHover={{ scale: 1.02 }}
-              className={`aspect-[3/4] rounded-3xl bg-gradient-to-br ${event.color} flex items-center justify-center relative overflow-hidden border border-white/10`}
-            >
-              <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGNpcmNsZSBjeD0iMzAiIGN5PSIzMCIgcj0iMSIgZmlsbD0icmdiYSgyNTUsMjU1LDI1NSwwLjEpIi8+PC9zdmc+')] opacity-50" />
-              <div className="text-center z-10">
-                <div className="text-6xl mb-4">{event.icon}</div>
-                <h3 className="font-orbitron text-3xl font-bold text-white mb-2">
-                  {event.name}
-                </h3>
-                <p className="text-white/70 text-sm">GALAXY 2K26</p>
-              </div>
-            </motion.div>
+            <div className="lg:col-span-1 flex flex-col justify-center items-center lg:h-full">
+              <TiltedCard
+                imageSrc={event.posterImage}
+                altText={event.name}
+                captionText={event.name}
+                containerHeight="400px"
+                containerWidth="300px"
+                imageHeight="400px"
+                imageWidth="300px"
+                rotateAmplitude={12}
+                scaleOnHover={1.05}
+                showMobileWarning={false}
+                showTooltip={true}
+                displayOverlayContent={!event.posterImage}
+                overlayContent={
+                  !event.posterImage && (
+                    <div className="absolute inset-0 flex flex-col items-center justify-center text-center p-4">
+                      <div className="text-6xl mb-4 text-white z-10">{event.icon}</div>
+                      <h3 className="font-orbitron text-3xl font-bold text-white mb-2 z-10">
+                        {event.name}
+                      </h3>
+                      <p className="text-white/70 text-sm z-10">GALAXY 2K26</p>
+                    </div>
+                  )
+                }
+              >
+                {!event.posterImage && (
+                  <div className={`w-full h-full bg-gradient-to-br ${event.color} relative overflow-hidden rounded-[15px]`}>
+                    <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGNpcmNsZSBjeD0iMzAiIGN5PSIzMCIgcj0iMSIgZmlsbD0icmdiYSgyNTUsMjU1LDI1NSwwLjEpIi8+PC9zdmc+')] opacity-50" />
+                  </div>
+                )}
+              </TiltedCard>
+            </div>
 
             {/* Register Button */}
             <motion.button
@@ -354,54 +402,55 @@ export default function EventDetail({ eventId, onBack, onRegister }: EventDetail
             </motion.button>
           </motion.div>
 
-          {/* Right - Rounds */}
+          {/* Right - Description/Rounds */}
           <motion.div
             initial={{ opacity: 0, x: 30 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ delay: 0.4 }}
           >
             <div className="flex items-center justify-between mb-6">
-              <span className="text-white/60 text-xs tracking-wider">ROUNDS</span>
-              <span className="bg-gradient-to-r from-gray-400 to-gray-600 bg-clip-text text-transparent text-sm font-semibold">{event.rounds.length} Rounds</span>
+              <span className="text-white/60 text-xs tracking-wider">DESCRIPTION</span>
+              {!event.description && (
+                <span className="bg-gradient-to-r from-gray-400 to-gray-600 bg-clip-text text-transparent text-sm font-semibold">{event.rounds.length} Rounds</span>
+              )}
             </div>
 
-            <div className="space-y-4">
-              {event.rounds.map((round, i) => (
-                <motion.div
-                  key={i}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.5 + i * 0.1 }}
-                  whileHover={{ scale: 1.02, x: 5 }}
-                  className="glass rounded-2xl p-6 group hover:bg-white/10 transition-all cursor-pointer border border-white/10 hover:border-white/30"
-                >
-                  <div className="flex items-start gap-4">
-                    <div className="w-10 h-10 rounded-full bg-gradient-to-br from-gray-500 to-gray-700 flex items-center justify-center flex-shrink-0">
-                      <span className="text-white font-bold text-sm">R{i + 1}</span>
+            {event.description ? (
+              <SpotlightCard className="glass rounded-2xl p-6 border border-white/10" spotlightColor="rgba(255, 255, 255, 0.15)">
+                <p className="text-white/80 leading-loose tracking-wide whitespace-pre-line font-orbitron text-sm">
+                  {event.description}
+                </p>
+              </SpotlightCard>
+            ) : (
+              <div className="space-y-4">
+                {event.rounds.map((round, i) => (
+                  <motion.div
+                    key={i}
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.5 + i * 0.1 }}
+                    whileHover={{ scale: 1.02, x: 5 }}
+                    className="glass rounded-2xl p-6 group hover:bg-white/10 transition-all cursor-pointer border border-white/10 hover:border-white/30"
+                  >
+                    <div className="flex items-start gap-4">
+                      <div className="w-10 h-10 rounded-full bg-gradient-to-br from-gray-500 to-gray-700 flex items-center justify-center flex-shrink-0">
+                        <span className="text-white font-bold text-sm">R{i + 1}</span>
+                      </div>
+                      <div className="flex-1">
+                        <h4 className="text-white font-orbitron font-bold mb-2 group-hover:text-gray-300 transition-colors">
+                          {round.name}
+                        </h4>
+                        <p className="text-white/60 text-sm leading-relaxed">
+                          {round.description}
+                        </p>
+                      </div>
+                      <ChevronRight className="w-5 h-5 text-white/30 group-hover:text-white group-hover:translate-x-1 transition-all" />
                     </div>
-                    <div className="flex-1">
-                      <h4 className="text-white font-orbitron font-bold mb-2 group-hover:text-gray-300 transition-colors">
-                        {round.name}
-                      </h4>
-                      <p className="text-white/60 text-sm leading-relaxed">
-                        {round.description}
-                      </p>
-                    </div>
-                    <ChevronRight className="w-5 h-5 text-white/30 group-hover:text-white group-hover:translate-x-1 transition-all" />
-                  </div>
-                </motion.div>
-              ))}
-            </div>
+                  </motion.div>
+                ))}
+              </div>
+            )}
 
-            {/* Learn More */}
-            <motion.button
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
-              className="w-full mt-6 py-4 rounded-xl glass text-white font-orbitron tracking-wider hover:bg-white/10 transition-all flex items-center justify-center gap-2 group border border-white/10 hover:border-white/30"
-            >
-              LEARN MORE
-              <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-            </motion.button>
           </motion.div>
         </div>
       </div>

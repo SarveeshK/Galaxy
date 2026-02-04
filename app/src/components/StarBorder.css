@@ -1,9 +1,8 @@
 .star-border-container {
-    display: block;
+    display: inline-block;
     position: relative;
     border-radius: 20px;
     overflow: hidden;
-    height: 100%;
 }
 
 .border-gradient-bottom {
@@ -32,14 +31,9 @@
 
 .inner-content {
     position: relative;
-    background: transparent;
-    color: white;
-    font-size: 16px;
-    text-align: left;
-    padding: 0;
-    border-radius: 20px;
-    z-index: 1;
     height: 100%;
+    width: 100%;
+    z-index: 1;
 }
 
 @keyframes star-movement-bottom {
