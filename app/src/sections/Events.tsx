@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion';
-import { ArrowRight, Code, Users, GitBranch, Zap, FileQuestion, Shield } from 'lucide-react';
+import { ArrowRight, Code, Users, GitBranch, Zap, FileQuestion, Shield, Sparkles } from 'lucide-react';
 import SpotlightCard from '../components/SpotlightCard';
 import ScrollFloat from '../components/ScrollFloat';
 import StarBorder from '../components/StarBorder';
@@ -70,7 +70,7 @@ const events = [
     icon: Zap,
     color: 'from-yellow-400 to-orange-500',
     size: 'small',
-    price: 100,
+    price: 150,
   },
   {
     id: 'ipl-auction',
@@ -80,7 +80,7 @@ const events = [
     icon: Users,
     color: 'from-indigo-400 to-blue-500',
     size: 'large',
-    price: 100,
+    price: 150,
   },
   {
     id: 'hintdrop',
@@ -90,7 +90,7 @@ const events = [
     icon: Zap,
     color: 'from-pink-400 to-rose-500',
     size: 'small',
-    price: 100,
+    price: 150,
   },
   {
     id: 'short-film',
@@ -100,7 +100,7 @@ const events = [
     icon: Users,
     color: 'from-amber-400 to-orange-500',
     size: 'small',
-    price: 100,
+    price: 150,
   },
   {
     id: 'spin-and-win',
@@ -110,23 +110,24 @@ const events = [
     icon: Zap,
     color: 'from-cyan-400 to-blue-500',
     size: 'small',
-    price: 100,
+    price: 150,
   },
   {
     id: 'stranger-things',
     name: 'STRANGER THINGS',
-    type: 'NON TECHNICAL',
+    type: 'FLAGSHIP',
     description: 'Enter the upside down in this themed event',
     icon: Shield,
     color: 'from-red-500 to-black',
     size: 'small',
-    price: 100,
+    price: 200,
   },
 ];
 
 export default function Events({ onEventClick }: EventsProps) {
   const techEvents = events.filter(e => e.type === 'TECHNICAL');
   const nonTechEvents = events.filter(e => e.type === 'NON TECHNICAL' || e.type === 'QUIZ');
+  const flagshipEvents = events.filter(e => e.type === 'FLAGSHIP');
 
 
   //...
@@ -214,6 +215,37 @@ export default function Events({ onEventClick }: EventsProps) {
             Explore our lineup of exciting events
           </p>
         </motion.div>
+
+        {/* Flagship Events Subsection */}
+        {flagshipEvents.length > 0 && (
+          <div className="mb-20">
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95 }}
+              whileInView={{ opacity: 1, scale: 1 }}
+              viewport={{ once: true }}
+              className="relative p-8 rounded-3xl border border-white/20 bg-white/5 backdrop-blur-sm overflow-hidden"
+            >
+              {/* Background Glow */}
+              <div className="absolute inset-0 bg-gradient-to-r from-white/10 via-transparent to-white/10 opacity-30 pointer-events-none"></div>
+
+              <motion.h3
+                className="font-orbitron text-2xl md:text-3xl font-bold text-white mb-8 border-l-4 border-gray-400 pl-4 flex items-center gap-3"
+              >
+                FLAGSHIP <span className="text-gray-400">EVENT</span>
+                <Sparkles className="w-6 h-6 text-white animate-pulse" />
+              </motion.h3>
+
+              <div className="grid grid-cols-1 md:grid-cols-1 lg:grid-cols-2 gap-12 justify-center">
+                {flagshipEvents.map((event, index) => (
+                  <div key={event.id} className="lg:col-span-2">
+                    {/* Centering the single flagship event if strictly one, or listing them */}
+                    <EventCard event={event} index={index} />
+                  </div>
+                ))}
+              </div>
+            </motion.div>
+          </div>
+        )}
 
         {/* Technical Events Subsection */}
         <div className="mb-20">

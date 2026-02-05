@@ -98,6 +98,9 @@ function App() {
   };
 
   const handleNavigate = (view: 'home' | 'events' | 'about') => {
+    if (view === 'events') {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
     navigateTo(view);
   };
 

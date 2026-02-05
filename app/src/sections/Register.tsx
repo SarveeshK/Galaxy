@@ -1,8 +1,9 @@
-import { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { ArrowLeft, Send, Check, AlertCircle, Loader2, Users, User, Phone } from 'lucide-react';
+import { useState, useRef, useEffect } from 'react';
+import { motion } from 'framer-motion';
+import { ArrowLeft, Send, Check, AlertCircle, Loader2, ChevronRight, ChevronLeft, Upload, CreditCard } from 'lucide-react';
 import PremiumCheck from '../components/PremiumCheck';
 import CustomSelect from '../components/CustomSelect';
+import Stepper, { Step } from '../components/Stepper';
 import useGoogleSheet from '../hooks/useGoogleSheet';
 import { eventData } from '../data/events';
 
@@ -16,6 +17,8 @@ interface RegisterProps {
 
 export default function Register({ onBack }: RegisterProps) {
   const { submitToSheet, loading, error, success } = useGoogleSheet();
+  const [step, setStep] = useState(1);
+  const scrollRef = useRef<HTMLDivElement>(null);
 
   const [formData, setFormData] = useState({
     fullName: '',
@@ -35,23 +38,38 @@ export default function Register({ onBack }: RegisterProps) {
     }>
   });
 
+  // Scroll to top when step changes
+  useEffect(() => {
+    if (scrollRef.current) {
+      scrollRef.current.scrollIntoView({ behavior: 'smooth' });
+    }
+  }, [step]);
+
+  // Handle Main Back Button Logic
+  const handleMainBack = () => {
+    if (step > 1) {
+      setStep(prev => prev - 1);
+    } else {
+      onBack();
+    }
+  };
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
   };
 
-  const handleCheckboxChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { value, checked } = e.target;
-    const eventName = value;
+  const handleCheckboxChange = (eventName: string) => {
+    const isChecked = formData.events.includes(eventName);
 
     setFormData(prev => {
-      const newEvents = checked
+      const newEvents = !isChecked
         ? [...prev.events, eventName]
         : prev.events.filter(event => event !== eventName);
 
       const newTeamDetails = { ...prev.teamDetails };
 
-      if (checked) {
+      if (!isChecked) {
         // Initialize team details if checking a team event
         const eventConfig = Object.values(eventData).find(e => e.name === eventName);
         if (eventConfig && eventConfig.maxMembers > 1) {
@@ -115,502 +133,634 @@ export default function Register({ onBack }: RegisterProps) {
     }
   };
 
+  const validateStep1 = () => {
+    if (formData.events.length === 0) {
+      alert('Please select at least one event to proceed.');
+      return false;
+    }
+    return true;
+  };
+
+  const validateStep2 = () => {
+    if (!formData.fullName || !formData.email || !formData.phone || !formData.college || !formData.department || !formData.year || !formData.gender) {
+      alert('Please fill in all personal and academic details.');
+      return false;
+    }
+
+    // Validate Team Details on Step 2
+    for (const eventName of formData.events) {
+      const eventDetails = Object.values(eventData).find(e => e.name === eventName);
+      if (eventDetails && eventDetails.maxMembers > 1) {
+        const teamInfo = formData.teamDetails[eventName];
+        // Simple check: Lead details required
+        if (!teamInfo?.leadName || !teamInfo?.leadPhone) {
+          alert(`Please fill in Team Lead details for ${eventName}`);
+          return false;
+        }
+      }
+    }
+
+    return true;
+  };
+
+  const handleNext = () => {
+    if (step === 1 && validateStep1()) setStep(2);
+    if (step === 2 && validateStep2()) setStep(3);
+  };
+
+  const handlePrev = () => {
+    if (step > 1) setStep(step - 1);
+  };
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (GOOGLE_SCRIPT_URL.includes('REPLACE')) {
       alert('Please deploy the Google Script and update the URL in Register.tsx');
       return;
     }
-    // Validate Events
-    if (formData.events.length === 0) {
-      alert('Please select at least one event');
+
+    // Final check
+    if (!formData.transactionId || !formData.paymentScreenshot) {
+      alert('Please provide transaction ID and payment screenshot.');
       return;
     }
 
-    // Validate Team Members
-    for (const eventName of formData.events) {
-      const eventDetails = eventData[Object.keys(eventData).find(key => eventData[key].name === eventName) as string];
-      if (eventDetails && eventDetails.maxMembers > 1) {
-        const teamInfo = formData.teamDetails[eventName];
-        if (!teamInfo || !teamInfo.leadName || !teamInfo.leadPhone) {
-          // HTML5 validation might catch this if visible, but good to be safe.
-          // Actually, HTML5 required attribute on hidden inputs (if tab switched) might not block submit or might be buggy.
-          // The inputs are in the DOM if event is checked.
-        }
-
-        const filledMembers = teamInfo?.members.filter(m => m.trim()).length || 0;
-        const requiredAdditional = eventDetails.minMembers - 1;
-
-        if (filledMembers < requiredAdditional) {
-          alert(`Please enter at least ${requiredAdditional} additional team member(s) for ${eventName}.`);
-          return;
-        }
-      }
-    }
-
-    // Prepare data for submission
-    // Format events to include team details for the sheet
-    const formattedEvents = formData.events.map(eventName => {
-      const details = formData.teamDetails[eventName];
-      if (details) {
-        const memberString = details.members.filter(m => m.trim()).join(', ');
-        return `${eventName} [Lead: ${details.leadName} (${details.leadPhone})${memberString ? `, Members: ${memberString}` : ''}]`;
-      }
-      return eventName;
-    });
-
     const submissionData = {
       ...formData,
-      events: formattedEvents // Override array with formatted strings (hook will likely join them)
+      events: formData.events,
+      teamDetails: formData.teamDetails
     };
 
     submitToSheet(submissionData, GOOGLE_SCRIPT_URL);
   };
+
+  const calculateTotal = () => {
+    return formData.events.reduce((total, eventName) => {
+      const event = Object.values(eventData).find(e => e.name === eventName);
+      return total + (event?.price || 0);
+    }, 0);
+  };
+
+  const techEvents = Object.values(eventData).filter(e => e.type === 'TECHNICAL');
+  const nonTechEvents = Object.values(eventData).filter(e => e.type === 'NON TECHNICAL');
+  const flagshipEvents = Object.values(eventData).filter(e => e.type === 'FLAGSHIP');
 
   if (success) {
     return (
       <motion.div
         initial={{ opacity: 0, scale: 0.9 }}
         animate={{ opacity: 1, scale: 1 }}
-        className="w-full max-w-lg mx-auto p-8 glass-strong rounded-3xl border border-white/10 text-center"
+        className="w-full max-w-lg mx-auto p-8 glass-strong rounded-3xl border border-white/20 text-center shadow-[0_0_50px_rgba(255,255,255,0.1)]"
       >
         <div className="flex items-center justify-center mx-auto mb-6">
           <PremiumCheck className="w-24 h-24" />
         </div>
         <h2 className="font-orbitron text-2xl font-bold text-white mb-4">REGISTRATION SUCCESSFUL!</h2>
-        <p className="text-white/70 mb-8">
+        <p className="text-white/70 mb-8 font-light">
           Thank you for registering for Galaxy 2k26. A confirmation email has been sent to {formData.email}.
         </p>
         <button
           onClick={onBack}
-          className="px-8 py-3 bg-white/10 hover:bg-white/20 rounded-full text-white font-orbitron text-sm transition-colors"
+          className="px-8 py-3 bg-white text-black font-orbitron text-sm font-bold tracking-widest hover:bg-slate-200 transition-colors rounded-none skew-x-[-10deg]"
         >
-          BACK TO HOME
+          <span className="skew-x-[10deg] inline-block">BACK TO HOME</span>
         </button>
       </motion.div>
     );
   }
 
-  const techEvents = Object.values(eventData).filter(e => e.type === 'TECHNICAL');
-  const nonTechEvents = Object.values(eventData).filter(e => e.type === 'NON TECHNICAL');
-
   return (
     <motion.div
+      ref={scrollRef}
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: 20 }}
-      className="w-full max-w-4xl mx-auto pb-20"
+      className="w-full max-w-5xl mx-auto pb-20 px-4"
     >
       <button
-        onClick={onBack}
-        className="mb-8 flex items-center gap-2 text-white/90 hover:text-white transition-colors group"
+        onClick={handleMainBack}
+        className="mb-8 flex items-center gap-2 text-white/70 hover:text-white transition-colors group"
       >
         <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
-        <span className="text-sm">Back to Home</span>
+        <span className="text-sm font-light tracking-wide">
+          {step > 1 ? 'PREVIOUS STEP' : 'BACK TO HOME'}
+        </span>
       </button>
 
-      <div className="backdrop-blur-xl bg-black/30 rounded-3xl p-8 md:p-12 border border-white/20 relative overflow-hidden shadow-2xl">
-        <div className="relative z-10">
-          <h2 className="font-orbitron text-3xl font-bold text-white mb-2 text-center tracking-wider">REGISTER FOR GALAXY 2K26</h2>
-          <p className="text-white/90 text-center mb-10">Fill in your details to participate</p>
+      {/* Progress Steps via New Stepper Component */}
+      <div className="mb-10 max-w-2xl mx-auto">
+        <Stepper
+          initialStep={1}
+          currentStepExternal={step}
+          hideFooter={true} // We use our own buttons for validation & logic
+        >
+          {/* STEP 1: EVENT SELECTION */}
+          <Step>
+            <div className="backdrop-blur-md bg-black/60 rounded-3xl border border-white/20 relative overflow-hidden shadow-xl">
+              <div className="absolute top-0 w-full h-1 bg-gradient-to-r from-transparent via-white/40 to-transparent opacity-50"></div>
+              <div className="p-5 md:p-12">
+                <motion.div
+                  initial={{ opacity: 0, x: 20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  exit={{ opacity: 0, x: -20 }}
+                  className="space-y-12"
+                >
+                  <div className="text-center mb-8">
+                    <h2 className="font-orbitron text-3xl font-bold text-white mb-2 tracking-wider">EVENT SELECTION</h2>
+                    <p className="text-slate-400 font-light">Technical: ₹200 | Non-Technical: ₹150</p>
+                  </div>
 
-          <form onSubmit={handleSubmit} className="space-y-10">
+                  {/* Flagship Events Grid - Highlighted */}
+                  {flagshipEvents.length > 0 && (
+                    <div className="mb-10 relative">
+                      {/* Glow Effect */}
+                      <div className="absolute inset-0 bg-gradient-to-r from-red-600/10 via-purple-600/10 to-red-600/10 blur-xl opacity-50 animate-pulse"></div>
 
-            {/* Personal Details */}
-            <div className="space-y-6">
-              <h3 className="font-orbitron text-xl text-white border-b border-white/10 pb-4 tracking-wider">Personal Information</h3>
-              <div className="grid md:grid-cols-2 gap-8">
-                <div className="space-y-3">
-                  <label className="text-xs text-slate-200 uppercase tracking-widest font-bold ml-1">Full Name</label>
-                  <input
-                    required
-                    type="text"
-                    name="fullName"
-                    value={formData.fullName}
-                    onChange={handleChange}
-                    className="w-full bg-white/5 border border-white/10 rounded-xl p-4 text-white placeholder-white/60 focus:border-slate-300 focus:bg-white/10 focus:outline-none transition-all duration-300"
-                    placeholder="Enter your name"
-                  />
-                </div>
-                <div className="space-y-3">
-                  <CustomSelect
-                    label="Gender"
-                    required
-                    value={formData.gender}
-                    onChange={(val) => setFormData(prev => ({ ...prev, gender: val }))}
-                    options={[
-                      { value: 'Male', label: 'Male' },
-                      { value: 'Female', label: 'Female' },
-                      { value: 'Other', label: 'Other' }
-                    ]}
-                    placeholder="Select Gender"
-                  />
-                </div>
-                <div className="space-y-3">
-                  <label className="text-xs text-slate-200 uppercase tracking-widest font-bold ml-1">Email Address</label>
-                  <input
-                    required
-                    type="email"
-                    name="email"
-                    value={formData.email}
-                    onChange={handleChange}
-                    className="w-full bg-white/5 border border-white/10 rounded-xl p-4 text-white placeholder-white/60 focus:border-slate-300 focus:bg-white/10 focus:outline-none transition-all duration-300"
-                    placeholder="john@example.com"
-                  />
-                </div>
-                <div className="space-y-3">
-                  <label className="text-xs text-slate-200 uppercase tracking-widest font-bold ml-1">Phone Number</label>
-                  <input
-                    required
-                    type="tel"
-                    name="phone"
-                    value={formData.phone}
-                    onChange={handleChange}
-                    className="w-full bg-white/5 border border-white/10 rounded-xl p-4 text-white placeholder-white/60 focus:border-slate-300 focus:bg-white/10 focus:outline-none transition-all duration-300"
-                    placeholder="+91 98765 43210"
-                  />
-                </div>
-              </div>
-            </div>
-
-            {/* Academic Details */}
-            <div className="space-y-6">
-              <h3 className="font-orbitron text-xl text-white border-b border-white/10 pb-4 tracking-wider">Academic Information</h3>
-              <div className="grid md:grid-cols-2 gap-8">
-                <div className="space-y-3">
-                  <label className="text-xs text-slate-200 uppercase tracking-widest font-bold ml-1">College Name</label>
-                  <input
-                    required
-                    type="text"
-                    name="college"
-                    value={formData.college}
-                    onChange={handleChange}
-                    className="w-full bg-white/5 border border-white/10 rounded-xl p-4 text-white placeholder-white/60 focus:border-slate-300 focus:bg-white/10 focus:outline-none transition-all duration-300"
-                    placeholder="Your College Name"
-                  />
-                </div>
-
-                <div className="space-y-3">
-                  <label className="text-xs text-slate-200 uppercase tracking-widest font-bold ml-1">Department</label>
-                  <input
-                    required
-                    type="text"
-                    name="department"
-                    value={formData.department}
-                    onChange={handleChange}
-                    className="w-full bg-white/5 border border-white/10 rounded-xl p-4 text-white placeholder-white/60 focus:border-slate-300 focus:bg-white/10 focus:outline-none transition-all duration-300"
-                    placeholder="e.g. ECE, CSE"
-                  />
-                </div>
-                <div className="space-y-3">
-                  <CustomSelect
-                    label="Year of Study"
-                    required
-                    value={formData.year}
-                    onChange={(val) => setFormData(prev => ({ ...prev, year: val }))}
-                    options={[
-                      { value: '1', label: '1st Year' },
-                      { value: '2', label: '2nd Year' },
-                      { value: '3', label: '3rd Year' },
-                      { value: '4', label: '4th Year' }
-                    ]}
-                    placeholder="Select Year"
-                  />
-                </div>
-              </div>
-            </div>
-
-            {/* Event Selection */}
-            <div className="space-y-8">
-              <h3 className="font-orbitron text-xl text-white border-b border-white/10 pb-4 tracking-wider">Event Registration</h3>
-
-              {/* Technical Events */}
-              <div>
-                <h4 className="font-orbitron text-sm text-white/80 mb-4 tracking-wider border-l-2 border-white pl-3">TECHNICAL EVENTS</h4>
-                <div className="grid md:grid-cols-2 gap-4">
-                  {techEvents.map((event) => (
-                    <div key={event.name} className="flex flex-col gap-2">
-                      <label className={`
-                        flex items-center gap-4 p-4 rounded-xl border cursor-pointer transition-all duration-300
-                        ${formData.events.includes(event.name)
-                          ? 'bg-white/10 border-white/50 shadow-[0_0_15px_rgba(255,255,255,0.1)]'
-                          : 'bg-white/5 border-white/10 hover:bg-white/10 hover:border-white/30'}
-                      `}>
-                        <div className={`
-                          w-6 h-6 rounded flex items-center justify-center border transition-all duration-300
-                          ${formData.events.includes(event.name)
-                            ? 'bg-white border-white shadow-[0_0_10px_rgba(255,255,255,0.3)] scale-110'
-                            : 'border-white/30 group-hover:border-white/50'}
-                        `}>
-                          {formData.events.includes(event.name) && <Check className="w-4 h-4 text-black stroke-[3]" />}
+                      <div className="relative border border-red-500/30 bg-red-900/10 rounded-2xl p-6 backdrop-blur-sm shadow-[0_0_30px_rgba(220,38,38,0.15)]">
+                        <h3 className="text-sm font-bold text-white mb-6 uppercase tracking-[0.2em] flex items-center gap-2 border-l-2 border-red-500 pl-4">
+                          Flagship Event
+                          <span className="h-[1px] flex-grow bg-gradient-to-r from-red-500/50 to-transparent ml-4"></span>
+                          <span className="px-2 py-0.5 bg-red-600 text-[10px] text-white rounded font-bold animate-pulse">FEATURED</span>
+                        </h3>
+                        <div className="grid grid-cols-1 gap-6">
+                          {flagshipEvents.map((event) => (
+                            <EventCard
+                              key={event.name}
+                              event={event}
+                              selected={formData.events.includes(event.name)}
+                              onToggle={() => handleCheckboxChange(event.name)}
+                              isFlagship={true}
+                            />
+                          ))}
                         </div>
-                        <input
-                          type="checkbox"
-                          value={event.name}
-                          checked={formData.events.includes(event.name)}
-                          onChange={handleCheckboxChange}
-                          className="hidden"
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Technical Events Grid */}
+                  <div>
+                    <h3 className="text-sm font-bold text-white mb-6 uppercase tracking-[0.2em] border-l-2 border-white pl-4 flex items-center gap-2">
+                      Technical Events
+                      <span className="h-[1px] flex-grow bg-white/10 ml-4"></span>
+                    </h3>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                      {techEvents.map((event) => (
+                        <EventCard
+                          key={event.name}
+                          event={event}
+                          selected={formData.events.includes(event.name)}
+                          onToggle={() => handleCheckboxChange(event.name)}
                         />
-                        <span className={`text-sm font-medium transition-colors ${formData.events.includes(event.name) ? 'text-white' : 'text-white/70'}`}>
-                          {event.name}
-                        </span>
-                      </label>
+                      ))}
+                    </div>
+                  </div>
 
-                      {/* Team Details Section */}
-                      <AnimatePresence>
-                        {formData.events.includes(event.name) && event.maxMembers > 1 && (
-                          <motion.div
-                            initial={{ opacity: 0, height: 0 }}
-                            animate={{ opacity: 1, height: 'auto' }}
-                            exit={{ opacity: 0, height: 0 }}
-                            className="bg-white/5 rounded-xl p-4 border border-white/10 ml-4 border-l-2 border-l-slate-300 space-y-4"
-                          >
-                            <p className="text-xs text-white uppercase tracking-widest font-bold mb-2">Team Details ({event.teamSize})</p>
+                  {/* Non-Technical Events Grid */}
+                  <div>
+                    <h3 className="text-sm font-bold text-white mb-6 uppercase tracking-[0.2em] border-l-2 border-white pl-4 flex items-center gap-2">
+                      Non-Technical Events
+                      <span className="h-[1px] flex-grow bg-white/10 ml-4"></span>
+                    </h3>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                      {nonTechEvents.map((event) => (
+                        <EventCard
+                          key={event.name}
+                          event={event}
+                          selected={formData.events.includes(event.name)}
+                          onToggle={() => handleCheckboxChange(event.name)}
+                        />
+                      ))}
+                    </div>
+                  </div>
 
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                              <div>
-                                <label className="text-xs md:text-sm text-white/50 uppercase block mb-1">Team Lead Name</label>
-                                <div className="flex items-center gap-3 bg-black/20 rounded-xl p-3 border border-white/10">
-                                  <User size={16} className="text-white" />
+                  {/* Total Panel */}
+                  <div className="sticky bottom-4 z-20 bg-black/90 backdrop-blur-xl border border-white/20 p-4 rounded-xl flex justify-between items-center shadow-[0_0_30px_rgba(0,0,0,0.8)] gap-4">
+                    <div className="flex flex-col">
+                      <p className="text-[10px] md:text-xs text-slate-400 uppercase tracking-widest mb-0.5">Total Amount</p>
+                      <p className="text-xl md:text-2xl font-orbitron font-bold text-white tracking-wide">₹{calculateTotal()}</p>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={handleNext}
+                      className="px-6 py-3 md:px-8 bg-white text-black font-orbitron text-xs md:text-sm font-bold tracking-widest hover:bg-slate-200 transition-all flex items-center gap-2 whitespace-nowrap rounded-lg shadow-[0_0_15px_rgba(255,255,255,0.3)] active:scale-95"
+                    >
+                      NEXT STEP <ChevronRight size={16} />
+                    </button>
+                  </div>
+                </motion.div>
+              </div>
+            </div>
+          </Step>
+
+          {/* STEP 2: PARTICIPANT & TEAM DETAILS */}
+          <Step>
+            <div className="backdrop-blur-xl bg-black/40 rounded-3xl border border-white/20 relative overflow-hidden shadow-2xl">
+              <div className="absolute top-0 w-full h-1 bg-gradient-to-r from-transparent via-white/40 to-transparent opacity-50"></div>
+              <div className="p-5 md:p-12">
+                <motion.div
+                  initial={{ opacity: 0, x: 20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  exit={{ opacity: 0, x: -20 }}
+                  className="space-y-8"
+                >
+                  <div className="text-center mb-8">
+                    <h2 className="font-orbitron text-2xl md:text-3xl font-bold text-white mb-2 tracking-wider">DETAILS</h2>
+                    <p className="text-slate-400 font-light text-sm md:text-base">Personal & Team Information</p>
+                  </div>
+
+                  {/* Personal Details */}
+                  <div className="space-y-6">
+                    <h3 className="font-orbitron text-xs md:text-sm text-white/70 uppercase tracking-widest border-b border-white/10 pb-2">Personal info</h3>
+                    <div className="grid md:grid-cols-2 gap-8">
+                      <div className="space-y-2 group">
+                        <label className="text-[10px] md:text-xs text-white/50 uppercase tracking-widest font-bold ml-1 group-focus-within:text-white transition-colors">Full Name</label>
+                        <input
+                          required
+                          type="text"
+                          name="fullName"
+                          value={formData.fullName}
+                          onChange={handleChange}
+                          className="w-full bg-transparent border border-white/20 rounded-lg p-4 text-white placeholder:text-white/20 focus:border-white focus:bg-white/5 focus:outline-none focus:ring-1 focus:ring-white/50 transition-all font-orbitron tracking-wide text-sm"
+                          placeholder="ENTER NAME"
+                        />
+                      </div>
+
+                      {/* Email with Validation */}
+                      <div className="space-y-2 group">
+                        <label className={`text-[10px] md:text-xs uppercase tracking-widest font-bold ml-1 transition-colors ${formData.email && !formData.email.includes('@') ? 'text-red-400' : 'text-white/50 group-focus-within:text-white'
+                          }`}>Email Address</label>
+                        <div className={`
+                           relative transition-all duration-300 rounded-lg
+                           ${formData.email && !formData.email.includes('@')
+                            ? 'bg-red-500/5 border border-red-500/50 shadow-[0_0_15px_rgba(239,68,68,0.1)]'
+                            : 'bg-transparent border border-white/20 focus-within:border-white focus-within:bg-white/5'
+                          }
+                        `}>
+                          <input
+                            required
+                            type="email"
+                            name="email"
+                            value={formData.email}
+                            onChange={handleChange}
+                            className={`
+                                w-full bg-transparent p-4 text-white placeholder:text-white/20 focus:outline-none transition-all font-orbitron tracking-wide text-sm rounded-lg
+                                ${formData.email && !formData.email.includes('@') ? 'text-red-300' : ''}
+                             `}
+                            placeholder="EMAIL ID"
+                          />
+                          {formData.email && !formData.email.includes('@') && (
+                            <AlertCircle className="absolute right-4 top-1/2 -translate-y-1/2 text-red-500 w-5 h-5 animate-pulse" />
+                          )}
+                          {formData.email && formData.email.includes('@') && (
+                            <Check className="absolute right-4 top-1/2 -translate-y-1/2 text-green-400 w-5 h-5" />
+                          )}
+                        </div>
+                      </div>
+
+                      {/* Phone Number - Digits Only */}
+                      <div className="space-y-2 group">
+                        <label className="text-[10px] md:text-xs text-white/50 uppercase tracking-widest font-bold ml-1 group-focus-within:text-white transition-colors">Phone Number</label>
+                        <input
+                          required
+                          type="tel"
+                          name="phone"
+                          value={formData.phone}
+                          onChange={(e) => {
+                            const val = e.target.value.replace(/\D/g, '').slice(0, 10);
+                            setFormData(prev => ({ ...prev, phone: val }));
+                          }}
+                          className="w-full bg-transparent border border-white/20 rounded-lg p-4 text-white placeholder:text-white/20 focus:border-white focus:bg-white/5 focus:outline-none focus:ring-1 focus:ring-white/50 transition-all font-orbitron tracking-widest text-sm"
+                          placeholder="MOBILE NUMBER"
+                        />
+                      </div>
+
+                      <div className="space-y-2">
+                        <CustomSelect
+                          label="Gender"
+                          required
+                          value={formData.gender}
+                          onChange={(val) => setFormData(prev => ({ ...prev, gender: val }))}
+                          options={[
+                            { value: 'Male', label: 'Male' },
+                            { value: 'Female', label: 'Female' },
+                            { value: 'Other', label: 'Other' }
+                          ]}
+                          placeholder="SELECT GENDER"
+                        />
+                      </div>
+                      <div className="space-y-2 group">
+                        <label className="text-[10px] md:text-xs text-white/50 uppercase tracking-widest font-bold ml-1 group-focus-within:text-white transition-colors">College</label>
+                        <input
+                          required
+                          type="text"
+                          name="college"
+                          value={formData.college}
+                          onChange={handleChange}
+                          className="w-full bg-transparent border border-white/20 rounded-lg p-4 text-white placeholder:text-white/20 focus:border-white focus:bg-white/5 focus:outline-none focus:ring-1 focus:ring-white/50 transition-all font-orbitron tracking-wide text-sm"
+                          placeholder="COLLEGE NAME"
+                        />
+                      </div>
+                      <div className="space-y-2 group">
+                        <label className="text-[10px] md:text-xs text-white/50 uppercase tracking-widest font-bold ml-1 group-focus-within:text-white transition-colors">Department</label>
+                        <input
+                          required
+                          type="text"
+                          name="department"
+                          value={formData.department}
+                          onChange={handleChange}
+                          className="w-full bg-transparent border border-white/20 rounded-lg p-4 text-white placeholder:text-white/20 focus:border-white focus:bg-white/5 focus:outline-none focus:ring-1 focus:ring-white/50 transition-all font-orbitron tracking-wide text-sm"
+                          placeholder="DEPARTMENT (e.g. ECE)"
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <CustomSelect
+                          label="Year of Study"
+                          required
+                          value={formData.year}
+                          onChange={(val) => setFormData(prev => ({ ...prev, year: val }))}
+                          options={[
+                            { value: '1', label: '1st Year' },
+                            { value: '2', label: '2nd Year' },
+                            { value: '3', label: '3rd Year' },
+                            { value: '4', label: '4th Year' }
+                          ]}
+                          placeholder="SELECT YEAR"
+                        />
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Team Details Section (Events with maxMembers > 1) */}
+                  {formData.events.some(evName => {
+                    const ev = Object.values(eventData).find(e => e.name === evName);
+                    return ev && ev.maxMembers > 1;
+                  }) && (
+                      <div className="space-y-8 pt-8 border-t border-white/10">
+                        <div className="text-center">
+                          <h3 className="font-orbitron text-lg md:text-xl font-bold text-white tracking-wider">TEAM DETAILS</h3>
+                          <p className="text-slate-400 text-xs md:text-sm font-light">Enter details for your team members</p>
+                        </div>
+
+                        {formData.events.map(eventName => {
+                          const event = Object.values(eventData).find(e => e.name === eventName);
+                          if (!event || event.maxMembers <= 1) return null;
+
+                          return (
+                            <div key={eventName} className="bg-white/5 border border-white/20 rounded-xl p-6 space-y-6 shadow-[0_0_30px_rgba(0,0,0,0.2)]">
+                              <div className="flex justify-between items-center border-b border-white/10 pb-4">
+                                <div className="flex items-center gap-3">
+                                  <h4 className="font-orbitron font-bold text-base md:text-lg text-white">{event.name}</h4>
+                                  <div className="bg-green-500/20 p-1 rounded-full">
+                                    <Check className="w-3 h-3 text-green-400" />
+                                  </div>
+                                </div>
+                                <span className="font-orbitron font-bold text-white text-base md:text-lg">₹{event.price}</span>
+                              </div>
+
+                              <p className="text-[10px] text-white/40 uppercase tracking-widest font-bold">Team Details ({event.teamSize})</p>
+
+                              <div className="grid md:grid-cols-2 gap-6">
+                                <div className="space-y-2">
+                                  <label className="text-[10px] text-white/50 uppercase font-bold">Lead Name</label>
                                   <input
                                     required
                                     type="text"
-                                    placeholder="Name"
-                                    className="bg-transparent w-full text-sm text-white outline-none placeholder:text-white/20"
+                                    placeholder="LEAD NAME"
+                                    className="w-full bg-black/40 border border-white/10 rounded-lg p-3 text-sm text-white focus:border-white/50 outline-none transition-all font-orbitron tracking-wide"
                                     value={formData.teamDetails[event.name]?.leadName || ''}
                                     onChange={(e) => handleTeamDetailChange(event.name, 'leadName', e.target.value)}
                                   />
                                 </div>
-                              </div>
-                              <div>
-                                <label className="text-xs md:text-sm text-white/50 uppercase block mb-1">Phone</label>
-                                <div className="flex items-center gap-3 bg-black/20 rounded-xl p-3 border border-white/10">
-                                  <Phone size={16} className="text-slate-300" />
+                                <div className="space-y-2">
+                                  <label className="text-[10px] text-white/50 uppercase font-bold">Lead Phone</label>
                                   <input
                                     required
                                     type="tel"
-                                    placeholder="Phone"
-                                    className="bg-transparent w-full text-sm text-white outline-none placeholder:text-white/20"
+                                    placeholder="LEAD PHONE"
+                                    className="w-full bg-black/40 border border-white/10 rounded-lg p-3 text-sm text-white focus:border-white/50 outline-none transition-all font-orbitron tracking-wide"
                                     value={formData.teamDetails[event.name]?.leadPhone || ''}
-                                    onChange={(e) => handleTeamDetailChange(event.name, 'leadPhone', e.target.value)}
+                                    onChange={(e) => {
+                                      const val = e.target.value.replace(/\D/g, '').slice(0, 10);
+                                      handleTeamDetailChange(event.name, 'leadPhone', val);
+                                    }}
                                   />
                                 </div>
                               </div>
-                            </div>
 
-                            {/* Additional Members */}
-                            <div className="space-y-3">
-                              {formData.teamDetails[event.name]?.members.map((member, index) => (
-                                <div key={index}>
-                                  <label className="text-xs md:text-sm text-white/50 uppercase block mb-1">Team Member {index + 2} Name</label>
-                                  <div className="flex items-center gap-3 bg-black/20 rounded-xl p-3 border border-white/10">
-                                    <Users size={16} className="text-white/40" />
+                              <div className="space-y-4">
+                                {formData.teamDetails[event.name]?.members.map((member: string, idx: number) => (
+                                  <div key={idx} className="space-y-2">
+                                    <label className="text-[10px] text-white/50 uppercase font-bold">Member {idx + 2}</label>
                                     <input
                                       type="text"
-                                      placeholder="Member Name (Optional)"
-                                      className="bg-transparent w-full text-sm text-white outline-none placeholder:text-white/20"
+                                      placeholder={`MEMBER ${idx + 2} NAME`}
+                                      className="w-full bg-black/40 border border-white/10 rounded-lg p-3 text-sm text-white focus:border-white/50 outline-none transition-all font-orbitron tracking-wide"
                                       value={member}
-                                      onChange={(e) => handleTeamDetailChange(event.name, 'member', e.target.value, index)}
+                                      onChange={(e) => handleTeamDetailChange(event.name, 'member', e.target.value, idx)}
                                     />
                                   </div>
-                                </div>
-                              ))}
+                                ))}
+                              </div>
                             </div>
-                          </motion.div>
-                        )}
-                      </AnimatePresence>
-                    </div>
-                  ))}
-                </div>
-              </div>
+                          );
+                        })}
+                      </div>
+                    )}
 
-              {/* Non-Technical Events */}
-              <div>
-                <h4 className="font-orbitron text-sm text-white/80 mb-4 tracking-wider border-l-2 border-white pl-3">NON-TECHNICAL EVENTS</h4>
-                <div className="grid md:grid-cols-2 gap-4">
-                  {nonTechEvents.map((event) => (
-                    <div key={event.name} className="flex flex-col gap-2">
-                      <label className={`
-                        flex items-center gap-4 p-4 rounded-xl border cursor-pointer transition-all duration-300
-                        ${formData.events.includes(event.name)
-                          ? 'bg-white/10 border-white/50 shadow-[0_0_15px_rgba(255,255,255,0.1)]'
-                          : 'bg-white/5 border-white/10 hover:bg-white/10 hover:border-white/30'}
-                      `}>
-                        <div className={`
-                          w-6 h-6 rounded flex items-center justify-center border transition-all duration-300
-                          ${formData.events.includes(event.name)
-                            ? 'bg-white border-white shadow-[0_0_10px_rgba(255,255,255,0.3)] scale-110'
-                            : 'border-white/30 group-hover:border-white/50'}
-                        `}>
-                          {formData.events.includes(event.name) && <Check className="w-4 h-4 text-black stroke-[3]" />}
+                  <div className="sticky bottom-4 z-20 bg-black/90 backdrop-blur-xl border border-white/20 p-4 rounded-xl grid grid-cols-2 gap-4 shadow-[0_0_30px_rgba(0,0,0,0.8)] mt-8">
+                    <button
+                      type="button"
+                      onClick={handlePrev}
+                      className="w-full px-4 py-3 border border-white/20 text-white font-orbitron text-xs md:text-sm hover:bg-white/10 transition-colors flex items-center justify-center gap-2 tracking-widest rounded-lg"
+                    >
+                      <ChevronLeft size={16} /> BACK
+                    </button>
+                    <button
+                      type="button"
+                      onClick={handleNext}
+                      className="w-full px-4 py-3 bg-white text-black font-orbitron text-xs md:text-sm font-bold tracking-widest hover:bg-slate-200 transition-all flex items-center justify-center gap-2 whitespace-nowrap rounded-lg shadow-[0_0_15px_rgba(255,255,255,0.3)] active:scale-95"
+                    >
+                      NEXT STEP <ChevronRight size={16} />
+                    </button>
+                  </div>
+                </motion.div>
+              </div>
+            </div>
+          </Step>
+
+          {/* STEP 3: PAYMENT */}
+          <Step>
+            <div className="backdrop-blur-xl bg-black/40 rounded-3xl border border-white/20 relative overflow-hidden shadow-2xl">
+              <div className="absolute top-0 w-full h-1 bg-gradient-to-r from-transparent via-white/40 to-transparent opacity-50"></div>
+              <div className="p-5 md:p-12">
+                <form onSubmit={handleSubmit}>
+                  <motion.div
+                    initial={{ opacity: 0, x: 20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    exit={{ opacity: 0, x: -20 }}
+                    className="space-y-12"
+                  >
+                    <div className="text-center mb-4">
+                      <h2 className="font-orbitron text-3xl font-bold text-white mb-2 tracking-wider">PAYMENT</h2>
+                      <p className="text-slate-400 font-light">Complete your registration</p>
+                    </div>
+
+                    <div className="grid md:grid-cols-2 gap-12">
+                      {/* Summary */}
+                      <div className="space-y-6">
+                        <h3 className="font-orbitron text-lg text-white border-b border-white/10 pb-3">ORDER SUMMARY</h3>
+                        <div className="space-y-4">
+                          {formData.events.map(eventName => {
+                            const ev = Object.values(eventData).find(e => e.name === eventName);
+                            return (
+                              <div key={eventName} className="flex justify-between items-center text-sm">
+                                <span className="text-slate-300">{eventName}</span>
+                                <span className="text-white font-mono">₹{ev?.price}</span>
+                              </div>
+                            );
+                          })}
+                          <div className="border-t border-white/10 pt-4 flex justify-between items-center">
+                            <span className="text-white font-bold uppercase tracking-wider">Total Payable</span>
+                            <span className="text-2xl font-orbitron text-white font-bold">₹{calculateTotal()}</span>
+                          </div>
                         </div>
-                        <input
-                          type="checkbox"
-                          value={event.name}
-                          checked={formData.events.includes(event.name)}
-                          onChange={handleCheckboxChange}
-                          className="hidden"
-                        />
-                        <span className={`text-sm font-medium transition-colors ${formData.events.includes(event.name) ? 'text-white' : 'text-white/70'}`}>
-                          {event.name}
-                        </span>
-                      </label>
+                      </div>
 
-                      {/* Team Details Section */}
-                      <AnimatePresence>
-                        {formData.events.includes(event.name) && event.maxMembers > 1 && (
-                          <motion.div
-                            initial={{ opacity: 0, height: 0 }}
-                            animate={{ opacity: 1, height: 'auto' }}
-                            exit={{ opacity: 0, height: 0 }}
-                            className="bg-white/5 rounded-xl p-4 border border-white/10 ml-4 border-l-2 border-l-slate-400 space-y-4"
-                          >
-                            <p className="text-xs text-slate-300 uppercase tracking-widest font-bold mb-2">Team Details ({event.teamSize})</p>
+                      {/* Payment Details */}
+                      <div className="space-y-6">
+                        <h3 className="font-orbitron text-lg text-white border-b border-white/10 pb-3">SCAN TO PAY</h3>
 
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                              <div>
-                                <label className="text-xs md:text-sm text-white/50 uppercase block mb-1">Team Lead Name</label>
-                                <div className="flex items-center gap-3 bg-black/20 rounded-xl p-3 border border-white/10">
-                                  <User size={16} className="text-slate-300" />
-                                  <input
-                                    required
-                                    type="text"
-                                    placeholder="Name"
-                                    className="bg-transparent w-full text-sm text-white outline-none placeholder:text-white/20"
-                                    value={formData.teamDetails[event.name]?.leadName || ''}
-                                    onChange={(e) => handleTeamDetailChange(event.name, 'leadName', e.target.value)}
-                                  />
-                                </div>
-                              </div>
-                              <div>
-                                <label className="text-xs md:text-sm text-white/50 uppercase block mb-1">Phone</label>
-                                <div className="flex items-center gap-3 bg-black/20 rounded-xl p-3 border border-white/10">
-                                  <Phone size={16} className="text-white" />
-                                  <input
-                                    required
-                                    type="tel"
-                                    placeholder="Phone"
-                                    className="bg-transparent w-full text-sm text-white outline-none placeholder:text-white/20"
-                                    value={formData.teamDetails[event.name]?.leadPhone || ''}
-                                    onChange={(e) => handleTeamDetailChange(event.name, 'leadPhone', e.target.value)}
-                                  />
-                                </div>
-                              </div>
+                        <div className="bg-white p-4 rounded-xl w-fit mx-auto shadow-xl">
+                          <img src="/qr-code.png.jpeg" alt="QR Code" className="w-48 h-48 object-contain" />
+                        </div>
+                        <div className="text-center space-y-2">
+                          <p className="text-xs text-slate-400 uppercase tracking-widest">UPI ID</p>
+                          <div className="inline-flex items-center gap-2 px-3 py-1 bg-white/10 rounded-full border border-white/10">
+                            <span className="text-white font-mono text-sm">sarveeshkaarthic05@okhdfcbank</span>
+                          </div>
+                        </div>
+
+                        <div className="space-y-4 pt-4">
+                          <div className="space-y-2">
+                            <label className="text-xs text-white/60 uppercase tracking-widest font-bold ml-1">Transaction ID</label>
+                            <div className="flex items-center gap-3 bg-black/30 border border-white/20 rounded-lg p-3">
+                              <CreditCard size={18} className="text-white/50" />
+                              <input
+                                required
+                                type="text"
+                                name="transactionId"
+                                value={formData.transactionId}
+                                onChange={handleChange}
+                                className="bg-transparent w-full text-white focus:outline-none font-mono tracking-widest"
+                                placeholder="ENTER UTR / REF ID"
+                              />
                             </div>
+                          </div>
 
-                            {/* Additional Members */}
-                            <div className="space-y-3">
-                              {formData.teamDetails[event.name]?.members.map((member, index) => (
-                                <div key={index}>
-                                  <label className="text-xs md:text-sm text-white/50 uppercase block mb-1">Team Member {index + 2} Name</label>
-                                  <div className="flex items-center gap-3 bg-black/20 rounded-xl p-3 border border-white/10">
-                                    <Users size={16} className="text-white/40" />
-                                    <input
-                                      type="text"
-                                      placeholder="Member Name (Optional)"
-                                      className="bg-transparent w-full text-sm text-white outline-none placeholder:text-white/20"
-                                      value={member}
-                                      onChange={(e) => handleTeamDetailChange(event.name, 'member', e.target.value, index)}
-                                    />
+                          <div className="space-y-2">
+                            <label className="text-xs text-white/60 uppercase tracking-widest font-bold ml-1">Upload Screenshot</label>
+                            <label className="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed border-white/20 rounded-lg cursor-pointer hover:bg-white/5 hover:border-white/40 transition-all">
+                              <div className="flex flex-col items-center justify-center pt-5 pb-6">
+                                {formData.paymentScreenshot ? (
+                                  <div className="flex items-center gap-2 text-green-400">
+                                    <Check size={24} />
+                                    <p className="text-sm">Screenshot Uploaded</p>
                                   </div>
-                                </div>
-                              ))}
-                            </div>
-                          </motion.div>
-                        )}
-                      </AnimatePresence>
+                                ) : (
+                                  <>
+                                    <Upload className="w-8 h-8 text-white/40 mb-2" />
+                                    <p className="text-sm text-white/60">Click to upload image</p>
+                                    <p className="text-xs text-white/40 mt-1">Max 5MB</p>
+                                  </>
+                                )}
+                              </div>
+                              <input type="file" accept="image/*" className="hidden" onChange={handleFileChange} required />
+                            </label>
+                          </div>
+                        </div>
+                      </div>
                     </div>
-                  ))}
-                </div>
+
+                    {error && (
+                      <div className="p-4 bg-red-500/10 border border-red-500/20 rounded-xl flex items-center gap-3 text-red-400 text-sm">
+                        <AlertCircle size={18} />
+                        {error}
+                      </div>
+                    )}
+
+                    <div className="sticky bottom-4 z-20 bg-black/90 backdrop-blur-xl border border-white/20 p-4 rounded-xl grid grid-cols-2 gap-4 shadow-[0_0_30px_rgba(0,0,0,0.8)] mt-8">
+                      <button
+                        type="button"
+                        onClick={handlePrev}
+                        className="w-full px-4 py-3 border border-white/20 text-white font-orbitron text-xs md:text-sm hover:bg-white/10 transition-colors flex items-center justify-center gap-2 tracking-widest rounded-lg"
+                      >
+                        <ChevronLeft size={16} /> BACK
+                      </button>
+                      <button
+                        type="submit"
+                        disabled={loading}
+                        className="w-full px-4 py-3 bg-white text-black font-orbitron text-xs md:text-sm font-bold tracking-widest hover:bg-slate-200 transition-all flex items-center justify-center gap-2 whitespace-nowrap rounded-lg shadow-[0_0_15px_rgba(255,255,255,0.3)] active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
+                      >
+                        {loading ? <Loader2 className="animate-spin" /> : <Send size={16} />}
+                        SUBMIT
+                      </button>
+                    </div>
+
+                  </motion.div>
+                </form>
               </div>
             </div>
-
-            {/* Payment Section */}
-            <div className="space-y-6">
-              <h3 className="font-orbitron text-xl text-white border-b border-white/10 pb-4 tracking-wider">Payment Verification</h3>
-
-              <div className="bg-white/5 p-6 rounded-xl border border-white/10 flex flex-col gap-6">
-
-                <div className="flex flex-col md:flex-row gap-8 items-start">
-                  {/* QR Code Placeholder/Area */}
-                  <div className="flex-shrink-0 flex flex-col items-center gap-2">
-                    <div className="w-40 h-40 bg-white rounded-lg flex items-center justify-center overflow-hidden">
-                      {/* QR Code Image */}
-                      <img
-                        src="/qr-code.png.jpeg"
-                        alt="Payment QR Code"
-                        className="w-full h-full object-contain"
-                      />
-                    </div>
-                    <span className="text-xs text-white/50 tracking-wider">sarveeshkaarthic05@okhdfcbank</span>
-                  </div>
-
-                  <div className="flex-grow space-y-4">
-                    <p className="text-white">
-                      Registration Fee: <span className="text-xl font-bold text-white">Tech: ₹200 | Non-Tech: ₹100</span>
-                    </p>
-                    <p className="text-sm text-white/90">
-                      Please complete the payment using GPay, PhonePe, or Paytm.
-                      Then enter the Transaction ID and upload the payment screenshot below.
-                    </p>
-
-                    <div className="space-y-3">
-                      <label className="text-xs text-slate-200 uppercase tracking-widest font-bold ml-1">Transaction ID (UTR)</label>
-                      <input
-                        required
-                        type="text"
-                        name="transactionId"
-                        value={formData.transactionId}
-                        onChange={handleChange}
-                        className="w-full bg-black/50 border border-white/20 rounded-xl p-4 text-white placeholder-white/60 focus:border-white/50 focus:outline-none tracking-widest font-mono"
-                        placeholder="e.g. 304218931284"
-                      />
-                    </div>
-                  </div>
-                </div>
-
-                <div className="space-y-3 pt-4 border-t border-white/5">
-                  <label className="text-xs text-slate-200 uppercase tracking-widest font-bold ml-1">Upload Payment Screenshot (Max 5MB)</label>
-                  <input
-                    required
-                    type="file"
-                    accept="image/*"
-                    onChange={handleFileChange}
-                    className="w-full bg-white/5 border border-white/10 rounded-xl p-3 text-white file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-white/10 file:text-white hover:file:bg-white/20 transition-all cursor-pointer"
-                  />
-                  <p className="text-xs text-white/60">* Required for verification</p>
-                </div>
-              </div>
-            </div>
-
-            {error && (
-              <div className="p-4 bg-red-500/10 border border-red-500/20 rounded-xl flex items-center gap-3 text-red-400 text-sm">
-                <AlertCircle size={18} />
-                {error}
-              </div>
-            )}
-
-            <button
-              type="submit"
-              disabled={loading}
-              className="w-full py-4 bg-white/10 border border-white/20 rounded-xl font-orbitron font-bold text-white tracking-widest hover:bg-white/20 hover:shadow-[0_0_30px_rgba(255,255,255,0.2)] transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
-            >
-              {loading ? (
-                <>
-                  <Loader2 className="animate-spin" />
-                  REGISTERING...
-                </>
-              ) : (
-                <>
-                  <Send className="w-5 h-5" />
-                  SUBMIT REGISTRATION
-                </>
-              )}
-            </button>
-
-          </form>
-        </div>
+          </Step>
+        </Stepper>
       </div>
     </motion.div>
+  );
+}
+
+// Helper Component for Event Card
+function EventCard({ event, selected, onToggle, isFlagship = false }: any) {
+  return (
+    <div
+      onClick={onToggle}
+      className={`
+           relative border transition-all duration-300 rounded-xl overflow-hidden group cursor-pointer
+           ${selected
+          ? (isFlagship
+            ? 'bg-white/10 border-white shadow-[0_0_15px_rgba(255,255,255,0.1)]'
+            : 'bg-white/5 border-white shadow-[0_0_10px_rgba(255,255,255,0.05)]')
+          : (isFlagship
+            ? 'bg-transparent border-white/30 hover:border-white/60 hover:bg-white/5'
+            : 'bg-transparent border-white/10 hover:border-white/30 hover:bg-white/5')}
+        `}
+      style={{ willChange: 'transform' }}
+    >
+      <div className="p-5 flex justify-between items-start gap-4">
+        <div className="space-y-1 flex-1">
+          <h4 className={`font-orbitron font-bold text-base md:text-lg leading-tight ${selected ? 'text-white' : 'text-slate-300'}`}>
+            {event.name}
+          </h4>
+          <p className="text-[10px] text-white/50 uppercase tracking-widest font-semibold pt-1">
+            {event.type}
+          </p>
+        </div>
+
+        <div className="text-right flex flex-col items-end gap-1 shrink-0">
+          <div className="flex items-center gap-2">
+            <p className="font-orbitron text-white text-lg md:text-xl font-bold">₹{event.price}</p>
+            {selected && (
+              <div className="bg-green-500/20 p-1 rounded-full animate-in fade-in zoom-in duration-300">
+                <Check className="w-3 h-3 md:w-4 md:h-4 text-green-400" />
+              </div>
+            )}
+          </div>
+          {event.price === 0 && <span className="text-[10px] bg-white text-black px-2 py-0.5 rounded font-bold uppercase">Free</span>}
+        </div>
+      </div>
+
+      {/* Active Indicator Bar */}
+      {selected && (
+        <div className="absolute bottom-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-green-400 to-transparent opacity-50" />
+      )}
+    </div>
   );
 }

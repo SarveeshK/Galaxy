@@ -4,6 +4,8 @@ import { useState } from 'react';
 import ShinyText from '../components/ShinyText';
 
 
+import Countdown from '../components/Countdown';
+
 interface HeroProps {
   onRegister: () => void;
   onViewEvents: () => void;
@@ -55,6 +57,9 @@ export default function Hero({ onRegister, onViewEvents }: HeroProps) {
           <h1 className="relative font-orbitron text-xl md:text-3xl lg:text-4xl font-extrabold tracking-wider text-center px-4 leading-relaxed text-metallic-premium mb-2">
             GOVERNMENT COLLEGE OF ENGINEERING, ERODE
           </h1>
+          <h2 className="relative font-orbitron text-sm md:text-lg lg:text-xl font-bold tracking-wider text-center px-4 leading-relaxed text-metallic-premium mb-2 opacity-90">
+            Department of ECE Presents
+          </h2>
         </div>
 
 
@@ -66,7 +71,7 @@ export default function Hero({ onRegister, onViewEvents }: HeroProps) {
             className="w-full max-w-5xl mx-auto px-4 mb-4 z-10"
           >
             <img
-              src="/galaxy-title-new.png"
+              src="/galaxy-logo-final.png"
               alt="GALAXY"
               className="w-full h-auto object-contain drop-shadow-[0_0_35px_rgba(255,255,255,0.2)]"
             />
@@ -127,10 +132,15 @@ export default function Hero({ onRegister, onViewEvents }: HeroProps) {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.9 }}
-          className="text-white/80 text-xl md:text-2xl font-orbitron tracking-wider mb-8"
+          className="text-white/80 text-xl md:text-2xl font-orbitron tracking-wider mb-10"
         >
           FEB 27, 2026
         </motion.p>
+
+        {/* Countdown Timer */}
+        <div className="flex justify-center w-full">
+          <Countdown />
+        </div>
 
         {/* CTA Buttons */}
         <motion.div
@@ -151,7 +161,7 @@ export default function Hero({ onRegister, onViewEvents }: HeroProps) {
 
           <button
             onClick={onViewEvents}
-            className="group relative px-12 py-5 overflow-hidden rounded-lg border border-white/20 bg-transparent text-white font-orbitron tracking-[0.2em] text-lg font-bold uppercase transition-all duration-300 hover:bg-white/10 hover:border-white/40 hover:shadow-[0_0_40px_rgba(255,255,255,0.2)]"
+            className="group relative px-12 py-5 overflow-hidden rounded-lg border border-white/20 bg-white/10 backdrop-blur-md text-white font-orbitron tracking-[0.2em] text-lg font-bold uppercase transition-all duration-300 hover:bg-white/20 hover:border-white/40 hover:shadow-[0_0_40px_rgba(255,255,255,0.2)]"
           >
             <div className="absolute inset-0 w-1 bg-white transition-all duration-[250ms] ease-out group-hover:w-full opacity-5" />
             <span className="relative flex items-center gap-3">

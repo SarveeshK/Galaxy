@@ -82,43 +82,25 @@ export default function About() {
             className="text-center lg:text-left"
           >
             <h3 className="font-orbitron text-2xl md:text-3xl font-bold text-white mb-6">
-              GOVERNMENT COLLEGE OF ENGINEERING, ERODE
+              About the ECE Department
             </h3>
 
-
-
-            <p className="text-white/70 mb-6 leading-relaxed">
-              The college was established in 1984 under Institute of Road and Transport by the Tamil Nadu State Transport Corporation. In 2021, the college was transferred to under the governance of Directorate of Technical Education (DoTE) and subsequently renamed as Government College of Engineering, Erode.
-            </p>
-
-            <p className="text-white/70 mb-6 leading-relaxed">
-              It is a premier Government Engineering College affiliated to Anna University, Chennai. The Institute is located on a sprawling lush green campus of 200 acres between Chithode and Bhavani in Erode district. It provides a congenial atmosphere for Technical Education.
-            </p>
-
-            <p className="text-white/70 mb-6 leading-relaxed">
-              The Institute has excellent infrastructure, well-equipped laboratories, library and highly qualified & experienced faculty members. The Institute is well known for its technical excellence, modern facilities, research activities, good academic performance track record and more placements with high salary package.
-            </p>
-
-            <p className="text-white/70 mb-6 leading-relaxed">
-              This Institute is functioning as the Zonal Headquarters for Zone-XI (Erode Zone) of Anna University monitoring the Engineering colleges affiliated to Anna University in Erode district and part of Namakkal, Tiruppur and Salem districts.
-            </p>
-
-            <ul className="space-y-3 mb-8 text-left inline-block">
-              <li className="flex items-start gap-3 text-white/70">
-                <div className="w-1.5 h-1.5 rounded-full bg-gray-400 mt-2 flex-shrink-0" />
-                <span>Galaxy 2K26 is a National Level Technical Symposium organized by the Electronics and Communication Engineering Association.</span>
+            <ul className="space-y-4 mb-8 text-left inline-block">
+              <li className="flex items-start gap-3 text-white/80 leading-relaxed">
+                <div className="w-1.5 h-1.5 rounded-full bg-cyan-400 mt-2.5 flex-shrink-0 shadow-[0_0_8px_rgba(34,211,238,0.6)]" />
+                <span>The <span className="text-white font-medium">Electronics and Communication Engineering</span> Department emphasizes strong fundamentals in electronics, communication systems, and modern technologies.</span>
               </li>
-              <li className="flex items-start gap-3 text-white/70">
-                <div className="w-1.5 h-1.5 rounded-full bg-gray-500 mt-2 flex-shrink-0" />
-                <span>The event focuses on solving real challenges within the college ecosystem using technology-driven solutions.</span>
+              <li className="flex items-start gap-3 text-white/80 leading-relaxed">
+                <div className="w-1.5 h-1.5 rounded-full bg-purple-400 mt-2.5 flex-shrink-0 shadow-[0_0_8px_rgba(192,132,252,0.6)]" />
+                <span>We blend theoretical knowledge with practical application, supported by <span className="text-white font-medium">state-of-the-art laboratories</span> and advanced computing facilities.</span>
               </li>
-              <li className="flex items-start gap-3 text-white/70">
-                <div className="w-1.5 h-1.5 rounded-full bg-gray-300 mt-2 flex-shrink-0" />
-                <span>Problem statements are sourced directly from faculty and administrative departments to ensure real-world relevance.</span>
+              <li className="flex items-start gap-3 text-white/80 leading-relaxed">
+                <div className="w-1.5 h-1.5 rounded-full bg-pink-400 mt-2.5 flex-shrink-0 shadow-[0_0_8px_rgba(244,114,182,0.6)]" />
+                <span>Students are encouraged to engage in technical activities, research, and industry-oriented workshops to stay current with <span className="text-white font-medium">emerging trends</span>.</span>
               </li>
-              <li className="flex items-start gap-3 text-white/70">
-                <div className="w-1.5 h-1.5 rounded-full bg-white mt-2 flex-shrink-0" />
-                <span>Galaxy promotes innovation, collaboration, and hands-on learning beyond the classroom.</span>
+              <li className="flex items-start gap-3 text-white/80 leading-relaxed">
+                <div className="w-1.5 h-1.5 rounded-full bg-blue-400 mt-2.5 flex-shrink-0 shadow-[0_0_8px_rgba(96,165,250,0.6)]" />
+                <span>Through events like the <span className="text-white font-medium">Galaxy Symposium</span>, the department fosters innovation, technical excellence, and collaborative learning among future engineers.</span>
               </li>
             </ul>
 

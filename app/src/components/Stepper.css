@@ -1,0 +1,185 @@
+.outer-container {
+    display: flex;
+    min-height: 100%;
+    flex: 1 1 0%;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    /* Adjusted for integration */
+}
+
+.step-circle-container {
+    margin-left: auto;
+    margin-right: auto;
+    width: 100%;
+    max-width: 100%;
+    /* Full width to fit container */
+    /* Border handled by parent or removed if not needed */
+}
+
+.step-indicator-row {
+    display: flex;
+    width: 100%;
+    align-items: center;
+    padding: 1rem 0;
+    /* Reduced padding */
+    justify-content: space-between;
+}
+
+.step-content-default {
+    position: relative;
+    overflow: hidden;
+    width: 100%;
+    /* Ensure content takes full width */
+}
+
+.step-default {
+    padding-left: 0;
+    padding-right: 0;
+}
+
+.footer-container {
+    padding-top: 2rem;
+    padding-bottom: 0;
+    width: 100%;
+}
+
+.footer-nav {
+    margin-top: 0;
+    display: flex;
+    width: 100%;
+}
+
+.footer-nav.spread {
+    justify-content: space-between;
+}
+
+.footer-nav.end {
+    justify-content: flex-end;
+}
+
+.back-button {
+    transition: all 350ms;
+    border-radius: 0.25rem;
+    padding: 0.5rem 1.5rem;
+    color: #a3a3a3;
+    cursor: pointer;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    font-family: 'Orbitron', sans-serif;
+    text-transform: uppercase;
+    font-size: 0.875rem;
+    letter-spacing: 0.05em;
+}
+
+.back-button:hover {
+    color: white;
+    background: rgba(255, 255, 255, 0.05);
+    border-color: rgba(255, 255, 255, 0.5);
+}
+
+.next-button {
+    transition: all 350ms;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 0.25rem;
+    /* Match theme */
+    background-color: white;
+    color: black;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    padding: 0.5rem 2rem;
+    cursor: pointer;
+    font-family: 'Orbitron', sans-serif;
+    text-transform: uppercase;
+    font-size: 0.875rem;
+    border: none;
+}
+
+.next-button:hover {
+    background-color: #e5e5e5;
+}
+
+/* Stepper Indicator Styles - Silver/White Theme */
+.step-indicator {
+    position: relative;
+    cursor: pointer;
+    outline: none;
+    z-index: 10;
+}
+
+.step-indicator-inner {
+    display: flex;
+    height: 2.5rem;
+    width: 2.5rem;
+    align-items: center;
+    justify-content: center;
+    border-radius: 9999px;
+    font-weight: 600;
+    background-color: black;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    transition: all 0.3s ease;
+    font-family: 'Orbitron', sans-serif;
+}
+
+/* Active State */
+.step-indicator[data-status="active"] .step-indicator-inner {
+    border-color: white;
+    box-shadow: 0 0 15px rgba(255, 255, 255, 0.5);
+    background-color: black;
+    color: white;
+}
+
+/* Complete State */
+.step-indicator[data-status="complete"] .step-indicator-inner {
+    background-color: white;
+    border-color: white;
+    color: black;
+    box-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
+}
+
+/* Inactive State */
+.step-indicator[data-status="inactive"] .step-indicator-inner {
+    background-color: black;
+    border-color: rgba(255, 255, 255, 0.1);
+    color: rgba(255, 255, 255, 0.3);
+}
+
+.active-dot {
+    height: 0.5rem;
+    width: 0.5rem;
+    border-radius: 9999px;
+    background-color: white;
+    box-shadow: 0 0 8px white;
+}
+
+.step-number {
+    font-size: 0.875rem;
+}
+
+.step-connector {
+    position: relative;
+    margin-left: 0.5rem;
+    margin-right: 0.5rem;
+    height: 2px;
+    flex: 1;
+    overflow: hidden;
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+.step-connector-inner {
+    position: absolute;
+    left: 0;
+    top: 0;
+    height: 100%;
+    background-color: white;
+    box-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+}
+
+.check-icon {
+    height: 1rem;
+    width: 1rem;
+    color: black;
+    /* Dark check on white background */
+}

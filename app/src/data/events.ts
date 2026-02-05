@@ -16,14 +16,14 @@ export const eventData: Record<string, {
     icon: any; // Lucide icon or string char
     posterImage?: string;
     description?: string;
-    type: 'TECHNICAL' | 'NON TECHNICAL';
+    type: 'TECHNICAL' | 'NON TECHNICAL' | 'FLAGSHIP';
     price: number;
 }> = {
     'project-war': {
         name: 'PROJECT WAR',
         tagline: 'SHOWCASE YOUR INNOVATIVE PROJECTS AND COMPETE FOR GLORY',
-        teamSize: 'Max 4 Members',
-        minMembers: 1,
+        teamSize: '3-4 Members',
+        minMembers: 3,
         maxMembers: 4,
         date: 'Feb 27',
         time: '10:00 AM - 3:00 PM',
@@ -40,6 +40,8 @@ export const eventData: Record<string, {
         icon: Code,
         type: 'TECHNICAL',
         price: 200,
+        posterImage: '/project-war-poster.jpg',
+        description: `Project Expo is an event where students showcase their innovative projects and technical ideas. It provides a platform to demonstrate creativity, practical knowledge, and real-world applications of engineering concepts.`,
     },
     'paper-presentation': {
         name: 'PAPER PRESENTATION',
@@ -83,16 +85,16 @@ export const eventData: Record<string, {
         color: 'from-amber-400 to-yellow-500',
         icon: Zap,
         type: 'NON TECHNICAL',
-        price: 100,
+        price: 150,
         posterImage: '/ai-prompt-battle.jpg',
         description: `This is a fun, non-technical game where participants compete by crafting clear, creative, and powerful prompts to get the best results from AI. With a given theme and exciting rounds, players test their imagination, communication, and prompt skills to stand out and win.`,
     },
     'arduino-hackathon': {
         name: 'ARDUINO HACKATHON',
-        tagline: 'BUILD AND PROGRAM EMBEDDED SYSTEMS IN A RACE AGAINST TIME',
-        teamSize: 'Max 3 Members',
+        tagline: 'CODE . CREATE . INNOVATE',
+        teamSize: '1-4 Members',
         minMembers: 1,
-        maxMembers: 3,
+        maxMembers: 4,
         date: 'Feb 27',
         time: '10:00 AM - 3:00 PM',
         venue: 'Embedded Systems Lab',
@@ -108,6 +110,9 @@ export const eventData: Record<string, {
         icon: GitBranch,
         type: 'TECHNICAL',
         price: 200,
+        posterImage: '/arduino-hackathon-poster.jpg',
+        description: `Develop intelligent Arduino solutions through hands-on prototyping.
+Showcase creativity through real working models.`,
     },
     'circuit-debugging': {
         name: 'CIRCUIT DEBUGGING',
@@ -177,7 +182,7 @@ export const eventData: Record<string, {
         color: 'from-indigo-400 to-blue-500',
         icon: Users,
         type: 'NON TECHNICAL',
-        price: 100,
+        price: 150,
         posterImage: '/ipl-auction-poster.jpg',
         description: `Experience the thrill of a live IPL-style auction where teams compete in real-time bidding.
 
@@ -205,7 +210,7 @@ Build a strong team, outbid your rivals, and prove your auction mastery.`,
         color: 'from-pink-400 to-rose-500',
         icon: Zap,
         type: 'NON TECHNICAL',
-        price: 100,
+        price: 150,
         posterImage: '/hintdrop-poster.jpg',
         description: `Hint Drop is not about what you know, but how smartly you say it. Easy to play, hard to master, where every clue counts and only the sharpest teams rise to the top.
 
@@ -231,7 +236,7 @@ Simple to Play! Thrilling to Win!`,
         color: 'from-amber-400 to-orange-500',
         icon: Users,
         type: 'NON TECHNICAL',
-        price: 100,
+        price: 150,
         posterImage: '/short-film-poster.jpg',
         description: `Short Film Showcase
 
@@ -258,7 +263,7 @@ Simple to Submit`,
         color: 'from-cyan-400 to-blue-500',
         icon: Zap,
         type: 'NON TECHNICAL',
-        price: 100,
+        price: 150,
         posterImage: '/spin-and-win-poster.jpg',
         description: `Spin and Win is all about luck meeting skill! Teams face the thrill of the spinner, where every turn decides their challenge. Easy to, Medium, or Hard—no one knows what’s coming next. Quick thinking, teamwork, and speed are the keys.
 
@@ -266,9 +271,9 @@ Simple to Play! Exciting to Conquer!`,
     },
     'stranger-things': {
         name: 'STRANGER THINGS',
-        tagline: 'ENTER THE UPSIDE DOWN',
-        teamSize: 'Max 4 Members',
-        minMembers: 1,
+        tagline: 'OBSERVE. SOLVE. ESCAPE.',
+        teamSize: '2-4 Members',
+        minMembers: 2,
         maxMembers: 4,
         date: 'Feb 27',
         time: 'All Day',
@@ -281,7 +286,11 @@ Simple to Play! Exciting to Conquer!`,
         ],
         color: 'from-red-500 to-black',
         icon: Shield,
-        type: 'NON TECHNICAL',
-        price: 100,
-    }
+        type: 'FLAGSHIP',
+        price: 200,
+        posterImage: '/stranger-things-poster.jpg',
+        description: `Enter the world of Stranger Things, where clues are hidden and nothing is as it seems. Test your observation, logic and teamwork through fun challenges inspired by the Upside Down.
+
+Think smart, act fast and trust your team to escape in time.`,
+    },
 };
