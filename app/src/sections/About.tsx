@@ -87,19 +87,19 @@ export default function About() {
 
             <ul className="space-y-4 mb-8 text-left inline-block">
               <li className="flex items-start gap-3 text-white/80 leading-relaxed">
-                <div className="w-1.5 h-1.5 rounded-full bg-cyan-400 mt-2.5 flex-shrink-0 shadow-[0_0_8px_rgba(34,211,238,0.6)]" />
+                <div className="w-1.5 h-1.5 rounded-full bg-gray-400 mt-2.5 flex-shrink-0 shadow-[0_0_8px_rgba(156,163,175,0.6)]" />
                 <span>The <span className="text-white font-medium">Electronics and Communication Engineering</span> Department emphasizes strong fundamentals in electronics, communication systems, and modern technologies.</span>
               </li>
               <li className="flex items-start gap-3 text-white/80 leading-relaxed">
-                <div className="w-1.5 h-1.5 rounded-full bg-purple-400 mt-2.5 flex-shrink-0 shadow-[0_0_8px_rgba(192,132,252,0.6)]" />
+                <div className="w-1.5 h-1.5 rounded-full bg-slate-300 mt-2.5 flex-shrink-0 shadow-[0_0_8px_rgba(203,213,225,0.6)]" />
                 <span>We blend theoretical knowledge with practical application, supported by <span className="text-white font-medium">state-of-the-art laboratories</span> and advanced computing facilities.</span>
               </li>
               <li className="flex items-start gap-3 text-white/80 leading-relaxed">
-                <div className="w-1.5 h-1.5 rounded-full bg-pink-400 mt-2.5 flex-shrink-0 shadow-[0_0_8px_rgba(244,114,182,0.6)]" />
+                <div className="w-1.5 h-1.5 rounded-full bg-gray-300 mt-2.5 flex-shrink-0 shadow-[0_0_8px_rgba(209,213,219,0.6)]" />
                 <span>Students are encouraged to engage in technical activities, research, and industry-oriented workshops to stay current with <span className="text-white font-medium">emerging trends</span>.</span>
               </li>
               <li className="flex items-start gap-3 text-white/80 leading-relaxed">
-                <div className="w-1.5 h-1.5 rounded-full bg-blue-400 mt-2.5 flex-shrink-0 shadow-[0_0_8px_rgba(96,165,250,0.6)]" />
+                <div className="w-1.5 h-1.5 rounded-full bg-slate-400 mt-2.5 flex-shrink-0 shadow-[0_0_8px_rgba(148,163,184,0.6)]" />
                 <span>Through events like the <span className="text-white font-medium">Galaxy Symposium</span>, the department fosters innovation, technical excellence, and collaborative learning among future engineers.</span>
               </li>
             </ul>

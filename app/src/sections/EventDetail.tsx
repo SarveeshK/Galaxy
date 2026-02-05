@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion';
-import { ArrowLeft, Users, Calendar, MapPin, ChevronRight, Clock, Sparkles } from 'lucide-react';
+import { ArrowLeft, Users, Calendar, MapPin, ChevronRight, Clock } from 'lucide-react';
 import TiltedCard from '../components/TiltedCard';
 import SpotlightCard from '../components/SpotlightCard';
 
@@ -45,11 +45,9 @@ export default function EventDetail({ eventId, onBack, onRegister }: EventDetail
           className="text-center mb-12"
         >
           <div className="flex items-center justify-center gap-2 mb-4">
-            <Sparkles className="w-5 h-5 text-gray-400" />
             <p className="text-white/60 text-sm tracking-[0.3em] font-orbitron">
               NON TECHNICAL
             </p>
-            <Sparkles className="w-5 h-5 text-gray-400" />
           </div>
           <h1 className="font-orbitron text-4xl md:text-6xl font-black text-white mb-4">
             {event.name}
@@ -173,6 +171,7 @@ export default function EventDetail({ eventId, onBack, onRegister }: EventDetail
             >
               REGISTER NOW
             </motion.button>
+            <div className="h-24 w-full"></div> {/* Spacer for bottom scroll */}
           </motion.div>
 
           {/* Right - Description/Rounds */}

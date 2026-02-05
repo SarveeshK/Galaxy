@@ -735,24 +735,24 @@ function EventCard({ event, selected, onToggle, isFlagship = false }: any) {
       style={{ willChange: 'transform' }}
     >
       <div className="p-5 flex justify-between items-start gap-4">
-        <div className="space-y-1 flex-1">
-          <h4 className={`font-orbitron font-bold text-base md:text-lg leading-tight ${selected ? 'text-white' : 'text-slate-300'}`}>
-            {event.name}
-          </h4>
+        <div className="space-y-1 flex-1 pr-2">
+          <div className="flex items-center gap-2">
+            <h4 className={`font-orbitron font-bold text-sm md:text-base leading-tight break-words ${selected ? 'text-white' : 'text-slate-300'}`}>
+              {event.name}
+            </h4>
+            {selected && (
+              <div className="bg-green-500/20 p-0.5 rounded-full border border-green-500/50 shadow-[0_0_10px_rgba(74,222,128,0.3)] animate-in fade-in zoom-in duration-300 shrink-0">
+                <Check className="w-3 h-3 text-green-400" strokeWidth={3} />
+              </div>
+            )}
+          </div>
           <p className="text-[10px] text-white/50 uppercase tracking-widest font-semibold pt-1">
             {event.type}
           </p>
         </div>
 
         <div className="text-right flex flex-col items-end gap-1 shrink-0">
-          <div className="flex items-center gap-2">
-            <p className="font-orbitron text-white text-lg md:text-xl font-bold">₹{event.price}</p>
-            {selected && (
-              <div className="bg-green-500/20 p-1 rounded-full animate-in fade-in zoom-in duration-300">
-                <Check className="w-3 h-3 md:w-4 md:h-4 text-green-400" />
-              </div>
-            )}
-          </div>
+          <p className="font-orbitron text-white text-lg md:text-xl font-bold">₹{event.price}</p>
           {event.price === 0 && <span className="text-[10px] bg-white text-black px-2 py-0.5 rounded font-bold uppercase">Free</span>}
         </div>
       </div>

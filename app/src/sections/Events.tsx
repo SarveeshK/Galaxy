@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion';
-import { ArrowRight, Code, Users, GitBranch, Zap, FileQuestion, Shield, Sparkles } from 'lucide-react';
+import { ArrowRight, Code, Users, GitBranch, Zap, FileQuestion, Shield } from 'lucide-react';
 import SpotlightCard from '../components/SpotlightCard';
 import ScrollFloat from '../components/ScrollFloat';
 import StarBorder from '../components/StarBorder';
@@ -232,13 +232,10 @@ export default function Events({ onEventClick }: EventsProps) {
                 className="font-orbitron text-2xl md:text-3xl font-bold text-white mb-8 border-l-4 border-gray-400 pl-4 flex items-center gap-3"
               >
                 FLAGSHIP <span className="text-gray-400">EVENT</span>
-                <Sparkles className="w-6 h-6 text-white animate-pulse" />
               </motion.h3>
-
-              <div className="grid grid-cols-1 md:grid-cols-1 lg:grid-cols-2 gap-12 justify-center">
+              <div className="flex flex-col items-center md:grid md:grid-cols-1 lg:grid-cols-2 gap-12 w-full">
                 {flagshipEvents.map((event, index) => (
-                  <div key={event.id} className="lg:col-span-2">
-                    {/* Centering the single flagship event if strictly one, or listing them */}
+                  <div key={event.id} className="w-full max-w-md md:max-w-none lg:col-span-2">
                     <EventCard event={event} index={index} />
                   </div>
                 ))}

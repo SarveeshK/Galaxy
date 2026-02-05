@@ -53,7 +53,6 @@ export default function Hero({ onRegister, onViewEvents }: HeroProps) {
 
         {/* College Name - 3D Effect */}
         <div className="mb-6 relative group">
-          <div className="absolute -inset-1 bg-gradient-to-r from-slate-500/20 via-gray-200/20 to-slate-500/20 rounded-lg blur opacity-0 group-hover:opacity-75 transition duration-1000"></div>
           <h1 className="relative font-orbitron text-xl md:text-3xl lg:text-4xl font-extrabold tracking-wider text-center px-4 leading-relaxed text-metallic-premium mb-2">
             GOVERNMENT COLLEGE OF ENGINEERING, ERODE
           </h1>

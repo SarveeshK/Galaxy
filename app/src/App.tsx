@@ -216,7 +216,7 @@ function App() {
       <div className={`md:hidden ${['register', 'event-detail'].includes(currentView) ? 'hidden' : ''}`}>
         <button
           onClick={() => setIsMobileMenuOpen(true)}
-          className="fixed top-6 left-6 z-[60] p-3 bg-black/40 backdrop-blur-md border border-white/20 rounded-full text-white shadow-[0_0_15px_rgba(255,255,255,0.1)] hover:bg-white/20 transition-all cursor-pointer"
+          className="fixed top-6 left-6 z-[60] p-3 bg-black/40 backdrop-blur-md border border-white/20 rounded-full text-white shadow-[0_0_15px_rgba(255,255,255,0.1)] hover:bg-white/20 transition-all cursor-pointer flex items-center justify-center"
           aria-label="Open Menu"
         >
           <Menu size={24} />
@@ -227,7 +227,7 @@ function App() {
             navigateTo('home');
             window.scrollTo({ top: 0, behavior: 'smooth' });
           }}
-          className="fixed top-6 right-6 z-[60] p-3 bg-black/40 backdrop-blur-md border border-white/20 rounded-full text-white shadow-[0_0_15px_rgba(255,255,255,0.1)] hover:bg-white/20 transition-all cursor-pointer"
+          className="fixed top-6 right-6 z-[60] p-3 bg-black/40 backdrop-blur-md border border-white/20 rounded-full text-white shadow-[0_0_15px_rgba(255,255,255,0.1)] hover:bg-white/20 transition-all cursor-pointer flex items-center justify-center"
           aria-label="Go Home"
         >
           <Home size={24} />
