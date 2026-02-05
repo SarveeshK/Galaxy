@@ -1,7 +1,7 @@
 import { motion } from 'framer-motion';
 import { ChevronDown } from 'lucide-react';
 import { useState } from 'react';
-import ShinyText from '../components/ShinyText';
+import ShinyText from '../components/ShinyText'; // Trigger HMR
 
 
 import Countdown from '../components/Countdown';
@@ -26,7 +26,7 @@ export default function Hero({ onRegister, onViewEvents }: HeroProps) {
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8 }}
-          className="flex items-center justify-center gap-6 mb-8"
+          className="flex items-center justify-center gap-6 mb-4 md:mb-8"
         >
           {/* GCEE Logo - Interactive Flippable */}
           <motion.div
@@ -62,12 +62,12 @@ export default function Hero({ onRegister, onViewEvents }: HeroProps) {
         </div>
 
 
-        <div className="flex flex-col items-center justify-center mb-8 z-20">
+        <div className="flex flex-col items-center justify-center mb-4 md:mb-8 z-20">
           <motion.div
             initial={{ scale: 0.8, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
             transition={{ duration: 1, ease: "easeOut" }}
-            className="w-full max-w-5xl mx-auto px-4 mb-4 z-10"
+            className="w-full max-w-5xl mx-auto px-4 mb-2 md:mb-4 z-10"
           >
             <img
               src="/galaxy-logo-final.png"
@@ -131,7 +131,7 @@ export default function Hero({ onRegister, onViewEvents }: HeroProps) {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.9 }}
-          className="text-white/80 text-xl md:text-2xl font-orbitron tracking-wider mb-10"
+          className="text-white/80 text-xl md:text-2xl font-orbitron tracking-wider mb-6 md:mb-10"
         >
           FEB 27, 2026
         </motion.p>

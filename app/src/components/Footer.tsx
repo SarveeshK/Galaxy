@@ -6,13 +6,13 @@ interface FooterProps {
 
 export default function Footer({ onNavigate }: FooterProps) {
     return (
-        <footer className="relative bg-black border-t border-white/10 pt-20 pb-10 overflow-hidden">
+        <footer className="relative bg-black border-t border-white/10 pt-10 pb-8 md:pt-20 md:pb-10 overflow-hidden">
             {/* Background Glow */}
             <div className="absolute top-0 left-1/4 w-96 h-96 bg-indigo-900/10 rounded-full blur-[128px] pointer-events-none" />
             <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-white/5 rounded-full blur-[128px] pointer-events-none" />
 
             <div className="max-w-7xl mx-auto px-6 relative z-10">
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 mb-16">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-8 md:gap-12 md:mb-16">
 
                     {/* Brand Column */}
                     <div className="space-y-6">

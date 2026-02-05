@@ -1,11 +1,13 @@
 import { useState, useRef, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { ArrowLeft, Send, Check, AlertCircle, Loader2, ChevronRight, ChevronLeft, Upload, CreditCard } from 'lucide-react';
+import { ArrowLeft, Send, Check, AlertCircle, Loader2, ChevronRight, Upload, Star } from 'lucide-react';
 import PremiumCheck from '../components/PremiumCheck';
 import CustomSelect from '../components/CustomSelect';
 import Stepper, { Step } from '../components/Stepper';
 import useGoogleSheet from '../hooks/useGoogleSheet';
 import { eventData } from '../data/events';
+import { compressImage } from '../utils/imageCompression';
+import { COMBOS, type ComboType } from '../data/combos';
 
 // PLACHOLDER - User needs to replace this after deploying their script
 const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbx8jpAeeTrsy3mFo3kjhF8r6-PLUSFB9Z4FyspTmRb6IOhIoIB_IbT5myojpXY2V72qow/exec';
@@ -15,10 +17,37 @@ interface RegisterProps {
   onLogin: () => void;
 }
 
+
+// Validation Helpers
+const sanitizeName = (val: string) => val.replace(/[^a-zA-Z\s]/g, '');
+const sanitizePhone = (val: string) => val.replace(/\D/g, '').slice(0, 10);
+
 export default function Register({ onBack }: RegisterProps) {
   const { submitToSheet, loading, error, success } = useGoogleSheet();
   const [step, setStep] = useState(1);
   const scrollRef = useRef<HTMLDivElement>(null);
+  const [compressing, setCompressing] = useState(false);
+
+  // Form State
+  const [selectedCombo, setSelectedCombo] = useState<ComboType | null>(null);
+
+  // Pre-select combo from URL if present
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const comboParam = params.get('combo');
+    if (comboParam) {
+      // Validate it matches a known combo ID
+      const validCombo = COMBOS.find(c => c.id === comboParam);
+      if (validCombo) {
+        setSelectedCombo(validCombo.id);
+        setStep(2); // Auto-advance to Event Selection
+        // Clean URL after selection
+        const newUrl = new URL(window.location.href);
+        newUrl.searchParams.delete('combo');
+        window.history.replaceState({}, '', newUrl.toString());
+      }
+    }
+  }, []);
 
   const [formData, setFormData] = useState({
     fullName: '',
@@ -35,17 +64,14 @@ export default function Register({ onBack }: RegisterProps) {
       leadName: string;
       leadPhone: string;
       members: string[];
+      projectTitle?: string;
+      projectDomain?: string;
+      paperTitle?: string;
     }>
   });
 
-  // Scroll to top when step changes
-  useEffect(() => {
-    if (scrollRef.current) {
-      scrollRef.current.scrollIntoView({ behavior: 'smooth' });
-    }
-  }, [step]);
+  // Scroll logic logic removed as requested properly
 
-  // Handle Main Back Button Logic
   const handleMainBack = () => {
     if (step > 1) {
       setStep(prev => prev - 1);
@@ -55,25 +81,49 @@ export default function Register({ onBack }: RegisterProps) {
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-    const { name, value } = e.target;
+    let { name, value } = e.target;
+
+    // Strict Input Sanitization
+    if (name === 'fullName' || name === 'college' || name === 'department') {
+      value = sanitizeName(value);
+    } else if (name === 'phone') {
+      value = sanitizePhone(value);
+    }
+
     setFormData(prev => ({ ...prev, [name]: value }));
   };
 
-  const handleCheckboxChange = (eventName: string) => {
-    const isChecked = formData.events.includes(eventName);
+  const handleComboSelect = (comboId: ComboType) => {
+    setSelectedCombo(comboId);
+    setFormData(prev => ({ ...prev, events: [], teamDetails: {} })); // Reset events & team details
+  };
+
+  const handleEventToggle = (eventId: string) => {
+    const isChecked = formData.events.includes(eventId);
+
+    // Check constraint before adding
+    if (!isChecked && selectedCombo) {
+      const combo = COMBOS.find(c => c.id === selectedCombo);
+      const validation = combo?.validateAdd(formData.events, eventId);
+
+      if (validation && !validation.valid) {
+        alert(validation.message);
+        return;
+      }
+    }
 
     setFormData(prev => {
       const newEvents = !isChecked
-        ? [...prev.events, eventName]
-        : prev.events.filter(event => event !== eventName);
+        ? [...prev.events, eventId]
+        : prev.events.filter(id => id !== eventId);
 
       const newTeamDetails = { ...prev.teamDetails };
 
       if (!isChecked) {
         // Initialize team details if checking a team event
-        const eventConfig = Object.values(eventData).find(e => e.name === eventName);
+        const eventConfig = eventData[eventId];
         if (eventConfig && eventConfig.maxMembers > 1) {
-          newTeamDetails[eventName] = {
+          newTeamDetails[eventId] = {
             leadName: '',
             leadPhone: '',
             members: Array(eventConfig.maxMembers - 1).fill('')
@@ -81,7 +131,7 @@ export default function Register({ onBack }: RegisterProps) {
         }
       } else {
         // Remove team details if unchecking
-        delete newTeamDetails[eventName];
+        delete newTeamDetails[eventId];
       }
 
       return {
@@ -92,18 +142,26 @@ export default function Register({ onBack }: RegisterProps) {
     });
   };
 
-  const handleTeamDetailChange = (eventName: string, field: 'leadName' | 'leadPhone' | 'member', value: string, index?: number) => {
+  const handleTeamDetailChange = (eventId: string, field: 'leadName' | 'leadPhone' | 'member' | 'projectTitle' | 'projectDomain' | 'paperTitle', value: string, index?: number) => {
     setFormData(prev => {
-      const currentDetails = prev.teamDetails[eventName] || { leadName: '', leadPhone: '', members: [] };
+      const currentDetails = prev.teamDetails[eventId] || { leadName: '', leadPhone: '', members: [] };
+      let finalValue = value;
+
+      if (field === 'leadName' || field === 'member') {
+        finalValue = sanitizeName(value);
+      } else if (field === 'leadPhone') {
+        finalValue = sanitizePhone(value);
+      }
+      // No sanitization needed for titles/domains as they can allow special chars/numbers
 
       if (field === 'member' && typeof index === 'number') {
         const newMembers = [...currentDetails.members];
-        newMembers[index] = value;
+        newMembers[index] = finalValue;
         return {
           ...prev,
           teamDetails: {
             ...prev.teamDetails,
-            [eventName]: { ...currentDetails, members: newMembers }
+            [eventId]: { ...currentDetails, members: newMembers }
           }
         };
       }
@@ -112,60 +170,79 @@ export default function Register({ onBack }: RegisterProps) {
         ...prev,
         teamDetails: {
           ...prev.teamDetails,
-          [eventName]: { ...currentDetails, [field]: value }
+          [eventId]: { ...currentDetails, [field]: finalValue }
         }
       };
     });
   };
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
-      if (file.size > 5 * 1024 * 1024) {
-        alert("File size must be less than 5MB");
-        return;
+      setCompressing(true);
+      try {
+        const compressedBase64 = await compressImage(file);
+        setFormData(prev => ({ ...prev, paymentScreenshot: compressedBase64 }));
+      } catch (err) {
+        console.error("Compression failed", err);
+        alert("Failed to process image. Please try another one.");
+      } finally {
+        setCompressing(false);
       }
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setFormData(prev => ({ ...prev, paymentScreenshot: reader.result as string }));
-      };
-      reader.readAsDataURL(file);
     }
   };
 
   const validateStep1 = () => {
-    if (formData.events.length === 0) {
-      alert('Please select at least one event to proceed.');
+    if (!selectedCombo) {
+      alert('Please select a combo plan.');
       return false;
     }
     return true;
   };
 
   const validateStep2 = () => {
-    if (!formData.fullName || !formData.email || !formData.phone || !formData.college || !formData.department || !formData.year || !formData.gender) {
-      alert('Please fill in all personal and academic details.');
+    if (formData.events.length === 0) {
+      alert('Please select at least one event to proceed.');
       return false;
     }
 
-    // Validate Team Details on Step 2
-    for (const eventName of formData.events) {
-      const eventDetails = Object.values(eventData).find(e => e.name === eventName);
-      if (eventDetails && eventDetails.maxMembers > 1) {
-        const teamInfo = formData.teamDetails[eventName];
-        // Simple check: Lead details required
-        if (!teamInfo?.leadName || !teamInfo?.leadPhone) {
-          alert(`Please fill in Team Lead details for ${eventName}`);
-          return false;
-        }
+    // Final Combo Validation
+    if (selectedCombo) {
+      const combo = COMBOS.find(c => c.id === selectedCombo);
+      const validation = combo?.validateNext(formData.events);
+      if (validation && !validation.valid) {
+        alert(validation.message);
+        return false;
       }
     }
 
     return true;
   };
 
+  const validateStep3 = () => {
+    if (!formData.fullName || !formData.email || !formData.phone || !formData.college || !formData.department || !formData.year || !formData.gender) {
+      alert('Please fill in all personal and academic details.');
+      return false;
+    }
+
+    // Validate Team Details
+    for (const eventId of formData.events) {
+      const eventDetails = eventData[eventId];
+      if (eventDetails && eventDetails.maxMembers > 1) {
+        const teamInfo = formData.teamDetails[eventId];
+        if (!teamInfo?.leadName || !teamInfo?.leadPhone) {
+          alert(`Please fill in Team Lead details for ${eventDetails.name}`);
+          return false;
+        }
+      }
+    }
+    return true;
+  }
+
   const handleNext = () => {
     if (step === 1 && validateStep1()) setStep(2);
     if (step === 2 && validateStep2()) setStep(3);
+    if (step === 3 && validateStep3()) setStep(4);
   };
 
   const handlePrev = () => {
@@ -179,31 +256,77 @@ export default function Register({ onBack }: RegisterProps) {
       return;
     }
 
-    // Final check
     if (!formData.transactionId || !formData.paymentScreenshot) {
       alert('Please provide transaction ID and payment screenshot.');
       return;
     }
 
+    const eventNames = formData.events.map(id => eventData[id]?.name);
+
+    const teamDetailsByName: any = {};
+    Object.entries(formData.teamDetails).forEach(([id, details]) => {
+      const name = eventData[id]?.name;
+      if (name) teamDetailsByName[name] = details;
+    });
+
     const submissionData = {
       ...formData,
-      events: formData.events,
-      teamDetails: formData.teamDetails
+      combo: selectedCombo,
+      totalAmount: calculateTotal(),
+      events: eventNames,
+      teamDetails: teamDetailsByName
     };
 
     submitToSheet(submissionData, GOOGLE_SCRIPT_URL);
   };
 
-  const calculateTotal = () => {
-    return formData.events.reduce((total, eventName) => {
-      const event = Object.values(eventData).find(e => e.name === eventName);
-      return total + (event?.price || 0);
-    }, 0);
+  const getParticipantCount = () => {
+    const uniqueParticipants = new Set<string>();
+
+    const normalize = (name: string) => name.trim().toLowerCase().replace(/\s+/g, ' ');
+
+    // Add Main Registrant
+    if (formData.fullName && formData.fullName.trim()) {
+      uniqueParticipants.add(normalize(formData.fullName));
+    }
+
+    // Add unique names from selected events (Leads + Members)
+    // The user explicitly requested: "check the name with the previous event... if added as team lead... dont consider as new"
+    // The Set data structure automatically checks membership and ignores duplicates.
+    formData.events.forEach(eventId => {
+      const details = formData.teamDetails[eventId];
+      if (details) {
+        if (details.leadName && details.leadName.trim()) {
+          uniqueParticipants.add(normalize(details.leadName));
+        }
+        details.members.forEach(m => {
+          if (m && m.trim()) {
+            uniqueParticipants.add(normalize(m));
+          }
+        });
+      }
+    });
+
+    return Math.max(1, uniqueParticipants.size);
   };
 
-  const techEvents = Object.values(eventData).filter(e => e.type === 'TECHNICAL');
-  const nonTechEvents = Object.values(eventData).filter(e => e.type === 'NON TECHNICAL');
-  const flagshipEvents = Object.values(eventData).filter(e => e.type === 'FLAGSHIP');
+  const calculateTotal = () => {
+    const combo = COMBOS.find(c => c.id === selectedCombo);
+    if (!combo) return 0;
+    return combo.price * getParticipantCount();
+  };
+
+  const getFilteredEventEntries = () => {
+    if (!selectedCombo) return [];
+    const combo = COMBOS.find(c => c.id === selectedCombo);
+    // Filter by iterating entries
+    return Object.entries(eventData).filter(([_, e]) => combo?.filter(e));
+  };
+
+  const filteredEventEntries = getFilteredEventEntries();
+  const techEvents = filteredEventEntries.filter(([_, e]) => e.type === 'TECHNICAL');
+  const nonTechEvents = filteredEventEntries.filter(([_, e]) => e.type === 'NON TECHNICAL');
+  const flagshipEvents = filteredEventEntries.filter(([_, e]) => e.type === 'FLAGSHIP');
 
   if (success) {
     return (
@@ -235,7 +358,7 @@ export default function Register({ onBack }: RegisterProps) {
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: 20 }}
-      className="w-full max-w-5xl mx-auto pb-20 px-4"
+      className="w-full max-w-6xl mx-auto pb-20 px-4"
     >
       <button
         onClick={handleMainBack}
@@ -247,520 +370,447 @@ export default function Register({ onBack }: RegisterProps) {
         </span>
       </button>
 
-      {/* Progress Steps via New Stepper Component */}
-      <div className="mb-10 max-w-2xl mx-auto">
+      {/* Progress Steps */}
+      <div className="mb-10 max-w-4xl mx-auto">
         <Stepper
           initialStep={1}
           currentStepExternal={step}
-          hideFooter={true} // We use our own buttons for validation & logic
+          hideFooter={true}
         >
-          {/* STEP 1: EVENT SELECTION */}
+          {/* STEP 1: COMBO SELECTION */}
           <Step>
-            <div className="backdrop-blur-md bg-black/60 rounded-3xl border border-white/20 relative overflow-hidden shadow-xl">
-              <div className="absolute top-0 w-full h-1 bg-gradient-to-r from-transparent via-white/40 to-transparent opacity-50"></div>
-              <div className="p-5 md:p-12">
-                <motion.div
-                  initial={{ opacity: 0, x: 20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  exit={{ opacity: 0, x: -20 }}
-                  className="space-y-12"
-                >
-                  <div className="text-center mb-8">
-                    <h2 className="font-orbitron text-3xl font-bold text-white mb-2 tracking-wider">EVENT SELECTION</h2>
-                    <p className="text-slate-400 font-light">Technical: ₹200 | Non-Technical: ₹150</p>
-                  </div>
-
-                  {/* Flagship Events Grid - Highlighted */}
-                  {flagshipEvents.length > 0 && (
-                    <div className="mb-10 relative">
-                      {/* Glow Effect */}
-                      <div className="absolute inset-0 bg-gradient-to-r from-red-600/10 via-purple-600/10 to-red-600/10 blur-xl opacity-50 animate-pulse"></div>
-
-                      <div className="relative border border-red-500/30 bg-red-900/10 rounded-2xl p-6 backdrop-blur-sm shadow-[0_0_30px_rgba(220,38,38,0.15)]">
-                        <h3 className="text-sm font-bold text-white mb-6 uppercase tracking-[0.2em] flex items-center gap-2 border-l-2 border-red-500 pl-4">
-                          Flagship Event
-                          <span className="h-[1px] flex-grow bg-gradient-to-r from-red-500/50 to-transparent ml-4"></span>
-                          <span className="px-2 py-0.5 bg-red-600 text-[10px] text-white rounded font-bold animate-pulse">FEATURED</span>
-                        </h3>
-                        <div className="grid grid-cols-1 gap-6">
-                          {flagshipEvents.map((event) => (
-                            <EventCard
-                              key={event.name}
-                              event={event}
-                              selected={formData.events.includes(event.name)}
-                              onToggle={() => handleCheckboxChange(event.name)}
-                              isFlagship={true}
-                            />
-                          ))}
-                        </div>
-                      </div>
-                    </div>
-                  )}
-
-                  {/* Technical Events Grid */}
-                  <div>
-                    <h3 className="text-sm font-bold text-white mb-6 uppercase tracking-[0.2em] border-l-2 border-white pl-4 flex items-center gap-2">
-                      Technical Events
-                      <span className="h-[1px] flex-grow bg-white/10 ml-4"></span>
-                    </h3>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                      {techEvents.map((event) => (
-                        <EventCard
-                          key={event.name}
-                          event={event}
-                          selected={formData.events.includes(event.name)}
-                          onToggle={() => handleCheckboxChange(event.name)}
-                        />
-                      ))}
-                    </div>
-                  </div>
-
-                  {/* Non-Technical Events Grid */}
-                  <div>
-                    <h3 className="text-sm font-bold text-white mb-6 uppercase tracking-[0.2em] border-l-2 border-white pl-4 flex items-center gap-2">
-                      Non-Technical Events
-                      <span className="h-[1px] flex-grow bg-white/10 ml-4"></span>
-                    </h3>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                      {nonTechEvents.map((event) => (
-                        <EventCard
-                          key={event.name}
-                          event={event}
-                          selected={formData.events.includes(event.name)}
-                          onToggle={() => handleCheckboxChange(event.name)}
-                        />
-                      ))}
-                    </div>
-                  </div>
-
-                  {/* Total Panel */}
-                  <div className="sticky bottom-4 z-20 bg-black/90 backdrop-blur-xl border border-white/20 p-4 rounded-xl flex justify-between items-center shadow-[0_0_30px_rgba(0,0,0,0.8)] gap-4">
-                    <div className="flex flex-col">
-                      <p className="text-[10px] md:text-xs text-slate-400 uppercase tracking-widest mb-0.5">Total Amount</p>
-                      <p className="text-xl md:text-2xl font-orbitron font-bold text-white tracking-wide">₹{calculateTotal()}</p>
-                    </div>
-                    <button
-                      type="button"
-                      onClick={handleNext}
-                      className="px-6 py-3 md:px-8 bg-white text-black font-orbitron text-xs md:text-sm font-bold tracking-widest hover:bg-slate-200 transition-all flex items-center gap-2 whitespace-nowrap rounded-lg shadow-[0_0_15px_rgba(255,255,255,0.3)] active:scale-95"
-                    >
-                      NEXT STEP <ChevronRight size={16} />
-                    </button>
-                  </div>
-                </motion.div>
+            <div className="space-y-8">
+              <div className="text-center">
+                <h2 className="font-orbitron text-4xl font-bold text-white mb-4 tracking-wider">CHOOSE YOUR PLAN</h2>
+                <p className="text-slate-400 font-light max-w-2xl mx-auto">Select the combo that suits you best. Prices are per member.</p>
               </div>
-            </div>
-          </Step>
 
-          {/* STEP 2: PARTICIPANT & TEAM DETAILS */}
-          <Step>
-            <div className="backdrop-blur-xl bg-black/40 rounded-3xl border border-white/20 relative overflow-hidden shadow-2xl">
-              <div className="absolute top-0 w-full h-1 bg-gradient-to-r from-transparent via-white/40 to-transparent opacity-50"></div>
-              <div className="p-5 md:p-12">
-                <motion.div
-                  initial={{ opacity: 0, x: 20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  exit={{ opacity: 0, x: -20 }}
-                  className="space-y-8"
-                >
-                  <div className="text-center mb-8">
-                    <h2 className="font-orbitron text-2xl md:text-3xl font-bold text-white mb-2 tracking-wider">DETAILS</h2>
-                    <p className="text-slate-400 font-light text-sm md:text-base">Personal & Team Information</p>
-                  </div>
-
-                  {/* Personal Details */}
-                  <div className="space-y-6">
-                    <h3 className="font-orbitron text-xs md:text-sm text-white/70 uppercase tracking-widest border-b border-white/10 pb-2">Personal info</h3>
-                    <div className="grid md:grid-cols-2 gap-8">
-                      <div className="space-y-2 group">
-                        <label className="text-[10px] md:text-xs text-white/50 uppercase tracking-widest font-bold ml-1 group-focus-within:text-white transition-colors">Full Name</label>
-                        <input
-                          required
-                          type="text"
-                          name="fullName"
-                          value={formData.fullName}
-                          onChange={handleChange}
-                          className="w-full bg-transparent border border-white/20 rounded-lg p-4 text-white placeholder:text-white/20 focus:border-white focus:bg-white/5 focus:outline-none focus:ring-1 focus:ring-white/50 transition-all font-orbitron tracking-wide text-sm"
-                          placeholder="ENTER NAME"
-                        />
-                      </div>
-
-                      {/* Email with Validation */}
-                      <div className="space-y-2 group">
-                        <label className={`text-[10px] md:text-xs uppercase tracking-widest font-bold ml-1 transition-colors ${formData.email && !formData.email.includes('@') ? 'text-red-400' : 'text-white/50 group-focus-within:text-white'
-                          }`}>Email Address</label>
-                        <div className={`
-                           relative transition-all duration-300 rounded-lg
-                           ${formData.email && !formData.email.includes('@')
-                            ? 'bg-red-500/5 border border-red-500/50 shadow-[0_0_15px_rgba(239,68,68,0.1)]'
-                            : 'bg-transparent border border-white/20 focus-within:border-white focus-within:bg-white/5'
-                          }
-                        `}>
-                          <input
-                            required
-                            type="email"
-                            name="email"
-                            value={formData.email}
-                            onChange={handleChange}
-                            className={`
-                                w-full bg-transparent p-4 text-white placeholder:text-white/20 focus:outline-none transition-all font-orbitron tracking-wide text-sm rounded-lg
-                                ${formData.email && !formData.email.includes('@') ? 'text-red-300' : ''}
-                             `}
-                            placeholder="EMAIL ID"
-                          />
-                          {formData.email && !formData.email.includes('@') && (
-                            <AlertCircle className="absolute right-4 top-1/2 -translate-y-1/2 text-red-500 w-5 h-5 animate-pulse" />
-                          )}
-                          {formData.email && formData.email.includes('@') && (
-                            <Check className="absolute right-4 top-1/2 -translate-y-1/2 text-green-400 w-5 h-5" />
-                          )}
-                        </div>
-                      </div>
-
-                      {/* Phone Number - Digits Only */}
-                      <div className="space-y-2 group">
-                        <label className="text-[10px] md:text-xs text-white/50 uppercase tracking-widest font-bold ml-1 group-focus-within:text-white transition-colors">Phone Number</label>
-                        <input
-                          required
-                          type="tel"
-                          name="phone"
-                          value={formData.phone}
-                          onChange={(e) => {
-                            const val = e.target.value.replace(/\D/g, '').slice(0, 10);
-                            setFormData(prev => ({ ...prev, phone: val }));
-                          }}
-                          className="w-full bg-transparent border border-white/20 rounded-lg p-4 text-white placeholder:text-white/20 focus:border-white focus:bg-white/5 focus:outline-none focus:ring-1 focus:ring-white/50 transition-all font-orbitron tracking-widest text-sm"
-                          placeholder="MOBILE NUMBER"
-                        />
-                      </div>
-
-                      <div className="space-y-2">
-                        <CustomSelect
-                          label="Gender"
-                          required
-                          value={formData.gender}
-                          onChange={(val) => setFormData(prev => ({ ...prev, gender: val }))}
-                          options={[
-                            { value: 'Male', label: 'Male' },
-                            { value: 'Female', label: 'Female' },
-                            { value: 'Other', label: 'Other' }
-                          ]}
-                          placeholder="SELECT GENDER"
-                        />
-                      </div>
-                      <div className="space-y-2 group">
-                        <label className="text-[10px] md:text-xs text-white/50 uppercase tracking-widest font-bold ml-1 group-focus-within:text-white transition-colors">College</label>
-                        <input
-                          required
-                          type="text"
-                          name="college"
-                          value={formData.college}
-                          onChange={handleChange}
-                          className="w-full bg-transparent border border-white/20 rounded-lg p-4 text-white placeholder:text-white/20 focus:border-white focus:bg-white/5 focus:outline-none focus:ring-1 focus:ring-white/50 transition-all font-orbitron tracking-wide text-sm"
-                          placeholder="COLLEGE NAME"
-                        />
-                      </div>
-                      <div className="space-y-2 group">
-                        <label className="text-[10px] md:text-xs text-white/50 uppercase tracking-widest font-bold ml-1 group-focus-within:text-white transition-colors">Department</label>
-                        <input
-                          required
-                          type="text"
-                          name="department"
-                          value={formData.department}
-                          onChange={handleChange}
-                          className="w-full bg-transparent border border-white/20 rounded-lg p-4 text-white placeholder:text-white/20 focus:border-white focus:bg-white/5 focus:outline-none focus:ring-1 focus:ring-white/50 transition-all font-orbitron tracking-wide text-sm"
-                          placeholder="DEPARTMENT (e.g. ECE)"
-                        />
-                      </div>
-                      <div className="space-y-2">
-                        <CustomSelect
-                          label="Year of Study"
-                          required
-                          value={formData.year}
-                          onChange={(val) => setFormData(prev => ({ ...prev, year: val }))}
-                          options={[
-                            { value: '1', label: '1st Year' },
-                            { value: '2', label: '2nd Year' },
-                            { value: '3', label: '3rd Year' },
-                            { value: '4', label: '4th Year' }
-                          ]}
-                          placeholder="SELECT YEAR"
-                        />
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Team Details Section (Events with maxMembers > 1) */}
-                  {formData.events.some(evName => {
-                    const ev = Object.values(eventData).find(e => e.name === evName);
-                    return ev && ev.maxMembers > 1;
-                  }) && (
-                      <div className="space-y-8 pt-8 border-t border-white/10">
-                        <div className="text-center">
-                          <h3 className="font-orbitron text-lg md:text-xl font-bold text-white tracking-wider">TEAM DETAILS</h3>
-                          <p className="text-slate-400 text-xs md:text-sm font-light">Enter details for your team members</p>
-                        </div>
-
-                        {formData.events.map(eventName => {
-                          const event = Object.values(eventData).find(e => e.name === eventName);
-                          if (!event || event.maxMembers <= 1) return null;
-
-                          return (
-                            <div key={eventName} className="bg-white/5 border border-white/20 rounded-xl p-6 space-y-6 shadow-[0_0_30px_rgba(0,0,0,0.2)]">
-                              <div className="flex justify-between items-center border-b border-white/10 pb-4">
-                                <div className="flex items-center gap-3">
-                                  <h4 className="font-orbitron font-bold text-base md:text-lg text-white">{event.name}</h4>
-                                  <div className="bg-green-500/20 p-1 rounded-full">
-                                    <Check className="w-3 h-3 text-green-400" />
-                                  </div>
-                                </div>
-                                <span className="font-orbitron font-bold text-white text-base md:text-lg">₹{event.price}</span>
-                              </div>
-
-                              <p className="text-[10px] text-white/40 uppercase tracking-widest font-bold">Team Details ({event.teamSize})</p>
-
-                              <div className="grid md:grid-cols-2 gap-6">
-                                <div className="space-y-2">
-                                  <label className="text-[10px] text-white/50 uppercase font-bold">Lead Name</label>
-                                  <input
-                                    required
-                                    type="text"
-                                    placeholder="LEAD NAME"
-                                    className="w-full bg-black/40 border border-white/10 rounded-lg p-3 text-sm text-white focus:border-white/50 outline-none transition-all font-orbitron tracking-wide"
-                                    value={formData.teamDetails[event.name]?.leadName || ''}
-                                    onChange={(e) => handleTeamDetailChange(event.name, 'leadName', e.target.value)}
-                                  />
-                                </div>
-                                <div className="space-y-2">
-                                  <label className="text-[10px] text-white/50 uppercase font-bold">Lead Phone</label>
-                                  <input
-                                    required
-                                    type="tel"
-                                    placeholder="LEAD PHONE"
-                                    className="w-full bg-black/40 border border-white/10 rounded-lg p-3 text-sm text-white focus:border-white/50 outline-none transition-all font-orbitron tracking-wide"
-                                    value={formData.teamDetails[event.name]?.leadPhone || ''}
-                                    onChange={(e) => {
-                                      const val = e.target.value.replace(/\D/g, '').slice(0, 10);
-                                      handleTeamDetailChange(event.name, 'leadPhone', val);
-                                    }}
-                                  />
-                                </div>
-                              </div>
-
-                              <div className="space-y-4">
-                                {formData.teamDetails[event.name]?.members.map((member: string, idx: number) => (
-                                  <div key={idx} className="space-y-2">
-                                    <label className="text-[10px] text-white/50 uppercase font-bold">Member {idx + 2}</label>
-                                    <input
-                                      type="text"
-                                      placeholder={`MEMBER ${idx + 2} NAME`}
-                                      className="w-full bg-black/40 border border-white/10 rounded-lg p-3 text-sm text-white focus:border-white/50 outline-none transition-all font-orbitron tracking-wide"
-                                      value={member}
-                                      onChange={(e) => handleTeamDetailChange(event.name, 'member', e.target.value, idx)}
-                                    />
-                                  </div>
-                                ))}
-                              </div>
-                            </div>
-                          );
-                        })}
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {COMBOS.map((combo) => (
+                  <div
+                    key={combo.id}
+                    onClick={() => handleComboSelect(combo.id)}
+                    className={`
+                                relative p-6 rounded-3xl border cursor-pointer transition-all duration-500 group overflow-hidden
+                                ${selectedCombo === combo.id
+                        ? 'bg-white/10 border-white/50 shadow-[0_0_30px_rgba(255,255,255,0.15)] scale-[1.02]'
+                        : 'bg-black/40 border-white/10 hover:border-white/30 hover:bg-white/5 hover:scale-[1.01]'}
+                            `}
+                  >
+                    {selectedCombo === combo.id && (
+                      <div className="absolute top-0 right-0 p-2 bg-gradient-to-bl from-white via-slate-200 to-slate-400 rounded-bl-2xl z-20 shadow-[0_0_15px_rgba(255,255,255,0.3)]">
+                        <Check className="w-5 h-5 text-black drop-shadow-sm" strokeWidth={3.5} />
                       </div>
                     )}
 
-                  <div className="sticky bottom-4 z-20 bg-black/90 backdrop-blur-xl border border-white/20 p-4 rounded-xl grid grid-cols-2 gap-4 shadow-[0_0_30px_rgba(0,0,0,0.8)] mt-8">
-                    <button
-                      type="button"
-                      onClick={handlePrev}
-                      className="w-full px-4 py-3 border border-white/20 text-white font-orbitron text-xs md:text-sm hover:bg-white/10 transition-colors flex items-center justify-center gap-2 tracking-widest rounded-lg"
-                    >
-                      <ChevronLeft size={16} /> BACK
-                    </button>
-                    <button
-                      type="button"
-                      onClick={handleNext}
-                      className="w-full px-4 py-3 bg-white text-black font-orbitron text-xs md:text-sm font-bold tracking-widest hover:bg-slate-200 transition-all flex items-center justify-center gap-2 whitespace-nowrap rounded-lg shadow-[0_0_15px_rgba(255,255,255,0.3)] active:scale-95"
-                    >
-                      NEXT STEP <ChevronRight size={16} />
-                    </button>
+                    <div className="absolute inset-0 bg-gradient-to-tr from-transparent via-white/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none" />
+
+                    <div className="h-full flex flex-col relative z-10">
+                      <h3 className={`font-orbitron font-bold text-xl mb-2 ${selectedCombo === combo.id ? 'text-white drop-shadow-md' : 'text-slate-300'}`}>
+                        {combo.name}
+                      </h3>
+                      <div className="text-3xl font-bold text-white mb-4 font-orbitron">
+                        ₹{combo.price} <span className="text-sm text-white/40 font-normal">/ member</span>
+                      </div>
+                      <div className="w-full h-[1px] bg-white/10 mb-4"></div>
+                      <p className="text-slate-400 text-sm italic mb-4 flex-grow">"{combo.description}"</p>
+
+                      <div className="bg-white/5 rounded-lg p-3 border border-white/5">
+                        <p className="text-xs text-white/60 uppercase tracking-widest font-bold mb-1">CONDITIONS</p>
+                        <p className="text-xs text-white">{combo.condition}</p>
+                      </div>
+                    </div>
                   </div>
-                </motion.div>
+                ))}
+              </div>
+
+              <div className="flex justify-center mt-8">
+                <button
+                  type="button"
+                  onClick={handleNext}
+                  disabled={!selectedCombo}
+                  className="px-8 py-3 bg-white text-black font-orbitron text-sm font-bold tracking-widest hover:bg-slate-200 transition-all flex items-center gap-2 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  CONTINUE TO EVENTS <ChevronRight size={16} />
+                </button>
               </div>
             </div>
           </Step>
 
-          {/* STEP 3: PAYMENT */}
+          {/* STEP 2: EVENT SELECTION */}
           <Step>
-            <div className="backdrop-blur-xl bg-black/40 rounded-3xl border border-white/20 relative overflow-hidden shadow-2xl">
-              <div className="absolute top-0 w-full h-1 bg-gradient-to-r from-transparent via-white/40 to-transparent opacity-50"></div>
-              <div className="p-5 md:p-12">
-                <form onSubmit={handleSubmit}>
-                  <motion.div
-                    initial={{ opacity: 0, x: 20 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    exit={{ opacity: 0, x: -20 }}
-                    className="space-y-12"
-                  >
-                    <div className="text-center mb-4">
-                      <h2 className="font-orbitron text-3xl font-bold text-white mb-2 tracking-wider">PAYMENT</h2>
-                      <p className="text-slate-400 font-light">Complete your registration</p>
+            <div className="backdrop-blur-md bg-black/60 rounded-3xl border border-white/20 relative overflow-hidden shadow-xl p-5 md:p-12">
+              <div className="text-center mb-8">
+                <h2 className="font-orbitron text-3xl font-bold text-white mb-2 tracking-wider">SELECT EVENTS</h2>
+                <p className="text-slate-400 font-light">
+                  Plan: <span className="text-white font-bold">{COMBOS.find(c => c.id === selectedCombo)?.name}</span>
+                </p>
+              </div>
+
+              <div className="space-y-12">
+                {flagshipEvents.length > 0 && (
+                  <div>
+                    <h3 className="text-sm font-bold text-white mb-6 uppercase tracking-[0.2em] flex items-center gap-2 border-l-2 border-red-500 pl-4">
+                      Flagship Events
+                    </h3>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                      {flagshipEvents.map(([id, event]) => (
+                        <EventCard
+                          key={id}
+                          event={event}
+                          selected={formData.events.includes(id)}
+                          onToggle={() => handleEventToggle(id)}
+                          isFlagship={true}
+                        />
+                      ))}
                     </div>
+                  </div>
+                )}
 
-                    <div className="grid md:grid-cols-2 gap-12">
-                      {/* Summary */}
-                      <div className="space-y-6">
-                        <h3 className="font-orbitron text-lg text-white border-b border-white/10 pb-3">ORDER SUMMARY</h3>
-                        <div className="space-y-4">
-                          {formData.events.map(eventName => {
-                            const ev = Object.values(eventData).find(e => e.name === eventName);
-                            return (
-                              <div key={eventName} className="flex justify-between items-center text-sm">
-                                <span className="text-slate-300">{eventName}</span>
-                                <span className="text-white font-mono">₹{ev?.price}</span>
+                {techEvents.length > 0 && (
+                  <div>
+                    <h3 className="text-sm font-bold text-white mb-6 uppercase tracking-[0.2em] border-l-2 border-blue-500 pl-4">
+                      Technical Events
+                    </h3>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                      {techEvents.map(([id, event]) => (
+                        <EventCard
+                          key={id}
+                          event={event}
+                          selected={formData.events.includes(id)}
+                          onToggle={() => handleEventToggle(id)}
+                          comboPrice={COMBOS.find(c => c.id === selectedCombo)?.price}
+                        />
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {nonTechEvents.length > 0 && (
+                  <div>
+                    <h3 className="text-sm font-bold text-white mb-6 uppercase tracking-[0.2em] border-l-2 border-yellow-500 pl-4">
+                      Non-Technical Events
+                    </h3>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                      {nonTechEvents.map(([id, event]) => (
+                        <EventCard
+                          key={id}
+                          event={event}
+                          selected={formData.events.includes(id)}
+                          onToggle={() => handleEventToggle(id)}
+                          comboPrice={COMBOS.find(c => c.id === selectedCombo)?.price}
+                        />
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              <div className="mt-12 bg-black/40 p-4 rounded-xl border border-white/10 backdrop-blur-sm">
+                <div className="md:hidden text-center mb-4">
+                  <p className="text-sm text-white font-orbitron tracking-widest">SELECTED: <span className="text-purple-400 font-bold">{formData.events.length}</span></p>
+                </div>
+                <div className="flex justify-between items-center">
+                  <button onClick={handlePrev} className="px-6 py-2 border border-white/20 rounded-lg text-white hover:bg-white/10">BACK</button>
+                  <div className="hidden md:block text-right">
+                    <p className="text-xs text-slate-400">SELECTED EVENTS: {formData.events.length}</p>
+                  </div>
+                  <button onClick={handleNext} className="px-6 py-2 bg-white text-black font-bold rounded-lg hover:bg-slate-200">NEXT</button>
+                </div>
+              </div>
+            </div>
+          </Step>
+
+          {/* STEP 3: DETAILS */}
+          <Step>
+            <div className="backdrop-blur-md md:backdrop-blur-xl bg-black/40 rounded-3xl border border-white/20 p-5 md:p-12">
+              <h2 className="font-orbitron text-3xl font-bold text-white mb-8 text-center">PARTICIPANT DETAILS</h2>
+
+              {/* Personal Info Grid */}
+              <div className="grid md:grid-cols-2 gap-6 mb-8">
+                <InputGroup label="Full Name" name="fullName" value={formData.fullName} onChange={handleChange} placeholder="ENTER NAME" required />
+                <InputGroup label="Email" name="email" value={formData.email} onChange={handleChange} placeholder="EMAIL ID" type="email" required />
+                <InputGroup label="Phone" name="phone" value={formData.phone} onChange={handleChange} placeholder="MOBILE NUMBER" type="tel" required />
+
+                <div className="space-y-2">
+                  <CustomSelect
+                    label="Gender"
+                    required
+                    value={formData.gender}
+                    onChange={(val) => setFormData(prev => ({ ...prev, gender: val }))}
+                    options={[{ value: 'Male', label: 'Male' }, { value: 'Female', label: 'Female' }, { value: 'Other', label: 'Other' }]}
+                    placeholder="SELECT GENDER"
+                  />
+                </div>
+
+                <InputGroup label="College" name="college" value={formData.college} onChange={handleChange} placeholder="COLLEGE NAME" required />
+                <InputGroup label="Department" name="department" value={formData.department} onChange={handleChange} placeholder="DEPARTMENT" required />
+
+                <div className="space-y-2">
+                  <CustomSelect
+                    label="Year"
+                    required
+                    value={formData.year}
+                    onChange={(val) => setFormData(prev => ({ ...prev, year: val }))}
+                    options={[{ value: '1', label: '1st Year' }, { value: '2', label: '2nd Year' }, { value: '3', label: '3rd Year' }, { value: '4', label: '4th Year' }]}
+                    placeholder="SELECT YEAR"
+                  />
+                </div>
+              </div>
+
+              {/* Team Details */}
+              {formData.events.some(eventId => {
+                const ev = eventData[eventId];
+                return ev && ev.maxMembers > 1;
+              }) && (
+                  <div className="space-y-6 pt-8 border-t border-white/10">
+                    <h3 className="font-orbitron text-xl text-white">TEAM DETAILS</h3>
+                    {formData.events.map(eventId => {
+                      const event = eventData[eventId];
+                      if (!event || event.maxMembers <= 1) return null;
+                      return (
+                        <div key={eventId} className="bg-white/5 border border-white/10 rounded-xl p-6">
+                          <div className="flex items-center gap-3 mb-4">
+                            <div className="w-1 h-6 bg-purple-500 rounded-full"></div>
+                            <h4 className="font-orbitron font-bold text-white">{event.name}</h4>
+                            <span className="text-xs text-white/50 bg-white/10 px-2 py-0.5 rounded">Max {event.maxMembers} Members</span>
+                          </div>
+
+                          {/* OPTIONAL: Project War Specific Fields */}
+                          {eventId === 'project-war' && (
+                            <div className="grid md:grid-cols-2 gap-4 mb-4 p-4 bg-white/5 rounded-lg border border-white/5">
+                              <InputGroup
+                                label="Project Title (Optional)"
+                                value={formData.teamDetails[eventId]?.projectTitle || ''}
+                                onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleTeamDetailChange(eventId, 'projectTitle', e.target.value)}
+                                placeholder="YOUR PROJECT TITLE"
+                              />
+                              <div className="space-y-2">
+                                <CustomSelect
+                                  label="Project Domain (Optional)"
+                                  value={formData.teamDetails[eventId]?.projectDomain || ''}
+                                  onChange={(val) => handleTeamDetailChange(eventId, 'projectDomain', val)}
+                                  options={[{ value: 'Hardware', label: 'Hardware' }, { value: 'Software', label: 'Software' }]}
+                                  placeholder="SELECT DOMAIN"
+                                />
                               </div>
-                            );
-                          })}
-                          <div className="border-t border-white/10 pt-4 flex justify-between items-center">
-                            <span className="text-white font-bold uppercase tracking-wider">Total Payable</span>
-                            <span className="text-2xl font-orbitron text-white font-bold">₹{calculateTotal()}</span>
-                          </div>
-                        </div>
-                      </div>
+                            </div>
+                          )}
 
-                      {/* Payment Details */}
-                      <div className="space-y-6">
-                        <h3 className="font-orbitron text-lg text-white border-b border-white/10 pb-3">SCAN TO PAY</h3>
-
-                        <div className="bg-white p-4 rounded-xl w-fit mx-auto shadow-xl">
-                          <img src="/qr-code.png.jpeg" alt="QR Code" className="w-48 h-48 object-contain" />
-                        </div>
-                        <div className="text-center space-y-2">
-                          <p className="text-xs text-slate-400 uppercase tracking-widest">UPI ID</p>
-                          <div className="inline-flex items-center gap-2 px-3 py-1 bg-white/10 rounded-full border border-white/10">
-                            <span className="text-white font-mono text-sm">sarveeshkaarthic05@okhdfcbank</span>
-                          </div>
-                        </div>
-
-                        <div className="space-y-4 pt-4">
-                          <div className="space-y-2">
-                            <label className="text-xs text-white/60 uppercase tracking-widest font-bold ml-1">Transaction ID</label>
-                            <div className="flex items-center gap-3 bg-black/30 border border-white/20 rounded-lg p-3">
-                              <CreditCard size={18} className="text-white/50" />
-                              <input
-                                required
-                                type="text"
-                                name="transactionId"
-                                value={formData.transactionId}
-                                onChange={handleChange}
-                                className="bg-transparent w-full text-white focus:outline-none font-mono tracking-widest"
-                                placeholder="ENTER UTR / REF ID"
+                          {/* OPTIONAL: Paper Presentation Specific Fields */}
+                          {eventId === 'paper-presentation' && (
+                            <div className="mb-4 p-4 bg-white/5 rounded-lg border border-white/5">
+                              <InputGroup
+                                label="Paper Title (Optional)"
+                                value={formData.teamDetails[eventId]?.paperTitle || ''}
+                                onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleTeamDetailChange(eventId, 'paperTitle', e.target.value)}
+                                placeholder="YOUR PAPER TITLE"
                               />
                             </div>
+                          )}
+
+                          <div className="grid md:grid-cols-2 gap-4 mb-4">
+                            <InputGroup
+                              label="Lead Name"
+                              value={formData.teamDetails[eventId]?.leadName || ''}
+                              onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleTeamDetailChange(eventId, 'leadName', e.target.value)}
+                              placeholder="LEAD NAME"
+                            />
+                            <InputGroup
+                              label="Lead Phone"
+                              value={formData.teamDetails[eventId]?.leadPhone || ''}
+                              onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleTeamDetailChange(eventId, 'leadPhone', e.target.value)}
+                              placeholder="LEAD PHONE"
+                              type="tel"
+                            />
                           </div>
 
-                          <div className="space-y-2">
-                            <label className="text-xs text-white/60 uppercase tracking-widest font-bold ml-1">Upload Screenshot</label>
-                            <label className="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed border-white/20 rounded-lg cursor-pointer hover:bg-white/5 hover:border-white/40 transition-all">
-                              <div className="flex flex-col items-center justify-center pt-5 pb-6">
-                                {formData.paymentScreenshot ? (
-                                  <div className="flex items-center gap-2 text-green-400">
-                                    <Check size={24} />
-                                    <p className="text-sm">Screenshot Uploaded</p>
-                                  </div>
-                                ) : (
-                                  <>
-                                    <Upload className="w-8 h-8 text-white/40 mb-2" />
-                                    <p className="text-sm text-white/60">Click to upload image</p>
-                                    <p className="text-xs text-white/40 mt-1">Max 5MB</p>
-                                  </>
-                                )}
-                              </div>
-                              <input type="file" accept="image/*" className="hidden" onChange={handleFileChange} required />
-                            </label>
+                          <div className="space-y-3">
+                            {formData.teamDetails[eventId]?.members.map((member, idx) => (
+                              <InputGroup
+                                key={idx}
+                                label={`Member ${idx + 2} Name`}
+                                value={member}
+                                onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleTeamDetailChange(eventId, 'member', e.target.value, idx)}
+                                placeholder={`MEMBER ${idx + 2} NAME`}
+                              />
+                            ))}
                           </div>
                         </div>
+                      );
+                    })}
+                  </div>
+                )}
+
+              <div className="flex justify-between items-center mt-12">
+                <button onClick={handlePrev} className="px-6 py-2 border border-white/20 rounded-lg text-white hover:bg-white/10">BACK</button>
+                <button onClick={handleNext} className="px-6 py-2 bg-white text-black font-bold rounded-lg hover:bg-slate-200">PROCEED TO PAY</button>
+              </div>
+            </div>
+          </Step>
+
+          {/* STEP 4: PAYMENT */}
+          <Step>
+            <div className="backdrop-blur-md md:backdrop-blur-xl bg-black/40 rounded-3xl border border-white/20 p-5 md:p-12">
+              <h2 className="font-orbitron text-3xl font-bold text-white mb-8 text-center">PAYMENT</h2>
+
+              <div className="grid md:grid-cols-2 gap-12">
+                <div className="bg-white/5 rounded-xl p-6 border border-white/10 h-fit">
+                  <h3 className="font-orbitron text-white text-lg mb-4 border-b border-white/10 pb-2">ORDER SUMMARY</h3>
+                  <div className="flex justify-between text-sm text-slate-300 mb-2">
+                    <span>Selected Plan</span>
+                    <span className="text-white font-bold">{COMBOS.find(c => c.id === selectedCombo)?.name}</span>
+                  </div>
+                  <div className="flex justify-between text-sm text-slate-300 mb-2">
+                    <span>Price per Member</span>
+                    <span className="text-white font-mono">₹{COMBOS.find(c => c.id === selectedCombo)?.price}</span>
+                  </div>
+                  <div className="flex justify-between text-sm text-slate-300 mb-2">
+                    <span>Participants</span>
+                    <span className="text-white font-bold">{getParticipantCount()}</span>
+                  </div>
+                  <div className="space-y-2 mt-4">
+                    <p className="text-xs text-white/50 uppercase">Events Selected</p>
+                    {formData.events.map(id => (
+                      <div key={id} className="flex items-center gap-2 text-white/80 text-sm">
+                        <Check size={12} className="text-green-400" /> {eventData[id]?.name}
                       </div>
+                    ))}
+                  </div>
+
+                  <div className="mt-6 pt-4 border-t border-white/10">
+                    <div className="flex justify-between items-end mb-2">
+                      <span className="text-xl font-bold text-white font-orbitron tracking-widest">TOTAL</span>
+                      <span className="text-3xl font-bold text-white font-orbitron text-shadow-glow">
+                        ₹{calculateTotal()}
+                      </span>
                     </div>
-
-                    {error && (
-                      <div className="p-4 bg-red-500/10 border border-red-500/20 rounded-xl flex items-center gap-3 text-red-400 text-sm">
-                        <AlertCircle size={18} />
-                        {error}
-                      </div>
-                    )}
-
-                    <div className="sticky bottom-4 z-20 bg-black/90 backdrop-blur-xl border border-white/20 p-4 rounded-xl grid grid-cols-2 gap-4 shadow-[0_0_30px_rgba(0,0,0,0.8)] mt-8">
-                      <button
-                        type="button"
-                        onClick={handlePrev}
-                        className="w-full px-4 py-3 border border-white/20 text-white font-orbitron text-xs md:text-sm hover:bg-white/10 transition-colors flex items-center justify-center gap-2 tracking-widest rounded-lg"
-                      >
-                        <ChevronLeft size={16} /> BACK
-                      </button>
-                      <button
-                        type="submit"
-                        disabled={loading}
-                        className="w-full px-4 py-3 bg-white text-black font-orbitron text-xs md:text-sm font-bold tracking-widest hover:bg-slate-200 transition-all flex items-center justify-center gap-2 whitespace-nowrap rounded-lg shadow-[0_0_15px_rgba(255,255,255,0.3)] active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
-                      >
-                        {loading ? <Loader2 className="animate-spin" /> : <Send size={16} />}
-                        SUBMIT
-                      </button>
+                    <div className="flex flex-col items-end gap-1">
+                      <span className="text-xs text-slate-400 font-mono tracking-wide">
+                        ({getParticipantCount()} members × ₹{COMBOS.find(c => c.id === selectedCombo)?.price})
+                      </span>
+                      <p className="text-[10px] text-slate-500 uppercase tracking-widest">*Includes all team members</p>
                     </div>
+                  </div>
+                </div>
 
-                  </motion.div>
-                </form>
+                <div className="space-y-6">
+                  <div className="flex flex-col items-center">
+                    <div className="bg-white p-4 rounded-xl shadow-lg mb-4">
+                      <img src="/qr-code.png.jpeg" alt="QR Code" className="w-48 h-48 object-contain" />
+                    </div>
+                    <div className="bg-white/10 px-4 py-2 rounded-full border border-white/10">
+                      <p className="text-white font-mono text-sm">sarveeshkaarthic05@okhdfcbank</p>
+                    </div>
+                  </div>
+
+                  <div className="space-y-4">
+                    <InputGroup
+                      label="Transaction ID (UTR)"
+                      name="transactionId"
+                      value={formData.transactionId}
+                      onChange={handleChange}
+                      placeholder="ENTER UTR / REF ID"
+                      required
+                    />
+
+                    <div className="space-y-2">
+                      <label className="text-xs text-white/60 uppercase tracking-widest font-bold ml-1">Payment Screenshot</label>
+                      <label className={`
+                                        flex flex-col items-center justify-center w-full h-32 border-2 border-dashed rounded-lg cursor-pointer transition-all
+                                        ${formData.paymentScreenshot ? 'border-green-500/50 bg-green-500/10' : 'border-white/20 hover:bg-white/5'}
+                                    `}>
+                        <div className="flex flex-col items-center justify-center pt-5 pb-6">
+                          {compressing ? (
+                            <Loader2 className="w-8 h-8 text-blue-400 animate-spin mb-2" />
+                          ) : formData.paymentScreenshot ? (
+                            <div className="flex items-center gap-2 text-green-400">
+                              <Check size={24} />
+                              <p className="text-sm">Screenshot Ready</p>
+                            </div>
+                          ) : (
+                            <>
+                              <Upload className="w-8 h-8 text-white/40 mb-2" />
+                              <p className="text-sm text-white/60">Upload Image</p>
+                              <p className="text-[10px] text-white/30">Auto compressed</p>
+                            </>
+                          )}
+                        </div>
+                        <input type="file" accept="image/*" className="hidden" onChange={handleFileChange} disabled={compressing} />
+                      </label>
+                      {compressing && <p className="text-xs text-blue-400 text-center animate-pulse">Compressing image for faster upload...</p>}
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {error && <div className="mt-6 p-4 bg-red-500/10 text-red-400 rounded-lg flex gap-2 items-center"><AlertCircle size={18} /> {error}</div>}
+
+              <div className="flex justify-between items-center mt-8">
+                <button onClick={handlePrev} className="px-6 py-2 border border-white/20 rounded-lg text-white hover:bg-white/10">BACK</button>
+                <button
+                  onClick={handleSubmit}
+                  disabled={loading || compressing}
+                  className="px-8 py-3 bg-white text-black font-bold rounded-lg hover:bg-slate-200 flex items-center gap-2 disabled:opacity-50"
+                >
+                  {loading ? <Loader2 className="animate-spin" /> : <Send size={18} />} SUBMIT
+                </button>
               </div>
             </div>
           </Step>
         </Stepper>
       </div>
-    </motion.div>
+    </motion.div >
   );
 }
 
-// Helper Component for Event Card
+// Helper Components - Premium
 function EventCard({ event, selected, onToggle, isFlagship = false }: any) {
   return (
     <div
       onClick={onToggle}
       className={`
-           relative border transition-all duration-300 rounded-xl overflow-hidden group cursor-pointer
-           ${selected
-          ? (isFlagship
-            ? 'bg-white/10 border-white shadow-[0_0_15px_rgba(255,255,255,0.1)]'
-            : 'bg-white/5 border-white shadow-[0_0_10px_rgba(255,255,255,0.05)]')
-          : (isFlagship
-            ? 'bg-transparent border-white/30 hover:border-white/60 hover:bg-white/5'
-            : 'bg-transparent border-white/10 hover:border-white/30 hover:bg-white/5')}
-        `}
-      style={{ willChange: 'transform' }}
+                relative border rounded-3xl p-5 cursor-pointer transition-all duration-500 group overflow-hidden
+                ${selected
+          ? 'bg-white/10 border-white/50 shadow-[0_0_25px_rgba(255,255,255,0.15)] scale-[1.02]'
+          : 'bg-black/40 border-white/10 hover:border-white/30 hover:bg-white/5 hover:scale-[1.01]'}
+            `}
     >
-      <div className="p-5 flex justify-between items-start gap-4">
-        <div className="space-y-1 flex-1 pr-2">
-          <div className="flex items-center gap-2">
-            <h4 className={`font-orbitron font-bold text-sm md:text-base leading-tight break-words ${selected ? 'text-white' : 'text-slate-300'}`}>
-              {event.name}
-            </h4>
-            {selected && (
-              <div className="bg-green-500/20 p-0.5 rounded-full border border-green-500/50 shadow-[0_0_10px_rgba(74,222,128,0.3)] animate-in fade-in zoom-in duration-300 shrink-0">
-                <Check className="w-3 h-3 text-green-400" strokeWidth={3} />
-              </div>
-            )}
-          </div>
-          <p className="text-[10px] text-white/50 uppercase tracking-widest font-semibold pt-1">
-            {event.type}
-          </p>
+      {/* Selected Indicator - Premium Golden/Silver Tick in Top Right */}
+      {selected && (
+        <div className="absolute top-0 right-0 p-2 bg-gradient-to-bl from-white via-slate-200 to-slate-400 rounded-bl-2xl z-20 shadow-[0_0_15px_rgba(255,255,255,0.3)]">
+          <Check className="w-5 h-5 text-black drop-shadow-sm" strokeWidth={3.5} />
         </div>
+      )}
 
-        <div className="text-right flex flex-col items-end gap-1 shrink-0">
-          <p className="font-orbitron text-white text-lg md:text-xl font-bold">₹{event.price}</p>
-          {event.price === 0 && <span className="text-[10px] bg-white text-black px-2 py-0.5 rounded font-bold uppercase">Free</span>}
+      {/* Shine Effect */}
+      <div className="absolute inset-0 bg-gradient-to-tr from-transparent via-white/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none" />
+
+      <div className="flex justify-between items-start gap-4">
+        <div className="flex-1">
+          <h4 className={`font-orbitron font-bold text-lg mb-1 ${selected ? 'text-white' : 'text-slate-300'}`}>{event.name}</h4>
+          <p className="text-[10px] text-white/50 uppercase tracking-widest">{event.type}</p>
         </div>
       </div>
 
-      {/* Active Indicator Bar */}
-      {selected && (
-        <div className="absolute bottom-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-green-400 to-transparent opacity-50" />
+      {isFlagship && (
+        <div className="absolute bottom-2 right-2 flex gap-1">
+          <Star size={12} className="text-yellow-500 fill-yellow-500 animate-pulse" />
+        </div>
       )}
+    </div>
+  );
+}
+
+// Premium Input Group
+function InputGroup({ label, ...props }: any) {
+  return (
+    <div className="space-y-2 group">
+      <label className="text-[10px] md:text-xs text-white/50 uppercase tracking-widest font-bold ml-1 group-focus-within:text-white transition-colors">{label}</label>
+      <input
+        className="w-full bg-white/5 border border-white/10 rounded-xl p-4 text-white placeholder:text-white/20 focus:border-white/50 focus:bg-white/10 focus:outline-none focus:ring-1 focus:ring-white/20 transition-all font-orbitron tracking-wide text-sm backdrop-blur-sm"
+        {...props}
+      />
     </div>
   );
 }

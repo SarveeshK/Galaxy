@@ -23,7 +23,7 @@ export default function EventDetail({ eventId, onBack, onRegister }: EventDetail
 
 
   return (
-    <section className="relative min-h-screen py-20 px-4">
+    <section className="relative min-h-screen pt-12 pb-16 md:py-20 px-4">
       <div className="max-w-6xl mx-auto">
         {/* Back Button */}
         <motion.button
@@ -42,7 +42,7 @@ export default function EventDetail({ eventId, onBack, onRegister }: EventDetail
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
-          className="text-center mb-12"
+          className="text-center mb-6 md:mb-12"
         >
           <div className="flex items-center justify-center gap-2 mb-4">
             <p className="text-white/60 text-sm tracking-[0.3em] font-orbitron">
@@ -58,7 +58,7 @@ export default function EventDetail({ eventId, onBack, onRegister }: EventDetail
         </motion.div>
 
         {/* Main Content */}
-        <div className="grid lg:grid-cols-3 gap-8">
+        <div className="grid lg:grid-cols-3 gap-6 md:gap-8">
           {/* Left - Event Info */}
           <motion.div
             initial={{ opacity: 0, x: -30 }}

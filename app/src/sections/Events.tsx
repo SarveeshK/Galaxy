@@ -3,9 +3,11 @@ import { ArrowRight, Code, Users, GitBranch, Zap, FileQuestion, Shield } from 'l
 import SpotlightCard from '../components/SpotlightCard';
 import ScrollFloat from '../components/ScrollFloat';
 import StarBorder from '../components/StarBorder';
+import { COMBOS } from '../data/combos';
 
 interface EventsProps {
   onEventClick: (eventId: string) => void;
+  onRegister: (comboId: string) => void;
 }
 
 const events = [
@@ -18,7 +20,7 @@ const events = [
     icon: Code,
     color: 'from-blue-400 to-blue-600',
     size: 'large',
-    price: 200,
+    price: 300,
   },
   {
     id: 'paper-presentation',
@@ -28,7 +30,7 @@ const events = [
     icon: FileQuestion,
     color: 'from-purple-400 to-purple-600',
     size: 'small',
-    price: 200,
+    price: 300,
   },
   {
     id: 'arduino-hackathon',
@@ -38,7 +40,7 @@ const events = [
     icon: GitBranch,
     color: 'from-green-400 to-emerald-600',
     size: 'small',
-    price: 200,
+    price: 300,
   },
   {
     id: 'circuit-debugging',
@@ -48,7 +50,7 @@ const events = [
     icon: Shield,
     color: 'from-red-400 to-rose-600',
     size: 'small',
-    price: 200,
+    price: 300,
   },
   {
     id: 'chase-and-build',
@@ -58,7 +60,7 @@ const events = [
     icon: Zap, // Placeholder icon
     color: 'from-teal-400 to-green-500',
     size: 'medium',
-    price: 200,
+    price: 300,
   },
 
   // Non-Technical Events
@@ -70,7 +72,7 @@ const events = [
     icon: Zap,
     color: 'from-yellow-400 to-orange-500',
     size: 'small',
-    price: 150,
+    price: 250,
   },
   {
     id: 'ipl-auction',
@@ -80,7 +82,7 @@ const events = [
     icon: Users,
     color: 'from-indigo-400 to-blue-500',
     size: 'large',
-    price: 150,
+    price: 250,
   },
   {
     id: 'hintdrop',
@@ -90,7 +92,7 @@ const events = [
     icon: Zap,
     color: 'from-pink-400 to-rose-500',
     size: 'small',
-    price: 150,
+    price: 250,
   },
   {
     id: 'short-film',
@@ -100,7 +102,7 @@ const events = [
     icon: Users,
     color: 'from-amber-400 to-orange-500',
     size: 'small',
-    price: 150,
+    price: 250,
   },
   {
     id: 'spin-and-win',
@@ -110,7 +112,7 @@ const events = [
     icon: Zap,
     color: 'from-cyan-400 to-blue-500',
     size: 'small',
-    price: 150,
+    price: 250,
   },
   {
     id: 'stranger-things',
@@ -124,7 +126,7 @@ const events = [
   },
 ];
 
-export default function Events({ onEventClick }: EventsProps) {
+export default function Events({ onEventClick, onRegister }: EventsProps) {
   const techEvents = events.filter(e => e.type === 'TECHNICAL');
   const nonTechEvents = events.filter(e => e.type === 'NON TECHNICAL' || e.type === 'QUIZ');
   const flagshipEvents = events.filter(e => e.type === 'FLAGSHIP');
@@ -178,7 +180,7 @@ export default function Events({ onEventClick }: EventsProps) {
                 <ArrowRight className="w-3 h-3 transform group-hover:translate-x-1 transition-transform" />
               </div>
               <div className="text-white/50 font-orbitron font-bold text-sm bg-white/5 px-2 py-1 rounded border border-white/10 group-hover:border-white/30 transition-colors">
-                ₹{(event as any).price}
+                ₹{(event as any).price} <span className="text-[10px] font-normal">/ member</span>
               </div>
             </div>
           </div>
@@ -188,7 +190,7 @@ export default function Events({ onEventClick }: EventsProps) {
   );
 
   return (
-    <section id="events" className="relative py-20 px-4">
+    <section id="events" className="relative pt-24 pb-20 md:pt-32 px-4 transition-all ease-in-out duration-500">
       <div className="max-w-7xl mx-auto">
         {/* Section Header */}
         <motion.div
@@ -196,7 +198,7 @@ export default function Events({ onEventClick }: EventsProps) {
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
           viewport={{ once: true }}
-          className="text-center mb-16"
+          className="text-center mb-2 md:mb-8"
         >
           <div className="flex items-center justify-center gap-2 mb-4">
             <ScrollFloat
@@ -216,6 +218,77 @@ export default function Events({ onEventClick }: EventsProps) {
           </p>
         </motion.div>
 
+        {/* GALACTIC ACCESS PASSES - COMBO SHOWCASE */}
+        <div className="mb-20">
+          <motion.h3
+            initial={{ opacity: 0, x: -20 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true }}
+            className="font-orbitron text-2xl md:text-3xl font-bold text-white mb-8 border-l-4 border-gray-400 pl-4 flex items-center gap-3"
+          >
+            GALACTIC <span className="text-gray-400">ACCESS PASSES</span>
+          </motion.h3>
+
+          {/* Horizontal Scroll Container */}
+          <div className="overflow-x-auto pb-8 -mx-4 px-4 scrollbar-hide">
+            <div className="flex gap-6 w-max md:w-full md:grid md:grid-cols-2 lg:grid-cols-3">
+              {COMBOS.map((combo, index) => (
+                <motion.div
+                  key={combo.id}
+                  initial={{ opacity: 0, scale: 0.9 }}
+                  whileInView={{ opacity: 1, scale: 1 }}
+                  transition={{ delay: index * 0.1 }}
+                  viewport={{ once: true }}
+                  className="w-[300px] md:w-auto"
+                >
+                  <SpotlightCard
+                    className="h-full border border-white/10 bg-white/5 rounded-2xl p-6 hover:border-white/40 transition-colors group relative overflow-hidden"
+                    spotlightColor="rgba(255, 255, 255, 0.1)"
+                  >
+                    {/* Best Value Badge for Mixed Combo */}
+                    {combo.id === 'MIXED_LIMITED' && (
+                      <div className="absolute top-0 right-0 bg-gradient-to-bl from-gray-200 to-gray-400 text-black text-[9px] font-bold px-3 py-1.5 rounded-bl-xl z-20 font-orbitron tracking-wider">
+                        BEST VALUE
+                      </div>
+                    )}
+                    {/* Flagship Badge */}
+                    {(combo.id === 'TECH_ST' || combo.id === 'NON_TECH_ST') && (
+                      <div className="absolute top-0 right-0 bg-gradient-to-bl from-red-600 to-red-900 text-white text-[9px] font-bold px-3 py-1.5 rounded-bl-xl z-20 font-orbitron tracking-wider">
+                        INCLUDES FLAGSHIP
+                      </div>
+                    )}
+
+                    <div className="flex flex-col h-full pt-6"> {/* Added pt-6 for badge spacing */}
+                      <h4 className="font-orbitron font-bold text-xl text-white mb-2 group-hover:text-gray-300 transition-colors">{combo.name}</h4>
+                      <div className="text-3xl font-bold text-white font-orbitron mb-4">
+                        ₹{combo.price} <span className="text-sm text-white/40 font-normal">/ member</span>
+                      </div>
+
+                      <div className="w-full h-px bg-white/10 mb-4"></div>
+
+                      <p className="text-slate-400 text-sm mb-4 flex-grow italic">"{combo.description}"</p>
+
+                      <div className="bg-black/40 rounded-lg p-3 border border-white/5 mb-6">
+                        <p className="text-xs text-white/60 uppercase tracking-widest font-bold mb-1">INCLUDES</p>
+                        <p className="text-xs text-white">{combo.condition}</p>
+                      </div>
+
+                      <button
+                        onClick={() => {
+                          if (onRegister) onRegister(combo.id);
+                        }}
+                        className="w-full py-3 bg-white/10 border border-white/20 rounded-lg text-white font-orbitron font-bold tracking-wider hover:bg-white hover:text-black hover:border-white transition-all uppercase text-sm"
+                      >
+                        GET PASS
+                      </button>
+                    </div>
+                  </SpotlightCard>
+                </motion.div>
+              ))}
+            </div>
+          </div>
+        </div>
+
         {/* Flagship Events Subsection */}
         {flagshipEvents.length > 0 && (
           <div className="mb-20">
@@ -233,7 +306,7 @@ export default function Events({ onEventClick }: EventsProps) {
               >
                 FLAGSHIP <span className="text-gray-400">EVENT</span>
               </motion.h3>
-              <div className="flex flex-col items-center md:grid md:grid-cols-1 lg:grid-cols-2 gap-12 w-full">
+              <div className="flex flex-col items-center md:grid md:grid-cols-1 lg:grid-cols-2 gap-6 md:gap-12 w-full">
                 {flagshipEvents.map((event, index) => (
                   <div key={event.id} className="w-full max-w-md md:max-w-none lg:col-span-2">
                     <EventCard event={event} index={index} />
@@ -254,7 +327,7 @@ export default function Events({ onEventClick }: EventsProps) {
           >
             TECHNICAL <span className="text-gray-400">EVENTS</span>
           </motion.h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-12">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-12">
             {techEvents.map((event, index) => (
               <EventCard key={event.id} event={event} index={index} />
             ))}
@@ -271,7 +344,7 @@ export default function Events({ onEventClick }: EventsProps) {
           >
             NON-TECHNICAL <span className="text-gray-500">EVENTS</span>
           </motion.h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-12">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-12">
             {nonTechEvents.map((event, index) => (
               <EventCard key={event.id} event={event} index={index} />
             ))}

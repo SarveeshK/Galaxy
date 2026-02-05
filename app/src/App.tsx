@@ -148,7 +148,14 @@ function App() {
 
         {currentView === 'events' && (
           <div className="pt-24">
-            <Events onEventClick={handleEventClick} />
+            <Events
+              onEventClick={handleEventClick}
+              onRegister={(comboId) => {
+                const url = `?view=register&combo=${comboId}`;
+                window.history.pushState({ view: 'register', combo: comboId }, '', url);
+                setCurrentView('register');
+              }}
+            />
             <Footer onNavigate={handleNavigate} />
           </div>
         )}

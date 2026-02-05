@@ -57,7 +57,7 @@ export default function CustomSelect({
             ${isOpen ? 'border-slate-300 bg-white/10 ring-1 ring-slate-300/50' : 'border-white/10 hover:border-white/30'}
           `}
                 >
-                    <span className={`${value ? 'text-white' : 'text-white/40'}`}>
+                    <span className={`${value ? 'text-white' : 'text-white/40'} font-orbitron tracking-wide`}>
                         {value ? selectedLabel : placeholder}
                     </span>
                     <motion.div
@@ -91,7 +91,7 @@ export default function CustomSelect({
                       ${value === option.value ? 'bg-white/10 text-white' : 'text-slate-300 hover:bg-white/5 hover:text-white'}
                     `}
                                     >
-                                        <span>{option.label}</span>
+                                        <span className="font-orbitron tracking-wide">{option.label}</span>
                                         {value === option.value && <Check className="w-4 h-4 text-slate-200" />}
                                     </button>
                                 ))}
