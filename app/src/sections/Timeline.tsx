@@ -34,7 +34,7 @@ export default function Timeline() {
   ];
 
   return (
-    <section id="timeline" ref={containerRef} className="relative py-32 px-4 overflow-hidden">
+    <section id="timeline" ref={containerRef} className="relative py-16 md:py-24 px-4 overflow-hidden">
       {/* Background Tech Lines */}
       <div className="absolute inset-0 opacity-10 pointer-events-none">
         <div className="absolute top-0 left-1/2 w-px h-full bg-gradient-to-b from-transparent via-white to-transparent" />
@@ -47,7 +47,7 @@ export default function Timeline() {
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
           viewport={{ once: true }}
-          className="text-center mb-24 relative z-10"
+          className="text-center mb-12 relative z-10"
         >
           <h2 className="font-orbitron text-4xl md:text-6xl font-black text-white mb-4">
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-slate-300 via-white to-slate-300 drop-shadow-[0_0_15px_rgba(255,255,255,0.3)]">TIMELINE</span>
@@ -65,7 +65,7 @@ export default function Timeline() {
             className="absolute left-4 md:left-1/2 top-0 bottom-0 w-px bg-gradient-to-b from-transparent via-white to-transparent md:-translate-x-1/2 shadow-[0_0_15px_rgba(255,255,255,0.5)]"
           />
 
-          <div className="space-y-32">
+          <div className="space-y-16">
             {schedule.map((item, index) => (
               <div
                 key={index}
@@ -86,11 +86,11 @@ export default function Timeline() {
                   viewport={{ once: true }}
                   className="ml-12 md:ml-0 md:w-1/2 md:px-12"
                 >
-                  <SpotlightCard className="w-full p-6 md:p-8" spotlightColor="rgba(255, 255, 255, 0.1)">
+                  <SpotlightCard className="w-full p-3 md:p-5" spotlightColor="rgba(255, 255, 255, 0.1)">
 
-                    <div className="flex flex-col gap-4">
+                    <div className="flex flex-col gap-1">
                       {/* Date & Time Row */}
-                      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-white/5 pb-4 mb-2">
+                      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1 border-b border-white/5 pb-2 mb-1">
                         <span className="text-sm font-bold text-slate-300 tracking-wider uppercase">
                           {item.date}
                         </span>
@@ -102,17 +102,17 @@ export default function Timeline() {
                       </div>
 
                       {/* Title */}
-                      <h3 className="font-orbitron text-xl md:text-2xl font-bold text-white group-hover:text-slate-200 transition-colors">
+                      <h3 className="font-orbitron text-lg md:text-xl font-bold text-white group-hover:text-slate-200 transition-colors">
                         {item.title}
                       </h3>
 
                       {/* Description */}
-                      <p className="text-gray-400 text-sm leading-relaxed max-w-sm">
+                      <p className="text-gray-400 text-xs leading-relaxed max-w-sm">
                         {item.description}
                       </p>
 
                       {/* Location or Extra Info */}
-                      <div className="flex items-center gap-2 text-xs text-slate-500 mt-2">
+                      <div className="flex items-center gap-2 text-xs text-slate-500 mt-1">
                         <MapPin className="w-3 h-3" />
                         <span>Main Auditorium</span>
                       </div>

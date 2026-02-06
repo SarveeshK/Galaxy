@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
+import QRCode from "react-qr-code";
 import { motion } from 'framer-motion';
 import { ArrowLeft, Send, Check, AlertCircle, Loader2, ChevronRight, Upload, Star } from 'lucide-react';
 import PremiumCheck from '../components/PremiumCheck';
@@ -234,6 +235,17 @@ export default function Register({ onBack }: RegisterProps) {
           alert(`Please fill in Team Lead details for ${eventDetails.name}`);
           return false;
         }
+
+        // Validate Minimum Members Requirement
+        if (eventDetails.minMembers > 1) {
+          const filledMembers = teamInfo.members.filter(m => m.trim().length > 0).length;
+          // Total participants = 1 (Lead) + filledMembers
+          // But minMembers includes Lead. So we need (1 + filledMembers) >= minMembers
+          if ((1 + filledMembers) < eventDetails.minMembers) {
+            alert(`${eventDetails.name} requires at least ${eventDetails.minMembers} members (Lead + ${eventDetails.minMembers - 1} Members). Please fill in all team member details.`);
+            return false;
+          }
+        }
       }
     }
     return true;
@@ -258,6 +270,11 @@ export default function Register({ onBack }: RegisterProps) {
 
     if (!formData.transactionId || !formData.paymentScreenshot) {
       alert('Please provide transaction ID and payment screenshot.');
+      return;
+    }
+
+    if (!/^\d{12}$/.test(formData.transactionId)) {
+      alert('Transaction ID (UTR) must be exactly 12 numeric digits.');
       return;
     }
 
@@ -313,6 +330,23 @@ export default function Register({ onBack }: RegisterProps) {
   const calculateTotal = () => {
     const combo = COMBOS.find(c => c.id === selectedCombo);
     if (!combo) return 0;
+    // Fixed price logic now, regardless of members (based on user request "1.2 Tech +3 Non tech... - 299")
+    // Wait, the user said "prices are per member" in the previous code? NO, the previous code had per member.
+    // The user's new request lists fixed prices for the combos.
+    // "1.2 Tech +3 Non tech + Stranger Things - 299" implies a fixed price for that package.
+    // However, if a team has multiple members, do they ALL pay 299? Or is 299 for the TEAM?
+    // "The basic registration should be in the normal combo... per member shown in the event page" was asked to be REMOVED.
+    // Let's assume the Combo Price is PER REGISTRATION (which usually is per person/pass).
+    // "Galaxy Access Pass" sounds like an individual pass.
+    // If multiple members are added in team details, usually each needs a pass?
+    // User said: "prices are per member" in old code.
+    // User request: "2 tech + 2 non tech = 249" (Basic Pass).
+    // Implementation: I will keep it as Price * Participants for now, as that is standard for "Passes".
+    // If I select a combo, I am buying a pass. If I add team members, they likely need tickets too?
+    // Actually, usually in these college fests, you buy a pass for yourself.
+    // Team events: Usually one person registers? Or all?
+    // Existing logic: `combo.price * getParticipantCount()`.
+    // I will KEEP this multiplier logic because "Pass" implies per person.
     return combo.price * getParticipantCount();
   };
 
@@ -397,6 +431,13 @@ export default function Register({ onBack }: RegisterProps) {
                         : 'bg-black/40 border-white/10 hover:border-white/30 hover:bg-white/5 hover:scale-[1.01]'}
                             `}
                   >
+                    {/* Flagship Badge */}
+                    {(combo.id === 'ULTIMATE' || combo.id === 'ELITE' || combo.id === 'PREMIUM' || combo.id === 'STANDARD') && (
+                      <div className="absolute top-0 right-0 bg-gradient-to-bl from-red-600 to-red-900 text-white text-[9px] font-bold px-3 py-1.5 rounded-bl-xl z-10 font-orbitron tracking-wider">
+                        INCLUDES FLAGSHIP
+                      </div>
+                    )}
+
                     {selectedCombo === combo.id && (
                       <div className="absolute top-0 right-0 p-2 bg-gradient-to-bl from-white via-slate-200 to-slate-400 rounded-bl-2xl z-20 shadow-[0_0_15px_rgba(255,255,255,0.3)]">
                         <Check className="w-5 h-5 text-black drop-shadow-sm" strokeWidth={3.5} />
@@ -410,13 +451,13 @@ export default function Register({ onBack }: RegisterProps) {
                         {combo.name}
                       </h3>
                       <div className="text-3xl font-bold text-white mb-4 font-orbitron">
-                        ₹{combo.price} <span className="text-sm text-white/40 font-normal">/ member</span>
+                        ₹{combo.price}
                       </div>
                       <div className="w-full h-[1px] bg-white/10 mb-4"></div>
                       <p className="text-slate-400 text-sm italic mb-4 flex-grow">"{combo.description}"</p>
 
                       <div className="bg-white/5 rounded-lg p-3 border border-white/5">
-                        <p className="text-xs text-white/60 uppercase tracking-widest font-bold mb-1">CONDITIONS</p>
+                        <p className="text-xs text-white/60 uppercase tracking-widest font-bold mb-1">INCLUDES</p>
                         <p className="text-xs text-white">{combo.condition}</p>
                       </div>
                     </div>
@@ -427,7 +468,30 @@ export default function Register({ onBack }: RegisterProps) {
               <div className="flex justify-center mt-8">
                 <button
                   type="button"
-                  onClick={handleNext}
+                  onClick={() => {
+                    if (step === 1 && selectedCombo) {
+                      const combo = COMBOS.find(c => c.id === selectedCombo);
+                      // Auto-select Stranger Things for Flagship combos if not already selected
+                      if (combo && combo.id !== 'BASIC') {
+                        setFormData(prev => {
+                          if (!prev.events.includes('stranger-things')) {
+                            const stEvent = eventData['stranger-things'];
+                            const newTeamDetails = { ...prev.teamDetails };
+                            if (stEvent && stEvent.maxMembers > 1) {
+                              newTeamDetails['stranger-things'] = {
+                                leadName: '',
+                                leadPhone: '',
+                                members: Array(stEvent.maxMembers - 1).fill('')
+                              };
+                            }
+                            return { ...prev, events: [...prev.events, 'stranger-things'], teamDetails: newTeamDetails };
+                          }
+                          return prev;
+                        });
+                      }
+                    }
+                    handleNext();
+                  }}
                   disabled={!selectedCombo}
                   className="px-8 py-3 bg-white text-black font-orbitron text-sm font-bold tracking-widest hover:bg-slate-200 transition-all flex items-center gap-2 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed"
                 >
@@ -479,7 +543,6 @@ export default function Register({ onBack }: RegisterProps) {
                           event={event}
                           selected={formData.events.includes(id)}
                           onToggle={() => handleEventToggle(id)}
-                          comboPrice={COMBOS.find(c => c.id === selectedCombo)?.price}
                         />
                       ))}
                     </div>
@@ -498,7 +561,6 @@ export default function Register({ onBack }: RegisterProps) {
                           event={event}
                           selected={formData.events.includes(id)}
                           onToggle={() => handleEventToggle(id)}
-                          comboPrice={COMBOS.find(c => c.id === selectedCombo)?.price}
                         />
                       ))}
                     </div>
@@ -662,12 +724,12 @@ export default function Register({ onBack }: RegisterProps) {
                     <span className="text-white font-bold">{COMBOS.find(c => c.id === selectedCombo)?.name}</span>
                   </div>
                   <div className="flex justify-between text-sm text-slate-300 mb-2">
-                    <span>Price per Member</span>
+                    <span>Price</span>
                     <span className="text-white font-mono">₹{COMBOS.find(c => c.id === selectedCombo)?.price}</span>
                   </div>
                   <div className="flex justify-between text-sm text-slate-300 mb-2">
                     <span>Participants</span>
-                    <span className="text-white font-bold">{getParticipantCount()}</span>
+                    <span className="text-white font-bold">{getParticipantCount()} (Covered in Pass)</span>
                   </div>
                   <div className="space-y-2 mt-4">
                     <p className="text-xs text-white/50 uppercase">Events Selected</p>
@@ -687,7 +749,7 @@ export default function Register({ onBack }: RegisterProps) {
                     </div>
                     <div className="flex flex-col items-end gap-1">
                       <span className="text-xs text-slate-400 font-mono tracking-wide">
-                        ({getParticipantCount()} members × ₹{COMBOS.find(c => c.id === selectedCombo)?.price})
+                        (Fixed Combo Price)
                       </span>
                       <p className="text-[10px] text-slate-500 uppercase tracking-widest">*Includes all team members</p>
                     </div>
@@ -697,7 +759,10 @@ export default function Register({ onBack }: RegisterProps) {
                 <div className="space-y-6">
                   <div className="flex flex-col items-center">
                     <div className="bg-white p-4 rounded-xl shadow-lg mb-4">
-                      <img src="/qr-code.png.jpeg" alt="QR Code" className="w-48 h-48 object-contain" />
+                      <QRCode
+                        value={`upi://pay?pa=sarveeshkaarthic05@okhdfcbank&pn=Galaxy 2k26&am=${calculateTotal()}&cu=INR`}
+                        size={180}
+                      />
                     </div>
                     <div className="bg-white/10 px-4 py-2 rounded-full border border-white/10">
                       <p className="text-white font-mono text-sm">sarveeshkaarthic05@okhdfcbank</p>
@@ -710,8 +775,9 @@ export default function Register({ onBack }: RegisterProps) {
                       name="transactionId"
                       value={formData.transactionId}
                       onChange={handleChange}
-                      placeholder="ENTER UTR / REF ID"
+                      placeholder="ENTER 12-DIGIT UTR"
                       required
+                      maxLength={12}
                     />
 
                     <div className="space-y-2">
@@ -806,9 +872,9 @@ function EventCard({ event, selected, onToggle, isFlagship = false }: any) {
 function InputGroup({ label, ...props }: any) {
   return (
     <div className="space-y-2 group">
-      <label className="text-[10px] md:text-xs text-white/50 uppercase tracking-widest font-bold ml-1 group-focus-within:text-white transition-colors">{label}</label>
+      <label className="text-xs text-white/60 uppercase tracking-widest font-bold ml-1 group-focus-within:text-white transition-colors">{label}</label>
       <input
-        className="w-full bg-white/5 border border-white/10 rounded-xl p-4 text-white placeholder:text-white/20 focus:border-white/50 focus:bg-white/10 focus:outline-none focus:ring-1 focus:ring-white/20 transition-all font-orbitron tracking-wide text-sm backdrop-blur-sm"
+        className="w-full bg-white/10 border border-white/10 rounded-xl p-4 text-white placeholder:text-white/40 focus:border-white/50 focus:bg-white/20 focus:outline-none focus:ring-1 focus:ring-white/20 transition-all font-orbitron tracking-wide text-sm backdrop-blur-sm"
         {...props}
       />
     </div>

@@ -8,8 +8,8 @@ export default function Footer({ onNavigate }: FooterProps) {
     return (
         <footer className="relative bg-black border-t border-white/10 pt-10 pb-8 md:pt-20 md:pb-10 overflow-hidden">
             {/* Background Glow */}
-            <div className="absolute top-0 left-1/4 w-96 h-96 bg-indigo-900/10 rounded-full blur-[128px] pointer-events-none" />
-            <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-white/5 rounded-full blur-[128px] pointer-events-none" />
+            <div className="hidden md:block absolute top-0 left-1/4 w-96 h-96 bg-indigo-900/10 rounded-full blur-[128px] pointer-events-none" />
+            <div className="hidden md:block absolute bottom-0 right-1/4 w-96 h-96 bg-white/5 rounded-full blur-[128px] pointer-events-none" />
 
             <div className="max-w-7xl mx-auto px-6 relative z-10">
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-8 md:gap-12 md:mb-16">
@@ -91,9 +91,11 @@ export default function Footer({ onNavigate }: FooterProps) {
                                     <span>galaxyece2k26@gmail.com</span>
                                 </a>
                             </li>
-                            <li className="flex items-center gap-3 text-white/60 text-sm">
-                                <Phone size={18} className="text-slate-200 shrink-0" />
-                                <span>+91 98765 43210</span>
+                            <li>
+                                <a href="tel:+916382310115" className="flex items-center gap-3 text-white/60 text-sm hover:text-white transition-colors">
+                                    <Phone size={18} className="text-slate-200 shrink-0" />
+                                    <span>+91 63823 10115</span>
+                                </a>
                             </li>
                         </ul>
                     </div>
@@ -101,7 +103,7 @@ export default function Footer({ onNavigate }: FooterProps) {
                     {/* Coordinators Column */}
                     <div className="space-y-6">
                         <h3 className="font-orbitron text-sm font-bold text-slate-200 tracking-widest uppercase mb-4">
-                            Faculty Coordinators
+                            Faculty Coordinator
                         </h3>
                         <div className="space-y-4 mb-8">
                             <div>
@@ -111,7 +113,7 @@ export default function Footer({ onNavigate }: FooterProps) {
                         </div>
 
                         <h3 className="font-orbitron text-sm font-bold text-slate-200 tracking-widest uppercase mb-4">
-                            Student Coordinators
+                            Student Coordinator
                         </h3>
                         <div className="space-y-4">
                             <div>

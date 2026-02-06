@@ -105,23 +105,23 @@ function App() {
   };
 
   return (
-    <div className="relative min-h-screen text-white selection:bg-purple-500/30">
+    <div className="relative min-h-[100dvh] text-white selection:bg-purple-500/30 overflow-x-hidden">
 
       {/* Galaxy Background - Fixed and behind everything */}
       <div className="fixed inset-0 z-[-1]">
         <div className="absolute inset-0 bg-black/80 z-0" /> {/* Dark overlay to ensure text readability */}
         <Galaxy
-          mouseRepulsion
-          mouseInteraction
-          density={window.innerWidth < 768 ? 0.5 : 1}
-          glowIntensity={0.3} // Increased glow
+          mouseRepulsion={window.innerWidth >= 768}
+          mouseInteraction={window.innerWidth >= 768}
+          density={window.innerWidth < 768 ? 0.2 : 1.5}
+          glowIntensity={window.innerWidth < 768 ? 0.1 : 0.4}
           saturation={0}
           hueShift={140}
-          twinkleIntensity={0.2}
+          twinkleIntensity={window.innerWidth < 768 ? 0.1 : 0.2}
           rotationSpeed={0}
           repulsionStrength={1.5}
           autoCenterRepulsion={0}
-          starSpeed={0.4}
+          starSpeed={window.innerWidth < 768 ? 0.2 : 0.5}
           speed={1}
         />
       </div>
@@ -138,7 +138,20 @@ function App() {
         {currentView === 'home' && (
           <div>
             <main>
-              <Hero onRegister={() => navigateTo('register')} onViewEvents={() => navigateTo('events')} />
+              <Hero onRegister={() => navigateTo('register')} onViewEvents={() => {
+                navigateTo('events');
+                // Timeout to allow render
+                setTimeout(() => {
+                  if (window.innerWidth < 768) {
+                    const passesSection = document.getElementById('galactic-passes');
+                    if (passesSection) {
+                      passesSection.scrollIntoView({ behavior: 'smooth' });
+                    }
+                  } else {
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                  }
+                }, 100);
+              }} />
               <Timeline />
               <LocateUs />
             </main>

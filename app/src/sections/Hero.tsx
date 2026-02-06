@@ -57,7 +57,7 @@ export default function Hero({ onRegister, onViewEvents }: HeroProps) {
             GOVERNMENT COLLEGE OF ENGINEERING, ERODE
           </h1>
           <h2 className="relative font-orbitron text-sm md:text-lg lg:text-xl font-bold tracking-wider text-center px-4 leading-relaxed text-metallic-premium mb-2 opacity-90">
-            Department of ECE Presents
+            ASSOCIATION OF ECE PRESENTS
           </h2>
         </div>
 

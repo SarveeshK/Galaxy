@@ -32,7 +32,7 @@ const highlights = [
 
 export default function About() {
   return (
-    <section id="about" className="relative pt-12 pb-16 md:py-20 px-4">
+    <section id="about" className="relative pt-8 pb-12 md:py-16 px-4">
       <div className="max-w-6xl mx-auto">
         {/* Section Header */}
         <motion.div
@@ -40,7 +40,7 @@ export default function About() {
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
           viewport={{ once: true }}
-          className="text-center mb-6 md:mb-12"
+          className="text-center mb-6 md:mb-8"
         >
           <div className="flex items-center justify-center gap-2 mb-4">
             <div className="hidden md:block">

@@ -40,7 +40,7 @@ export const eventData: Record<string, {
         icon: Code,
         type: 'TECHNICAL',
         price: 300,
-        posterImage: '/project-war-poster.jpg',
+        posterImage: '/project-war-detail.jpg',
         description: `Project Expo is an event where students showcase their innovative projects and technical ideas. It provides a platform to demonstrate creativity, practical knowledge, and real-world applications of engineering concepts.`,
     },
     'paper-presentation': {
@@ -110,7 +110,7 @@ export const eventData: Record<string, {
         icon: GitBranch,
         type: 'TECHNICAL',
         price: 300,
-        posterImage: '/arduino-hackathon-poster.jpg',
+        posterImage: '/arduino-hackathon-detail.jpg',
         description: `Develop intelligent Arduino solutions through hands-on prototyping.
 Showcase creativity through real working models.`,
     },
@@ -264,7 +264,7 @@ Simple to Submit`,
         icon: Zap,
         type: 'NON TECHNICAL',
         price: 250,
-        posterImage: '/spin-and-win-poster.jpg',
+        posterImage: '/spin-and-win-detail.jpg',
         description: `Spin and Win is all about luck meeting skill! Teams face the thrill of the spinner, where every turn decides their challenge. Easy to, Medium, or Hard—no one knows what’s coming next. Quick thinking, teamwork, and speed are the keys.
 
 Simple to Play! Exciting to Conquer!`,
@@ -272,8 +272,8 @@ Simple to Play! Exciting to Conquer!`,
     'stranger-things': {
         name: 'STRANGER THINGS',
         tagline: 'OBSERVE. SOLVE. ESCAPE.',
-        teamSize: '2-4 Members',
-        minMembers: 2,
+        teamSize: '4 Members',
+        minMembers: 4,
         maxMembers: 4,
         date: 'Feb 27',
         time: 'All Day',

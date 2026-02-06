@@ -51,7 +51,7 @@ const day2Schedule = [
 
 export default function Schedule() {
   return (
-    <section id="schedule" className="relative py-20 px-4">
+    <section id="schedule" className="relative py-16 px-4">
       <div className="max-w-6xl mx-auto">
         {/* Section Header */}
         <motion.div
@@ -59,7 +59,7 @@ export default function Schedule() {
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
           viewport={{ once: true }}
-          className="text-center mb-12"
+          className="text-center mb-8"
         >
           <h2 className="font-orbitron text-4xl md:text-6xl font-black text-white mb-4">
             <span className="bg-gradient-to-r from-gray-200 to-gray-500 bg-clip-text text-transparent">SCHEDULE</span>
