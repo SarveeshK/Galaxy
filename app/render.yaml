@@ -1,6 +1,6 @@
-services:
-  - type: web
-    name: galaxy-app
-    env: static
+staticSites:
+  - name: galaxy-app
     buildCommand: npm run build
-    staticPublishPath: ./dist
+    publishPath: ./dist
+    branch: main
+
