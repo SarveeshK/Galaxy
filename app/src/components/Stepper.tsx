@@ -1,5 +1,5 @@
 import { AnimatePresence, motion, type Variants } from 'framer-motion';
-import React, { Children, useLayoutEffect, useRef, useState, useEffect, type HTMLAttributes, type ReactNode } from 'react';
+import React, { Children, useRef, useState, useEffect, type HTMLAttributes, type ReactNode } from 'react';
 import './Stepper.css';
 
 interface StepperProps extends HTMLAttributes<HTMLDivElement> {
@@ -142,7 +142,7 @@ export default function Stepper({
                                     renderStepIndicator({
                                         step: stepNumber,
                                         currentStep,
-                                        onStepClick: clicked => {
+                                        onStepClick: () => {
                                             // Optional: Disable clicking steps to skip validation
                                             // setDirection(clicked > currentStep ? 1 : -1);
                                             // updateStep(clicked);
@@ -153,7 +153,7 @@ export default function Stepper({
                                         step={stepNumber}
                                         disableStepIndicators={disableStepIndicators}
                                         currentStep={currentStep}
-                                        onClickStep={clicked => {
+                                        onClickStep={() => {
                                             // Optional: allow click navigation
                                             // if (clicked < currentStep) { // only allow going back by click
                                             //   setDirection(-1);

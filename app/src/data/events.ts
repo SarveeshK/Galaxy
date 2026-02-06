@@ -33,7 +33,7 @@ export const eventData: Record<string, {
             { name: 'Q&A Session', description: 'Defend your project methodology and implementation.' },
         ],
         coordinators: [
-            { name: 'Shek allavudhin batsha S', phone: '8778236418' },
+            { name: 'Shek Allavudhin Batsha', phone: '8778236418' },
             { name: 'Shunmuga Lakshmi V', phone: '8825977538' },
         ],
         color: 'from-blue-400 to-blue-600',

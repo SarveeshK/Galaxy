@@ -3,8 +3,6 @@ import { useState, useEffect } from 'react';
 import {
   Home,
   Calendar,
-  Clock,
-  Phone,
   X,
   UserPlus,
   Info

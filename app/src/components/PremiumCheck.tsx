@@ -1,6 +1,6 @@
 import { motion } from 'framer-motion';
 
-export default function PremiumCheck({ className = "w-20 h-20", color = "#4f46e5" }) {
+export default function PremiumCheck({ className = "w-20 h-20" }) {
     return (
         <div className={`relative flex items-center justify-center ${className}`}>
             {/* Glow Effect */}

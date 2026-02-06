@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { gsap } from 'gsap';
-import { Menu, X, MousePointerClick, Home } from 'lucide-react';
+import { Menu, X, Home } from 'lucide-react';
 import './PillNav.css';
 
 export type PillNavItem = {

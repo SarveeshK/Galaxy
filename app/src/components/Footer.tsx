@@ -108,7 +108,7 @@ export default function Footer({ onNavigate }: FooterProps) {
                         <div className="space-y-4 mb-8">
                             <div>
                                 <p className="text-white font-medium text-sm">Dr. P. Kaliram</p>
-                                <p className="text-white/40 text-xs">Prof Dept ECE</p>
+                                <p className="text-white/40 text-xs">Prof. Dept of ECE</p>
                             </div>
                         </div>
 

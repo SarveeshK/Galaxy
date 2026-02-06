@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, lazy, Suspense } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Menu, Home } from 'lucide-react';
 import ClickSpark from './components/ClickSpark';
@@ -9,12 +9,13 @@ import RadialMenu from './components/RadialMenu';
 import Footer from './components/Footer';
 
 import Hero from './sections/Hero';
-import About from './sections/About';
-import Events from './sections/Events';
-import Timeline from './sections/Timeline';
-import Register from './sections/Register';
-import EventDetail from './sections/EventDetail';
-import LocateUs from './sections/LocateUs';
+
+const About = lazy(() => import('./sections/About'));
+const Events = lazy(() => import('./sections/Events'));
+const Timeline = lazy(() => import('./sections/Timeline'));
+const Register = lazy(() => import('./sections/Register'));
+const EventDetail = lazy(() => import('./sections/EventDetail'));
+const LocateUs = lazy(() => import('./sections/LocateUs'));
 
 type View = 'home' | 'events' | 'about' | 'event-detail' | 'register';
 
@@ -88,12 +89,11 @@ function App() {
   };
 
   const handleBack = () => {
-    // If there is history to go back to, use it (triggers popstate)
-    // Otherwise manually navigate
     if (window.history.length > 1) {
       window.history.back();
     } else {
-      navigateTo('events');
+      // Fallback only if absolutely no history (e.g. opened in new tab)
+      navigateTo('home');
     }
   };
 
@@ -114,7 +114,7 @@ function App() {
           mouseRepulsion={window.innerWidth >= 768}
           mouseInteraction={window.innerWidth >= 768}
           density={window.innerWidth < 768 ? 0.2 : 1.5}
-          glowIntensity={window.innerWidth < 768 ? 0.1 : 0.4}
+          glowIntensity={window.innerWidth < 768 ? 0.05 : 0.15}
           saturation={0}
           hueShift={140}
           twinkleIntensity={window.innerWidth < 768 ? 0.1 : 0.2}
@@ -135,6 +135,7 @@ function App() {
       >
 
         {/* Main Views - Static/Instant Switching */}
+        {/* Main Views - Static/Instant Switching */}
         {currentView === 'home' && (
           <div>
             <main>
@@ -152,8 +153,10 @@ function App() {
                   }
                 }, 100);
               }} />
-              <Timeline />
-              <LocateUs />
+              <Suspense fallback={<div className="h-20" />}>
+                <Timeline />
+                <LocateUs />
+              </Suspense>
             </main>
             <Footer onNavigate={handleNavigate} />
           </div>
@@ -161,21 +164,25 @@ function App() {
 
         {currentView === 'events' && (
           <div className="pt-24">
-            <Events
-              onEventClick={handleEventClick}
-              onRegister={(comboId) => {
-                const url = `?view=register&combo=${comboId}`;
-                window.history.pushState({ view: 'register', combo: comboId }, '', url);
-                setCurrentView('register');
-              }}
-            />
+            <Suspense fallback={<div className="min-h-screen flex items-center justify-center text-white/50">Loading Events...</div>}>
+              <Events
+                onEventClick={handleEventClick}
+                onRegister={(comboId) => {
+                  const url = `?view=register&combo=${comboId}`;
+                  window.history.pushState({ view: 'register', combo: comboId }, '', url);
+                  setCurrentView('register');
+                }}
+              />
+            </Suspense>
             <Footer onNavigate={handleNavigate} />
           </div>
         )}
 
         {currentView === 'about' && (
           <div className="pt-24 min-h-screen flex flex-col justify-between">
-            <About />
+            <Suspense fallback={<div className="min-h-screen flex items-center justify-center text-white/50">Loading...</div>}>
+              <About />
+            </Suspense>
             <Footer onNavigate={handleNavigate} />
           </div>
         )}
@@ -191,11 +198,13 @@ function App() {
               transition={{ duration: 0.3 }}
               className="fixed inset-0 z-50 overflow-y-auto bg-black/60 backdrop-blur-sm"
             >
-              <EventDetail
-                eventId={selectedEventId}
-                onBack={handleBack}
-                onRegister={() => navigateTo('register')}
-              />
+              <Suspense fallback={<div className="min-h-screen flex items-center justify-center text-white/50">Loading Details...</div>}>
+                <EventDetail
+                  eventId={selectedEventId}
+                  onBack={handleBack}
+                  onRegister={() => navigateTo('register')}
+                />
+              </Suspense>
             </motion.div>
           )}
 
@@ -214,10 +223,12 @@ function App() {
                 >
                   CLOSE
                 </button>
-                <Register
-                  onBack={handleBack}
-                  onLogin={() => { }} // No-op for now
-                />
+                <Suspense fallback={<div className="min-h-screen flex items-center justify-center text-white/50">Loading Registration...</div>}>
+                  <Register
+                    onBack={handleBack}
+                    onLogin={() => { }} // No-op for now
+                  />
+                </Suspense>
               </div>
             </motion.div>
           )}

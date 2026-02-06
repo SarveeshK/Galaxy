@@ -220,7 +220,8 @@ export default function Galaxy({
     const ctn = ctnDom.current;
     const renderer = new Renderer({
       alpha: transparent,
-      premultipliedAlpha: false
+      premultipliedAlpha: false,
+      dpr: Math.min(window.devicePixelRatio, 2)
     });
     const gl = renderer.gl;
 
