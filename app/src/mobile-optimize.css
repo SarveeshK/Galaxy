@@ -1,0 +1,16 @@
+@media (max-width: 768px) {
+
+    .glass,
+    .glass-premium,
+    .glass-strong {
+        backdrop-filter: blur(4px) !important;
+        -webkit-backdrop-filter: blur(4px) !important;
+        background: rgba(10, 10, 10, 0.85) !important;
+        box-shadow: none !important;
+    }
+
+    /* Disable heavy animations on mobile */
+    .animate-galaxy-rotate {
+        animation: none !important;
+    }
+}

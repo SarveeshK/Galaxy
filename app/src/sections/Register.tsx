@@ -503,7 +503,7 @@ export default function Register({ onBack }: RegisterProps) {
 
           {/* STEP 2: EVENT SELECTION */}
           <Step>
-            <div className="backdrop-blur-md bg-black/60 rounded-3xl border border-white/20 relative overflow-hidden shadow-xl p-5 md:p-12">
+            <div className="bg-black/80 md:bg-black/60 md:backdrop-blur-md rounded-3xl border border-white/20 relative overflow-hidden shadow-xl p-5 md:p-12">
               <div className="text-center mb-8">
                 <h2 className="font-orbitron text-3xl font-bold text-white mb-2 tracking-wider">SELECT EVENTS</h2>
                 <p className="text-slate-400 font-light">
@@ -585,7 +585,7 @@ export default function Register({ onBack }: RegisterProps) {
 
           {/* STEP 3: DETAILS */}
           <Step>
-            <div className="backdrop-blur-md md:backdrop-blur-xl bg-black/40 rounded-3xl border border-white/20 p-5 md:p-12">
+            <div className="bg-black/80 md:bg-black/40 md:backdrop-blur-xl rounded-3xl border border-white/20 p-5 md:p-12">
               <h2 className="font-orbitron text-3xl font-bold text-white mb-8 text-center">PARTICIPANT DETAILS</h2>
 
               {/* Personal Info Grid */}
@@ -713,7 +713,7 @@ export default function Register({ onBack }: RegisterProps) {
 
           {/* STEP 4: PAYMENT */}
           <Step>
-            <div className="backdrop-blur-md md:backdrop-blur-xl bg-black/40 rounded-3xl border border-white/20 p-5 md:p-12">
+            <div className="bg-black/80 md:bg-black/40 md:backdrop-blur-xl rounded-3xl border border-white/20 p-5 md:p-12">
               <h2 className="font-orbitron text-3xl font-bold text-white mb-8 text-center">PAYMENT</h2>
 
               <div className="grid md:grid-cols-2 gap-12">

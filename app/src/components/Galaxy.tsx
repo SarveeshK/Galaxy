@@ -218,10 +218,11 @@ export default function Galaxy({
   useEffect(() => {
     if (!ctnDom.current) return;
     const ctn = ctnDom.current;
+    const isMobile = window.innerWidth < 768;
     const renderer = new Renderer({
       alpha: transparent,
       premultipliedAlpha: false,
-      dpr: Math.min(window.devicePixelRatio, 2)
+      dpr: isMobile ? 1 : Math.min(window.devicePixelRatio, 2)
     });
     const gl = renderer.gl;
 
@@ -236,6 +237,7 @@ export default function Galaxy({
     let program: Program;
 
     function resize() {
+      // Debounce or minimize resize operations on mobile if needed
       const scale = 1;
       renderer.setSize(ctn.offsetWidth * scale, ctn.offsetHeight * scale);
       if (program) {
@@ -246,7 +248,7 @@ export default function Galaxy({
         );
       }
     }
-    window.addEventListener('resize', resize, false);
+    window.addEventListener('resize', resize, { passive: true });
     resize();
 
     const geometry = new Triangle(gl);

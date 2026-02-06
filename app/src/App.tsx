@@ -192,7 +192,7 @@ function App() {
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.95 }}
               transition={{ duration: 0.3 }}
-              className="fixed inset-0 z-50 overflow-y-auto bg-black/60 backdrop-blur-sm"
+              className="fixed inset-0 z-50 overflow-y-auto bg-black/90 md:bg-black/60 md:backdrop-blur-sm"
             >
               <Suspense fallback={<div className="min-h-screen flex items-center justify-center text-white/50">Loading Details...</div>}>
                 <EventDetail
@@ -210,7 +210,7 @@ function App() {
               initial={{ opacity: 0, y: 50 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: 50 }}
-              className="fixed inset-0 z-50 overflow-y-auto bg-black/60 backdrop-blur-sm"
+              className="fixed inset-0 z-50 overflow-y-auto bg-black/90 md:bg-black/60 md:backdrop-blur-sm"
             >
               <div className="p-4 pt-20"> {/* Add padding for close button if needed or just navbar */}
                 <button
