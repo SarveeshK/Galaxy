@@ -613,7 +613,7 @@ export default function Register({ onBack }: RegisterProps) {
                   <div>
                     <h4 className="text-yellow-500 font-bold text-sm mb-1 font-orbitron">IMPORTANT NOTICE</h4>
                     <p className="text-yellow-200/80 text-xs leading-relaxed">
-                      Participant names are <strong>CASE SENSITIVE</strong>. Ensure you enter names exactly the same way (e.g., "John Doe") across all entries to accurately calculate the participant count and avoid duplicate charges.
+                      Participant names are <strong>CASE SENSITIVE</strong>. Ensure you enter names exactly the same way (e.g., "") across all entries to accurately calculate the participant count and avoid duplicate charges.
                     </p>
                   </div>
                 </div>
@@ -707,6 +707,32 @@ export default function Register({ onBack }: RegisterProps) {
                           )}
 
                           <div className="grid md:grid-cols-2 gap-4 mb-4">
+                            <div className="md:col-span-2 flex items-center gap-2 mb-2 p-3 bg-white/5 rounded-lg border border-white/5 cursor-pointer hover:bg-white/10 transition-colors"
+                              onClick={() => {
+                                // Toggle logic: if already filled with main data, clear it? No, just overwrite is standard "copy" behavior.
+                                // Or better, toggle check state. But for simplicity, just a button action or a checkbox state.
+                                // Let's use a checkbox style div.
+                                const isSame = formData.teamDetails[eventId]?.leadName === formData.fullName &&
+                                  formData.teamDetails[eventId]?.leadPhone === formData.phone;
+
+                                if (!isSame) {
+                                  handleTeamDetailChange(eventId, 'leadName', formData.fullName);
+                                  handleTeamDetailChange(eventId, 'leadPhone', formData.phone);
+                                } else {
+                                  handleTeamDetailChange(eventId, 'leadName', '');
+                                  handleTeamDetailChange(eventId, 'leadPhone', '');
+                                }
+                              }}
+                            >
+                              <div className={`w-5 h-5 rounded border border-white/30 flex items-center justify-center transition-colors ${(formData.teamDetails[eventId]?.leadName === formData.fullName && formData.teamDetails[eventId]?.leadName !== '')
+                                  ? 'bg-purple-500 border-purple-500'
+                                  : 'bg-transparent'
+                                }`}>
+                                {(formData.teamDetails[eventId]?.leadName === formData.fullName && formData.teamDetails[eventId]?.leadName !== '') && <Check size={14} className="text-white" />}
+                              </div>
+                              <span className="text-sm text-slate-300 select-none">Same as Participant Details</span>
+                            </div>
+
                             <InputGroup
                               label="Lead Name"
                               value={formData.teamDetails[eventId]?.leadName || ''}
