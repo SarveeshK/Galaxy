@@ -58,6 +58,8 @@ export default function Register({ onBack }: RegisterProps) {
     college: '',
     department: '',
     year: '',
+    food: '',
+    accommodation: '',
     events: [] as string[],
     transactionId: '',
     paymentScreenshot: '',
@@ -221,7 +223,7 @@ export default function Register({ onBack }: RegisterProps) {
   };
 
   const validateStep3 = () => {
-    if (!formData.fullName || !formData.email || !formData.phone || !formData.college || !formData.department || !formData.year || !formData.gender) {
+    if (!formData.fullName || !formData.email || !formData.phone || !formData.college || !formData.department || !formData.year || !formData.gender || !formData.food || !formData.accommodation) {
       alert('Please fill in all personal and academic details.');
       return false;
     }
@@ -605,6 +607,17 @@ export default function Register({ onBack }: RegisterProps) {
                   />
                 </div>
 
+                {/* Case Sensitivity Warning */}
+                <div className="md:col-span-2 bg-yellow-500/10 border border-yellow-500/20 p-4 rounded-xl flex items-start gap-3 mb-6">
+                  <AlertCircle className="w-5 h-5 text-yellow-500 flex-shrink-0 mt-0.5" />
+                  <div>
+                    <h4 className="text-yellow-500 font-bold text-sm mb-1 font-orbitron">IMPORTANT NOTICE</h4>
+                    <p className="text-yellow-200/80 text-xs leading-relaxed">
+                      Participant names are <strong>CASE SENSITIVE</strong>. Ensure you enter names exactly the same way (e.g., "John Doe") across all entries to accurately calculate the participant count and avoid duplicate charges.
+                    </p>
+                  </div>
+                </div>
+
                 <InputGroup label="College" name="college" value={formData.college} onChange={handleChange} placeholder="COLLEGE NAME" required />
                 <InputGroup label="Department" name="department" value={formData.department} onChange={handleChange} placeholder="DEPARTMENT" required />
 
@@ -616,6 +629,28 @@ export default function Register({ onBack }: RegisterProps) {
                     onChange={(val) => setFormData(prev => ({ ...prev, year: val }))}
                     options={[{ value: '1', label: '1st Year' }, { value: '2', label: '2nd Year' }, { value: '3', label: '3rd Year' }, { value: '4', label: '4th Year' }]}
                     placeholder="SELECT YEAR"
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <CustomSelect
+                    label="Food Preference"
+                    required
+                    value={formData.food}
+                    onChange={(val) => setFormData(prev => ({ ...prev, food: val }))}
+                    options={[{ value: 'Veg', label: 'Veg' }, { value: 'Non-Veg', label: 'Non-Veg' }]}
+                    placeholder="SELECT FOOD"
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <CustomSelect
+                    label="Accommodation"
+                    required
+                    value={formData.accommodation}
+                    onChange={(val) => setFormData(prev => ({ ...prev, accommodation: val }))}
+                    options={[{ value: 'Yes', label: 'Yes' }, { value: 'No', label: 'No' }]}
+                    placeholder="ACCOMMODATION REQUIRED?"
                   />
                 </div>
               </div>
