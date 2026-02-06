@@ -282,7 +282,7 @@ Simple to Play! Exciting to Conquer!`,
             { name: 'Escape', description: 'Escape the upside down before time runs out.' }
         ],
         coordinators: [
-            { name: 'Coordinator', phone: '0000000000' }
+            { name: 'Nithishkumar V', phone: '6382310115' }
         ],
         color: 'from-red-500 to-black',
         icon: Shield,

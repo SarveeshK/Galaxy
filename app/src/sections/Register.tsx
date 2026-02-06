@@ -760,12 +760,14 @@ export default function Register({ onBack }: RegisterProps) {
                   <div className="flex flex-col items-center">
                     <div className="bg-white p-4 rounded-xl shadow-lg mb-4">
                       <QRCode
-                        value={`upi://pay?pa=sarveeshkaarthic05@okhdfcbank&pn=Galaxy 2k26&am=${calculateTotal()}&cu=INR`}
+                        value={`upi://pay?pa=bharathk220620005-5@okicici&pn=Galaxy 2k26&am=${calculateTotal()}&cu=INR`}
                         size={180}
+                        viewBox={`0 0 256 256`}
+                        style={{ height: "auto", maxWidth: "100%", width: "100%" }}
                       />
                     </div>
                     <div className="bg-white/10 px-4 py-2 rounded-full border border-white/10">
-                      <p className="text-white font-mono text-sm">sarveeshkaarthic05@okhdfcbank</p>
+                      <p className="text-white font-mono text-sm select-all">bharathk220620005-5@okicici</p>
                     </div>
                   </div>
 

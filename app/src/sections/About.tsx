@@ -27,6 +27,7 @@ const highlights = [
 ];
 
 // ... (existing imports)
+import ImageMarquee from '../components/ImageMarquee';
 
 // ...
 
@@ -173,7 +174,36 @@ export default function About() {
             </motion.div>
           </motion.div>
         </div>
+
+        {/* Previous Glimpses Gallery */}
+        <motion.div
+          initial={{ opacity: 0, y: 40 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, delay: 0.2 }}
+          viewport={{ once: true }}
+          className="mt-20 md:mt-32"
+        >
+          <div className="text-center mb-8">
+            <h3 className="font-orbitron text-2xl md:text-3xl font-bold text-white mb-2">
+              Glimpses of Galaxy
+            </h3>
+            <p className="text-white/60 text-sm">
+              A look back at our previous tech symposiums
+            </p>
+          </div>
+
+          <ImageMarquee
+            images={[
+              '/glimpse-1.jpg',
+              '/glimpse-2.jpg',
+              '/glimpse-3.jpg',
+              '/glimpse-4.jpg',
+              '/glimpse-5.jpg'
+            ]}
+            speed={40}
+          />
+        </motion.div>
       </div>
-    </section>
+    </section >
   );
 }

@@ -48,18 +48,12 @@ export default function Footer({ onNavigate }: FooterProps) {
                             Navigation
                         </h3>
                         <ul className="space-y-4">
-                            {['Home', 'Events', 'Timeline', 'About'].map((item) => (
+                            {['Home', 'Events', 'About'].map((item) => (
                                 <li key={item}>
                                     <button
                                         onClick={() => {
                                             const target = item.toLowerCase();
-                                            if (target === 'timeline') {
-                                                onNavigate('home');
-                                                setTimeout(() => {
-                                                    const section = document.getElementById('timeline');
-                                                    if (section) section.scrollIntoView({ behavior: 'smooth' });
-                                                }, 100);
-                                            } else if (target === 'home') {
+                                            if (target === 'home') {
                                                 onNavigate('home');
                                                 window.scrollTo({ top: 0, behavior: 'smooth' });
                                             } else {

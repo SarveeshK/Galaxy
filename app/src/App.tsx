@@ -12,7 +12,6 @@ import Hero from './sections/Hero';
 
 const About = lazy(() => import('./sections/About'));
 const Events = lazy(() => import('./sections/Events'));
-const Timeline = lazy(() => import('./sections/Timeline'));
 const Register = lazy(() => import('./sections/Register'));
 const EventDetail = lazy(() => import('./sections/EventDetail'));
 const LocateUs = lazy(() => import('./sections/LocateUs'));
@@ -98,9 +97,7 @@ function App() {
   };
 
   const handleNavigate = (view: 'home' | 'events' | 'about') => {
-    if (view === 'events') {
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-    }
+    window.scrollTo({ top: 0, behavior: 'smooth' });
     navigateTo(view);
   };
 
@@ -154,7 +151,6 @@ function App() {
                 }, 100);
               }} />
               <Suspense fallback={<div className="h-20" />}>
-                <Timeline />
                 <LocateUs />
               </Suspense>
             </main>
