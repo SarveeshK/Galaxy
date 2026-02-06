@@ -308,6 +308,12 @@ export default function Events({ onEventClick, onRegister }: EventsProps) {
             GALACTIC <span className="text-gray-400">ACCESS PASSES</span>
           </motion.h3>
 
+          {/* Mobile Swipe Hint */}
+          <div className="md:hidden flex items-center justify-end gap-2 text-white/50 text-xs font-orbitron tracking-widest mb-4 pr-4 animate-pulse">
+            <span>SWIPE TO VIEW PASSES</span>
+            <ArrowRight className="w-3 h-3" />
+          </div>
+
           {/* Horizontal Scroll Container */}
           <div className="overflow-x-auto pb-8 -mx-4 px-4 scrollbar-hide">
             <div className="flex gap-6 w-max md:w-full md:grid md:grid-cols-2 lg:grid-cols-3">
