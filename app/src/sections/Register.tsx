@@ -73,8 +73,6 @@ export default function Register({ onBack }: RegisterProps) {
     }>
   });
 
-  // Scroll logic logic removed as requested properly
-
   const handleMainBack = () => {
     if (step > 1) {
       setStep(prev => prev - 1);
@@ -333,22 +331,7 @@ export default function Register({ onBack }: RegisterProps) {
     const combo = COMBOS.find(c => c.id === selectedCombo);
     if (!combo) return 0;
     // Fixed price logic now, regardless of members (based on user request "1.2 Tech +3 Non tech... - 299")
-    // Wait, the user said "prices are per member" in the previous code? NO, the previous code had per member.
-    // The user's new request lists fixed prices for the combos.
-    // "1.2 Tech +3 Non tech + Stranger Things - 299" implies a fixed price for that package.
-    // However, if a team has multiple members, do they ALL pay 299? Or is 299 for the TEAM?
-    // "The basic registration should be in the normal combo... per member shown in the event page" was asked to be REMOVED.
-    // Let's assume the Combo Price is PER REGISTRATION (which usually is per person/pass).
-    // "Galaxy Access Pass" sounds like an individual pass.
-    // If multiple members are added in team details, usually each needs a pass?
-    // User said: "prices are per member" in old code.
-    // User request: "2 tech + 2 non tech = 249" (Basic Pass).
-    // Implementation: I will keep it as Price * Participants for now, as that is standard for "Passes".
-    // If I select a combo, I am buying a pass. If I add team members, they likely need tickets too?
-    // Actually, usually in these college fests, you buy a pass for yourself.
-    // Team events: Usually one person registers? Or all?
-    // Existing logic: `combo.price * getParticipantCount()`.
-    // I will KEEP this multiplier logic because "Pass" implies per person.
+    // Price calculation logic: Fixed price per participant based on selected combo.
     return combo.price * getParticipantCount();
   };
 
