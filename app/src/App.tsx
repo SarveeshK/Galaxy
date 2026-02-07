@@ -110,15 +110,15 @@ function App() {
         <Galaxy
           mouseRepulsion={window.innerWidth >= 768}
           mouseInteraction={window.innerWidth >= 768}
-          density={window.innerWidth < 768 ? 0.2 : 1.5}
-          glowIntensity={window.innerWidth < 768 ? 0.05 : 0.15}
+          density={window.innerWidth < 768 ? 1.2 : 1.5}
+          glowIntensity={window.innerWidth < 768 ? 0.12 : 0.15}
           saturation={0}
           hueShift={140}
-          twinkleIntensity={window.innerWidth < 768 ? 0.1 : 0.2}
+          twinkleIntensity={window.innerWidth < 768 ? 0.15 : 0.2}
           rotationSpeed={0}
           repulsionStrength={1.5}
           autoCenterRepulsion={0}
-          starSpeed={window.innerWidth < 768 ? 0.2 : 0.5}
+          starSpeed={window.innerWidth < 768 ? 0.3 : 0.5}
           speed={1}
         />
       </div>
