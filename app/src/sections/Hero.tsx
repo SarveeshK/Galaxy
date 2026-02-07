@@ -97,7 +97,7 @@ export default function Hero({ onRegister, onViewEvents }: HeroProps) {
           className="font-orbitron text-xl md:text-3xl lg:text-4xl font-bold mb-10 text-center"
         >
           <span className="text-transparent bg-clip-text bg-gradient-to-r from-slate-400 via-white to-slate-400 uppercase tracking-[0.3em] drop-shadow-lg">
-            THE BEGINNING OF AI ERA
+            WHERE AI MEETS THE UNIVERSE
           </span>
         </motion.h2>
 

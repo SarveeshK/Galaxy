@@ -89,12 +89,14 @@ export default function Register({ onBack }: RegisterProps) {
       value = sanitizeName(value);
     } else if (name === 'phone') {
       value = sanitizePhone(value);
+    } else if (name === 'transactionId') {
+      value = value.replace(/\D/g, '').slice(0, 12);
     }
 
     setFormData(prev => ({ ...prev, [name]: value }));
   };
 
-  const handleComboSelect = (comboId: ComboType) => {
+  const handleCom = (comboId: ComboType) => {
     setSelectedCombo(comboId);
     setFormData(prev => ({ ...prev, events: [], teamDetails: {} })); // Reset events & team details
   };
@@ -153,7 +155,6 @@ export default function Register({ onBack }: RegisterProps) {
       } else if (field === 'leadPhone') {
         finalValue = sanitizePhone(value);
       }
-      // No sanitization needed for titles/domains as they can allow special chars/numbers
 
       if (field === 'member' && typeof index === 'number') {
         const newMembers = [...currentDetails.members];
@@ -172,6 +173,54 @@ export default function Register({ onBack }: RegisterProps) {
         teamDetails: {
           ...prev.teamDetails,
           [eventId]: { ...currentDetails, [field]: finalValue }
+        }
+      };
+    });
+  };
+
+  const handleCopyTeamMembersOnly = (toEventId: string) => {
+    if (formData.events.length === 0) return;
+    const fromEventId = formData.events[0];
+    const sourceTeam = formData.teamDetails[fromEventId];
+
+    if (!sourceTeam) return;
+
+    setFormData(prev => {
+      // Check if already same to toggle
+      const currentMembers = prev.teamDetails[toEventId]?.members || [];
+      const sourceMembers = sourceTeam.members;
+
+      const isSame = JSON.stringify(currentMembers) === JSON.stringify(sourceMembers);
+
+      let newMembers;
+      if (isSame) {
+        // Clear if toggling off? Or re-copy? 
+        // "Same as Participant Details" toggles. 
+        // If I untick "Same as Participant", it clears the field.
+        // So here, if I untick, I should probably clear the members.
+        // But members array size depends on event constraints.
+        // Let's just clear values but keep array size.
+        const eventConfig = eventData[toEventId];
+        newMembers = Array(eventConfig.maxMembers - 1).fill('');
+      } else {
+        // Copy logic: maintain size of target event
+        const eventConfig = eventData[toEventId];
+        // We can only copy up to the max members of the target event
+        const maxCopy = eventConfig.maxMembers - 1;
+        // Source members might be more or less.
+        // Actually source members array size is fixed based on source event.
+        // We should map source members to target members.
+        newMembers = Array(maxCopy).fill('').map((_, i) => sourceMembers[i] || '');
+      }
+
+      return {
+        ...prev,
+        teamDetails: {
+          ...prev.teamDetails,
+          [toEventId]: {
+            ...prev.teamDetails[toEventId],
+            members: newMembers
+          }
         }
       };
     });
@@ -226,6 +275,11 @@ export default function Register({ onBack }: RegisterProps) {
       return false;
     }
 
+    if (formData.phone.length !== 10) {
+      alert("Phone number must be exactly 10 digits.");
+      return false;
+    }
+
     // Validate Team Details
     for (const eventId of formData.events) {
       const eventDetails = eventData[eventId];
@@ -233,6 +287,10 @@ export default function Register({ onBack }: RegisterProps) {
         const teamInfo = formData.teamDetails[eventId];
         if (!teamInfo?.leadName || !teamInfo?.leadPhone) {
           alert(`Please fill in Team Lead details for ${eventDetails.name}`);
+          return false;
+        }
+        if (teamInfo.leadPhone.length !== 10) {
+          alert(`Team Lead phone number for ${eventDetails.name} must be exactly 10 digits.`);
           return false;
         }
 
@@ -261,7 +319,7 @@ export default function Register({ onBack }: RegisterProps) {
     if (step > 1) setStep(step - 1);
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (GOOGLE_SCRIPT_URL.includes('REPLACE')) {
       alert('Please deploy the Google Script and update the URL in Register.tsx');
@@ -412,7 +470,7 @@ export default function Register({ onBack }: RegisterProps) {
                 {COMBOS.map((combo) => (
                   <div
                     key={combo.id}
-                    onClick={() => handleComboSelect(combo.id)}
+                    onClick={() => handleCom(combo.id)}
                     className={`
                                 relative p-6 rounded-3xl border cursor-pointer transition-all duration-500 group overflow-hidden
                                 ${selectedCombo === combo.id
@@ -581,7 +639,17 @@ export default function Register({ onBack }: RegisterProps) {
               <div className="grid md:grid-cols-2 gap-6 mb-8">
                 <InputGroup label="Full Name" name="fullName" value={formData.fullName} onChange={handleChange} placeholder="ENTER NAME" required />
                 <InputGroup label="Email" name="email" value={formData.email} onChange={handleChange} placeholder="EMAIL ID" type="email" required />
-                <InputGroup label="Phone" name="phone" value={formData.phone} onChange={handleChange} placeholder="MOBILE NUMBER" type="tel" required />
+                <InputGroup
+                  label="Phone"
+                  name="phone"
+                  value={formData.phone}
+                  onChange={handleChange}
+                  placeholder="MOBILE NUMBER"
+                  type="tel"
+                  required
+                  maxLength={10}
+                  error={formData.phone.length > 0 && formData.phone.length < 10 ? "Must be 10 digits" : null}
+                />
 
                 <div className="space-y-2">
                   <CustomSelect
@@ -600,7 +668,7 @@ export default function Register({ onBack }: RegisterProps) {
                   <div>
                     <h4 className="text-yellow-500 font-bold text-sm mb-1 font-orbitron">IMPORTANT NOTICE</h4>
                     <p className="text-yellow-200/80 text-xs leading-relaxed">
-                      Participant names are <strong>CASE SENSITIVE</strong>. Ensure you enter names exactly the same way (e.g., "Sarveesh Kaarthic") across all entries to accurately calculate the participant count and avoid duplicate charges.
+                      Participant names are <strong>CASE SENSITIVE</strong>. Ensure you enter names exactly the same way (e.g., "Galaxy") across all entries to accurately calculate the participant count and avoid duplicate charges.
                     </p>
                   </div>
                 </div>
@@ -649,11 +717,17 @@ export default function Register({ onBack }: RegisterProps) {
               }) && (
                   <div className="space-y-6 pt-8 border-t border-white/10">
                     <h3 className="font-orbitron text-xl text-white">TEAM DETAILS</h3>
-                    {formData.events.map(eventId => {
+                    {formData.events.map((eventId, index) => {
                       const event = eventData[eventId];
                       if (!event || event.maxMembers <= 1) return null;
+
+
+
+
                       return (
                         <div key={eventId} className="bg-white/5 border border-white/10 rounded-xl p-6">
+
+
                           <div className="flex items-center gap-3 mb-4">
                             <div className="w-1 h-6 bg-purple-500 rounded-full"></div>
                             <h4 className="font-orbitron font-bold text-white">{event.name}</h4>
@@ -732,8 +806,30 @@ export default function Register({ onBack }: RegisterProps) {
                               onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleTeamDetailChange(eventId, 'leadPhone', e.target.value)}
                               placeholder="LEAD PHONE"
                               type="tel"
+                              maxLength={10}
+                              error={formData.teamDetails[eventId]?.leadPhone && formData.teamDetails[eventId]?.leadPhone.length > 0 && formData.teamDetails[eventId]?.leadPhone.length < 10 ? "Must be 10 digits" : null}
                             />
                           </div>
+
+                          <div className="flex items-center gap-3 mb-4 mt-6 pt-4 border-t border-white/5">
+                            <h4 className="font-orbitron font-bold text-white/80 text-sm tracking-wider">TEAM MEMBERS</h4>
+                          </div>
+
+                          {index > 0 && (
+                            <div className="md:col-span-2 flex items-start sm:items-center gap-3 mb-4 p-3 bg-white/5 rounded-lg border border-white/5 cursor-pointer hover:bg-white/10 transition-colors group"
+                              onClick={() => handleCopyTeamMembersOnly(eventId)}
+                            >
+                              <div className={`w-5 h-5 rounded border border-white/30 flex items-center justify-center transition-colors flex-shrink-0 mt-0.5 sm:mt-0 ${JSON.stringify(formData.teamDetails[eventId]?.members) === JSON.stringify(formData.teamDetails[formData.events[0]]?.members)
+                                ? 'bg-purple-500 border-purple-500'
+                                : 'bg-transparent group-hover:border-white/50'
+                                }`}>
+                                {JSON.stringify(formData.teamDetails[eventId]?.members) === JSON.stringify(formData.teamDetails[formData.events[0]]?.members) &&
+                                  <Check size={14} className="text-white" />
+                                }
+                              </div>
+                              <span className="text-sm text-slate-300 select-none leading-snug">Same as Team Members Details</span>
+                            </div>
+                          )}
 
                           <div className="space-y-3">
                             {formData.teamDetails[eventId]?.members.map((member, idx) => (
@@ -828,6 +924,7 @@ export default function Register({ onBack }: RegisterProps) {
                       placeholder="ENTER 12-DIGIT UTR"
                       required
                       maxLength={12}
+                      error={formData.transactionId.length > 0 && formData.transactionId.length < 12 ? "Must be exactly 12 digits" : null}
                     />
 
                     <div className="space-y-2">
@@ -919,14 +1016,17 @@ function EventCard({ event, selected, onToggle, isFlagship = false }: any) {
 }
 
 // Premium Input Group
-function InputGroup({ label, ...props }: any) {
+function InputGroup({ label, error, ...props }: any) {
   return (
     <div className="space-y-2 group">
       <label className="text-xs text-white/60 uppercase tracking-widest font-bold ml-1 group-focus-within:text-white transition-colors">{label}</label>
       <input
-        className="w-full bg-white/10 border border-white/10 rounded-xl p-4 text-white placeholder:text-white/40 focus:border-white/50 focus:bg-white/20 focus:outline-none focus:ring-1 focus:ring-white/20 transition-all font-orbitron tracking-wide text-sm backdrop-blur-sm"
+        className={`w-full bg-white/10 border rounded-xl p-4 text-white placeholder:text-white/40 focus:bg-white/20 focus:outline-none focus:ring-1 transition-all font-orbitron tracking-wide text-sm backdrop-blur-sm
+          ${error ? 'border-red-500 focus:border-red-500 focus:ring-red-500/50' : 'border-white/10 focus:border-white/50 focus:ring-white/20'}
+        `}
         {...props}
       />
+      {error && <p className="text-red-400 text-xs ml-1 font-bold tracking-wide flex items-center gap-1"><AlertCircle size={10} /> {error}</p>}
     </div>
   );
 }
