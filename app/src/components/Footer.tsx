@@ -107,7 +107,7 @@ export default function Footer({ onNavigate }: FooterProps) {
                         </div>
 
                         <h3 className="font-orbitron text-sm font-bold text-slate-200 tracking-widest uppercase mb-4">
-                            Student Coordinator
+                            Student Coordinators
                         </h3>
                         <div className="space-y-4">
                             <div>

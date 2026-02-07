@@ -252,9 +252,16 @@ export default function Galaxy({
     resize();
 
     const geometry = new Triangle(gl);
+
+    // Optimize shader for mobile
+    const mobileFragmentShader = fragmentShader.replace(
+      '#define NUM_LAYER 4.0',
+      isMobile ? '#define NUM_LAYER 2.0' : '#define NUM_LAYER 4.0'
+    );
+
     program = new Program(gl, {
       vertex: vertexShader,
-      fragment: fragmentShader,
+      fragment: mobileFragmentShader,
       uniforms: {
         uTime: { value: 0 },
         uResolution: {

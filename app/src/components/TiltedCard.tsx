@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react';
+import { useRef, useState, useEffect } from 'react';
 import { motion, useMotionValue, useSpring, type SpringOptions } from 'framer-motion';
 import './TiltedCard.css';
 
@@ -42,6 +42,14 @@ export default function TiltedCard({
     children
 }: TiltedCardProps) {
     const ref = useRef<HTMLElement>(null);
+    const [isMobile, setIsMobile] = useState(false);
+
+    useEffect(() => {
+        const checkMobile = () => setIsMobile(window.innerWidth < 768);
+        checkMobile();
+        window.addEventListener('resize', checkMobile);
+        return () => window.removeEventListener('resize', checkMobile);
+    }, []);
 
     const x = useMotionValue(0);
     const y = useMotionValue(0);
@@ -58,7 +66,7 @@ export default function TiltedCard({
     const [lastY, setLastY] = useState<number>(0);
 
     function handleMouse(e: React.MouseEvent<HTMLElement>) {
-        if (!ref.current) return;
+        if (!ref.current || isMobile) return;
 
         const rect = ref.current.getBoundingClientRect();
         const offsetX = e.clientX - rect.left - rect.width / 2;
@@ -79,11 +87,13 @@ export default function TiltedCard({
     }
 
     function handleMouseEnter() {
+        if (isMobile) return;
         scale.set(scaleOnHover);
         opacity.set(1);
     }
 
     function handleMouseLeave() {
+        if (isMobile) return;
         opacity.set(0);
         scale.set(1);
         rotateX.set(0);
@@ -103,7 +113,7 @@ export default function TiltedCard({
             onMouseEnter={handleMouseEnter}
             onMouseLeave={handleMouseLeave}
         >
-            {showMobileWarning && (
+            {showMobileWarning && !isMobile && (
                 <div className="tilted-card-mobile-alert">This effect is not optimized for mobile. Check on desktop.</div>
             )}
 
@@ -112,9 +122,9 @@ export default function TiltedCard({
                 style={{
                     width: imageWidth,
                     height: imageHeight,
-                    rotateX,
-                    rotateY,
-                    scale
+                    rotateX: isMobile ? 0 : rotateX,
+                    rotateY: isMobile ? 0 : rotateY,
+                    scale: isMobile ? 1 : scale
                 }}
             >
                 {imageSrc ? (

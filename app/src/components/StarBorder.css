@@ -15,6 +15,7 @@
     border-radius: 50%;
     animation: star-movement-bottom linear infinite alternate;
     z-index: 0;
+    will-change: transform, opacity;
 }
 
 .border-gradient-top {
@@ -27,6 +28,7 @@
     border-radius: 50%;
     animation: star-movement-top linear infinite alternate;
     z-index: 0;
+    will-change: transform, opacity;
 }
 
 .inner-content {
