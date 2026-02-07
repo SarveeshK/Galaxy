@@ -725,8 +725,8 @@ export default function Register({ onBack }: RegisterProps) {
                               }}
                             >
                               <div className={`w-5 h-5 rounded border border-white/30 flex items-center justify-center transition-colors ${(formData.teamDetails[eventId]?.leadName === formData.fullName && formData.teamDetails[eventId]?.leadName !== '')
-                                  ? 'bg-purple-500 border-purple-500'
-                                  : 'bg-transparent'
+                                ? 'bg-purple-500 border-purple-500'
+                                : 'bg-transparent'
                                 }`}>
                                 {(formData.teamDetails[eventId]?.leadName === formData.fullName && formData.teamDetails[eventId]?.leadName !== '') && <Check size={14} className="text-white" />}
                               </div>
