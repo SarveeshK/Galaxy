@@ -241,8 +241,7 @@ Simple to Play! Thrilling to Win!`,
         description: `Short Film Showcase
 
 ▫️Unleash your creativity in a quick-fire film challenge. Easy to enter, tough to stand out—where storytelling shines and the best ideas captivate all.
-
-Simple to Submit`,
+`,
     },
     'spin-and-win': {
         name: 'SPIN AND WIN',
@@ -271,7 +270,7 @@ Simple to Play! Exciting to Conquer!`,
     },
     'stranger-things': {
         name: 'STRANGER THINGS',
-        tagline: 'OBSERVE. SOLVE. ESCAPE.',
+        tagline: 'ESCAPE FROM THE UPSIDE DOWN',
         teamSize: '3-4 Members',
         minMembers: 3,
         maxMembers: 4,
