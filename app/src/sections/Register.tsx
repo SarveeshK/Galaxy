@@ -617,7 +617,7 @@ export default function Register({ onBack }: RegisterProps) {
                   <div>
                     <h4 className="text-yellow-500 font-bold text-sm mb-1 font-orbitron">IMPORTANT NOTICE</h4>
                     <p className="text-yellow-200/80 text-xs leading-relaxed">
-                      Participant names are <strong>CASE SENSITIVE</strong>. Ensure you enter names exactly the same way (e.g., "") across all entries to accurately calculate the participant count and avoid duplicate charges.
+                      Participant names are <strong>CASE SENSITIVE</strong>. Ensure you enter names exactly the same way (e.g., "Sarveesh Kaarthic") across all entries to accurately calculate the participant count and avoid duplicate charges.
                     </p>
                   </div>
                 </div>

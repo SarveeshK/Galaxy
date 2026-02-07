@@ -114,6 +114,10 @@ export default function Footer({ onNavigate }: FooterProps) {
                                 <p className="text-white font-medium text-sm">Mr. Nithishkumar V</p>
                                 <p className="text-white/40 text-xs">Student Secretary</p>
                             </div>
+                            <div>
+                                <p className="text-white font-medium text-sm">Ms. Aswathi S Nair</p>
+                                <p className="text-white/40 text-xs">Student Secretary</p>
+                            </div>
                         </div>
                     </div>
                 </div>
