@@ -657,7 +657,7 @@ export default function Register({ onBack }: RegisterProps) {
                           <div className="flex items-center gap-3 mb-4">
                             <div className="w-1 h-6 bg-purple-500 rounded-full"></div>
                             <h4 className="font-orbitron font-bold text-white">{event.name}</h4>
-                            <span className="text-xs text-white/50 bg-white/10 px-2 py-0.5 rounded">Max {event.maxMembers} Members</span>
+                            <span className="text-xs text-white/50 bg-white/10 px-2 py-0.5 rounded">Min {event.minMembers} Members</span>
                           </div>
 
                           {/* OPTIONAL: Project War Specific Fields */}
