@@ -27,6 +27,7 @@ export default function Register({ onBack }: RegisterProps) {
   const { submitToSheet, loading, error, success } = useGoogleSheet();
   const [step, setStep] = useState(1);
   const scrollRef = useRef<HTMLDivElement>(null);
+  const nextButtonRef = useRef<HTMLButtonElement>(null);
   const [compressing, setCompressing] = useState(false);
 
   // Form State
@@ -99,6 +100,11 @@ export default function Register({ onBack }: RegisterProps) {
   const handleCom = (comboId: ComboType) => {
     setSelectedCombo(comboId);
     setFormData(prev => ({ ...prev, events: [], teamDetails: {} })); // Reset events & team details
+
+    // Auto-scroll to next button
+    setTimeout(() => {
+      nextButtonRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }, 100);
   };
 
   const handleEventToggle = (eventId: string) => {
@@ -514,6 +520,7 @@ export default function Register({ onBack }: RegisterProps) {
 
               <div className="flex justify-center mt-8">
                 <button
+                  ref={nextButtonRef}
                   type="button"
                   onClick={() => {
                     if (step === 1 && selectedCombo) {
