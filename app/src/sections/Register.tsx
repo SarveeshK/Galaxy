@@ -418,6 +418,10 @@ export default function Register({ onBack }: RegisterProps) {
             <div className="space-y-8">
               <div className="text-center">
                 <h2 className="font-orbitron text-4xl font-bold text-white mb-4 tracking-wider">CHOOSE YOUR PLAN</h2>
+                <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-amber-500/10 border border-amber-500/20 mb-6">
+                  <div className="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse" />
+                  <span className="text-amber-200 text-xs font-orbitron tracking-widest font-bold">REGISTRATION CLOSES ON FEB 26</span>
+                </div>
                 <p className="text-slate-400 font-light max-w-2xl mx-auto">Select the combo that suits you best. Prices are per member.</p>
               </div>
 

@@ -5,6 +5,7 @@ import ShinyText from '../components/ShinyText'; // Trigger HMR
 
 
 import Countdown from '../components/Countdown';
+import StarBorder from '../components/StarBorder';
 
 interface HeroProps {
   onRegister: () => void;
@@ -137,8 +138,26 @@ export default function Hero({ onRegister, onViewEvents }: HeroProps) {
         </motion.p>
 
         {/* Countdown Timer */}
-        <div className="flex justify-center w-full">
+        <div className="flex justify-center w-full mb-8">
           <Countdown />
+        </div>
+
+        {/* Registration Deadline Badge */}
+        <div className="flex justify-center w-full mb-10">
+          <StarBorder
+            as="div"
+            className="px-12 md:px-24 py-5 rounded-2xl bg-black/40 backdrop-blur-md border border-white/10"
+            color="#e2e8f0" // Silver/Platinum
+            speed="4s"
+          >
+            <span className="text-slate-200 font-orbitron text-sm md:text-base tracking-widest font-bold flex items-center gap-3">
+              REGISTRATION CLOSES ON FEB 26
+              <span className="hidden md:flex items-center gap-3">
+                <span className="text-white">•</span>
+                <span className="text-white drop-shadow-[0_0_5px_rgba(255,255,255,0.8)]">HURRY UP!</span>
+              </span>
+            </span>
+          </StarBorder>
         </div>
 
         {/* CTA Buttons */}
