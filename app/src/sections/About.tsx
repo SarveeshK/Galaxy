@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion';
-import { GraduationCap, Award, Users, Target, Globe, Rocket } from 'lucide-react';
+import { Target, Globe, Rocket } from 'lucide-react';
 import ScrollFloat from '../components/ScrollFloat';
 
 
