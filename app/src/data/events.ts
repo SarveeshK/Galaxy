@@ -153,7 +153,7 @@ Showcase creativity through real working models.`,
         ],
         coordinators: [
             { name: 'Naga Arjun M', phone: '9360494174' },
-            { name: 'Sathiya G', phone: '9042297254' },
+            { name: 'Sathya G', phone: '9042297254' },
         ],
         color: 'from-teal-400 to-green-500',
         icon: Zap,

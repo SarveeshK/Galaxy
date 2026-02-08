@@ -89,7 +89,7 @@ export const COMBOS: Combo[] = [
     {
         id: 'STANDARD',
         name: 'STANDARD PASS',
-        price: 249,
+        price: 199,
         description: '2 Tech + 2 Non-Tech',
         condition: 'Standard Events Only',
         filter: (e) => e.type !== 'FLAGSHIP',

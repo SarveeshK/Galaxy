@@ -473,7 +473,7 @@ export default function Register({ onBack }: RegisterProps) {
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {COMBOS.map((combo) => (
+                {COMBOS.map((combo) => ( // Rendering combos from data source
                   <div
                     key={combo.id}
                     onClick={() => handleCom(combo.id)}
