@@ -1,6 +1,6 @@
 import { eventData } from './events';
 
-export type ComboType = 'ULTIMATE' | 'ELITE' | 'PREMIUM' | 'STANDARD' | 'BASIC';
+export type ComboType = 'PREMIUM' | 'ELITE' | 'STANDARD' | 'BASIC';
 
 export interface Combo {
     id: ComboType;
@@ -17,19 +17,24 @@ export interface Combo {
 
 export const COMBOS: Combo[] = [
     {
-        id: 'ULTIMATE',
-        name: 'The Ultimate Pass',
+        id: 'PREMIUM',
+        name: 'PREMIUM PASS',
         price: 299,
-        description: '3 Tech + 2 Non-Tech + Stranger Things',
-        condition: 'Flagship Event + 5 Events',
-        filter: (_) => true, // Can see all events, validation restricts selection
+        description: '2 Tech + 2 Non-Tech + Stranger Things',
+        condition: '4 Events + Flagship Event',
+        filter: (_) => true,
         validateAdd: (events, newId) => {
             const nextEvents = [...events, newId];
             const techCount = nextEvents.filter(id => eventData[id]?.type === 'TECHNICAL').length;
             const nonTechCount = nextEvents.filter(id => eventData[id]?.type === 'NON TECHNICAL').length;
             const flagshipCount = nextEvents.filter(id => eventData[id]?.type === 'FLAGSHIP').length;
 
-            if (eventData[newId]?.type === 'TECHNICAL' && techCount > 3) return { valid: false, message: 'Max 3 Technical events allowed.' };
+            // Mutual Exclusion: Paper Presentation vs Project War
+            const hasPaper = nextEvents.includes('paper-presentation');
+            const hasProject = nextEvents.includes('project-war');
+            if (hasPaper && hasProject) return { valid: false, message: 'You can choose either Paper Presentation OR Project War, not both.' };
+
+            if (eventData[newId]?.type === 'TECHNICAL' && techCount > 2) return { valid: false, message: 'Max 2 Technical events allowed.' };
             if (eventData[newId]?.type === 'NON TECHNICAL' && nonTechCount > 2) return { valid: false, message: 'Max 2 Non-Technical events allowed.' };
             if (eventData[newId]?.type === 'FLAGSHIP' && flagshipCount > 1) return { valid: false, message: 'Already selected Flagship event.' };
 
@@ -39,9 +44,12 @@ export const COMBOS: Combo[] = [
             const techCount = events.filter(id => eventData[id]?.type === 'TECHNICAL').length;
             const nonTechCount = events.filter(id => eventData[id]?.type === 'NON TECHNICAL').length;
             const hasST = events.includes('stranger-things');
+            const hasPaper = events.includes('paper-presentation');
+            const hasProject = events.includes('project-war');
 
-            if (techCount !== 3) return { valid: false, message: `Select exactly 3 Technical events (Selected: ${techCount}).` };
-            if (nonTechCount !== 2) return { valid: false, message: `Select exactly 2 Non-Technical events (Selected: ${nonTechCount}).` };
+            if (!hasPaper && !hasProject) return { valid: false, message: 'You must select either Paper Presentation OR Project War.' };
+            if (techCount !== 2) return { valid: false, message: `Select exactly 2 Technical events.` };
+            if (nonTechCount !== 2) return { valid: false, message: `Select exactly 2 Non-Technical events.` };
             if (!hasST) return { valid: false, message: 'Stranger Things is required for this pass.' };
 
             return { valid: true };
@@ -49,72 +57,10 @@ export const COMBOS: Combo[] = [
     },
     {
         id: 'ELITE',
-        name: 'Elite Pass',
-        price: 299,
-        description: '2 Tech + 3 Non-Tech + Stranger Things',
-        condition: 'Flagship Event + 5 Events',
-        filter: (_) => true,
-        validateAdd: (events, newId) => {
-            const nextEvents = [...events, newId];
-            const techCount = nextEvents.filter(id => eventData[id]?.type === 'TECHNICAL').length;
-            const nonTechCount = nextEvents.filter(id => eventData[id]?.type === 'NON TECHNICAL').length;
-            const flagshipCount = nextEvents.filter(id => eventData[id]?.type === 'FLAGSHIP').length;
-
-            if (eventData[newId]?.type === 'TECHNICAL' && techCount > 2) return { valid: false, message: 'Max 2 Technical events allowed.' };
-            if (eventData[newId]?.type === 'NON TECHNICAL' && nonTechCount > 3) return { valid: false, message: 'Max 3 Non-Technical events allowed.' };
-            if (eventData[newId]?.type === 'FLAGSHIP' && flagshipCount > 1) return { valid: false, message: 'Already selected Flagship event.' };
-
-            return { valid: true };
-        },
-        validateNext: (events) => {
-            const techCount = events.filter(id => eventData[id]?.type === 'TECHNICAL').length;
-            const nonTechCount = events.filter(id => eventData[id]?.type === 'NON TECHNICAL').length;
-            const hasST = events.includes('stranger-things');
-
-            if (techCount !== 2) return { valid: false, message: `Select exactly 2 Technical events (Selected: ${techCount}).` };
-            if (nonTechCount !== 3) return { valid: false, message: `Select exactly 3 Non-Technical events (Selected: ${nonTechCount}).` };
-            if (!hasST) return { valid: false, message: 'Stranger Things is required for this pass.' };
-
-            return { valid: true };
-        }
-    },
-    {
-        id: 'PREMIUM',
-        name: 'Premium Pass',
-        price: 279,
-        description: '2 Tech + 1 Non-Tech + Stranger Things',
-        condition: 'Flagship Event + 3 Events',
-        filter: (_) => true,
-        validateAdd: (events, newId) => {
-            const nextEvents = [...events, newId];
-            const techCount = nextEvents.filter(id => eventData[id]?.type === 'TECHNICAL').length;
-            const nonTechCount = nextEvents.filter(id => eventData[id]?.type === 'NON TECHNICAL').length;
-            const flagshipCount = nextEvents.filter(id => eventData[id]?.type === 'FLAGSHIP').length;
-
-            if (eventData[newId]?.type === 'TECHNICAL' && techCount > 2) return { valid: false, message: 'Max 2 Technical events allowed.' };
-            if (eventData[newId]?.type === 'NON TECHNICAL' && nonTechCount > 1) return { valid: false, message: 'Max 1 Non-Technical event allowed.' };
-            if (eventData[newId]?.type === 'FLAGSHIP' && flagshipCount > 1) return { valid: false, message: 'Already selected Flagship event.' };
-
-            return { valid: true };
-        },
-        validateNext: (events) => {
-            const techCount = events.filter(id => eventData[id]?.type === 'TECHNICAL').length;
-            const nonTechCount = events.filter(id => eventData[id]?.type === 'NON TECHNICAL').length;
-            const hasST = events.includes('stranger-things');
-
-            if (techCount !== 2) return { valid: false, message: `Select exactly 2 Technical events (Selected: ${techCount}).` };
-            if (nonTechCount !== 1) return { valid: false, message: `Select exactly 1 Non-Technical event (Selected: ${nonTechCount}).` };
-            if (!hasST) return { valid: false, message: 'Stranger Things is required for this pass.' };
-
-            return { valid: true };
-        }
-    },
-    {
-        id: 'STANDARD',
-        name: 'Standard Pass',
+        name: 'ELITE PASS',
         price: 249,
         description: '1 Tech + 1 Non-Tech + Stranger Things',
-        condition: 'Flagship Event + 2 Events',
+        condition: '2 Events + Flagship Event',
         filter: (_) => true,
         validateAdd: (events, newId) => {
             const nextEvents = [...events, newId];
@@ -133,20 +79,20 @@ export const COMBOS: Combo[] = [
             const nonTechCount = events.filter(id => eventData[id]?.type === 'NON TECHNICAL').length;
             const hasST = events.includes('stranger-things');
 
-            if (techCount !== 1) return { valid: false, message: `Select exactly 1 Technical event (Selected: ${techCount}).` };
-            if (nonTechCount !== 1) return { valid: false, message: `Select exactly 1 Non-Technical event (Selected: ${nonTechCount}).` };
+            if (techCount !== 1) return { valid: false, message: `Select exactly 1 Technical event.` };
+            if (nonTechCount !== 1) return { valid: false, message: `Select exactly 1 Non-Technical event.` };
             if (!hasST) return { valid: false, message: 'Stranger Things is required for this pass.' };
 
             return { valid: true };
         }
     },
     {
-        id: 'BASIC',
-        name: 'Basic Pass',
+        id: 'STANDARD',
+        name: 'STANDARD PASS',
         price: 249,
-        description: 'The Normal Plan: 2 Tech + 2 Non-Tech',
+        description: '2 Tech + 2 Non-Tech',
         condition: 'Standard Events Only',
-        filter: (e) => e.type !== 'FLAGSHIP', // Stranger Things hidden/disabled
+        filter: (e) => e.type !== 'FLAGSHIP',
         validateAdd: (events, newId) => {
             const nextEvents = [...events, newId];
             const techCount = nextEvents.filter(id => eventData[id]?.type === 'TECHNICAL').length;
@@ -162,11 +108,26 @@ export const COMBOS: Combo[] = [
             const techCount = events.filter(id => eventData[id]?.type === 'TECHNICAL').length;
             const nonTechCount = events.filter(id => eventData[id]?.type === 'NON TECHNICAL').length;
 
-            if (techCount !== 2) return { valid: false, message: `Select exactly 2 Technical events (Selected: ${techCount}).` };
-            if (nonTechCount !== 2) return { valid: false, message: `Select exactly 2 Non-Technical events (Selected: ${nonTechCount}).` };
+            if (techCount !== 2) return { valid: false, message: `Select exactly 2 Technical events.` };
+            if (nonTechCount !== 2) return { valid: false, message: `Select exactly 2 Non-Technical events.` };
 
+            return { valid: true };
+        }
+    },
+    {
+        id: 'BASIC',
+        name: 'BASIC PASS',
+        price: 179,
+        description: 'Any 1 Event (including Stranger Things)',
+        condition: 'Single Event Entry',
+        filter: (_) => true,
+        validateAdd: (events, newId) => {
+            if (events.length >= 1) return { valid: false, message: 'Only 1 event allowed in Base Pass.' };
+            return { valid: true };
+        },
+        validateNext: (events) => {
+            if (events.length !== 1) return { valid: false, message: 'Select exactly 1 event.' };
             return { valid: true };
         }
     }
 ];
-

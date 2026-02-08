@@ -330,15 +330,12 @@ export default function Events({ onEventClick, onRegister }: EventsProps) {
                     className="h-full border border-white/10 bg-white/5 rounded-2xl p-6 hover:border-white/40 transition-colors group relative overflow-hidden"
                     spotlightColor="rgba(255, 255, 255, 0.1)"
                   >
-                    {/* Best Value Badge for Ultimate */}
-                    {combo.id === 'ULTIMATE' && (
-                      <div className="absolute top-0 right-0 bg-gradient-to-bl from-gray-200 to-gray-400 text-black text-[9px] font-bold px-3 py-1.5 rounded-bl-xl z-20 font-orbitron tracking-wider">
-                        BEST VALUE
-                      </div>
-                    )}
+
+
+
                     {/* Flagship Badge */}
-                    {(combo.id === 'ULTIMATE' || combo.id === 'ELITE' || combo.id === 'PREMIUM' || combo.id === 'STANDARD') && (
-                      <div className="absolute top-0 right-0 bg-gradient-to-bl from-red-600 to-red-900 text-white text-[9px] font-bold px-3 py-1.5 rounded-bl-xl z-20 font-orbitron tracking-wider">
+                    {(combo.id === 'PREMIUM' || combo.id === 'ELITE') && (
+                      <div className="absolute top-0 right-0 bg-gradient-to-bl from-red-600 to-red-900 text-white text-[9px] font-bold px-3 py-1.5 rounded-bl-xl z-20 font-orbitron tracking-wider shadow-md">
                         INCLUDES FLAGSHIP
                       </div>
                     )}

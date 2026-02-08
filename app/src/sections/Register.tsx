@@ -484,9 +484,11 @@ export default function Register({ onBack }: RegisterProps) {
                         : 'bg-black/40 border-white/10 hover:border-white/30 hover:bg-white/5 hover:scale-[1.01]'}
                             `}
                   >
+
+
                     {/* Flagship Badge */}
-                    {(combo.id === 'ULTIMATE' || combo.id === 'ELITE' || combo.id === 'PREMIUM' || combo.id === 'STANDARD') && (
-                      <div className="absolute top-0 right-0 bg-gradient-to-bl from-red-600 to-red-900 text-white text-[9px] font-bold px-3 py-1.5 rounded-bl-xl z-10 font-orbitron tracking-wider">
+                    {(combo.id === 'PREMIUM' || combo.id === 'ELITE') && (
+                      <div className="absolute top-0 right-0 bg-gradient-to-bl from-red-600 to-red-900 text-white text-[9px] font-bold px-3 py-1.5 rounded-bl-xl z-10 font-orbitron tracking-wider shadow-md">
                         INCLUDES FLAGSHIP
                       </div>
                     )}
