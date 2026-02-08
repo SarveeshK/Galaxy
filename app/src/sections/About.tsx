@@ -2,11 +2,7 @@ import { motion } from 'framer-motion';
 import { GraduationCap, Award, Users, Target, Globe, Rocket } from 'lucide-react';
 import ScrollFloat from '../components/ScrollFloat';
 
-const stats = [
-  { icon: GraduationCap, value: '8', label: 'UG Programs' },
-  { icon: Award, value: '40+', label: 'Years of Excellence' },
-  { icon: Users, value: '2000+', label: 'Students' },
-];
+
 
 const highlights = [
   {
@@ -105,24 +101,7 @@ export default function About() {
               </li>
             </ul>
 
-            {/* Stats */}
-            <div className="grid grid-cols-2 gap-4">
-              {stats.map((stat, index) => (
-                <motion.div
-                  key={stat.label}
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  transition={{ delay: index * 0.1 }}
-                  viewport={{ once: true }}
-                  whileHover={{ scale: 1.05 }}
-                  className="glass rounded-xl p-4 text-center hover:bg-white/10 transition-all border border-white/10 hover:border-white/30"
-                >
-                  <stat.icon className="w-6 h-6 mx-auto text-gray-400 mb-2" />
-                  <p className="text-2xl font-orbitron font-bold text-white">{stat.value}</p>
-                  <p className="text-white/50 text-xs">{stat.label}</p>
-                </motion.div>
-              ))}
-            </div>
+
           </motion.div>
 
           {/* Right - Highlights */}
