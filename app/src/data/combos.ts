@@ -121,7 +121,7 @@ export const COMBOS: Combo[] = [
         description: 'Any 1 Event (including Stranger Things)',
         condition: 'Single Event Entry',
         filter: (_) => true,
-        validateAdd: (events, _newId) => {
+        validateAdd: (events) => {
             if (events.length >= 1) return { valid: false, message: 'Only 1 event allowed in Base Pass.' };
             return { valid: true };
         },
