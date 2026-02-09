@@ -82,7 +82,7 @@ export default function LocateUs() {
                             </div>
 
                             <iframe
-                                src="https://maps.google.com/maps?q=11.2740,77.6070&z=15&output=embed"
+                                src="https://maps.google.com/maps?q=Department+of+Electronics+and+Communication+Engineering,+Government+College+of+Engineering,+Erode&t=&z=17&ie=UTF8&iwloc=&output=embed"
                                 width="100%"
                                 height="100%"
                                 style={{ border: 0, pointerEvents: 'auto' }}
@@ -90,7 +90,7 @@ export default function LocateUs() {
                                 loading="lazy"
                                 referrerPolicy="no-referrer-when-downgrade"
                                 className="w-full h-full rounded-2xl"
-                                title="Google Map of GCE Erode"
+                                title="Department of Electronics and Communication, GCE Erode"
                             ></iframe>
                         </motion.div>
                     </div>
