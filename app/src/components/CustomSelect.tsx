@@ -14,6 +14,7 @@ interface CustomSelectProps {
     placeholder?: string;
     label?: string;
     required?: boolean;
+    error?: string | null;
 }
 
 export default function CustomSelect({
@@ -22,7 +23,8 @@ export default function CustomSelect({
     onChange,
     placeholder = 'Select',
     label,
-    required
+    required,
+    error
 }: CustomSelectProps) {
     const [isOpen, setIsOpen] = useState(false);
     const containerRef = useRef<HTMLDivElement>(null);
@@ -54,7 +56,11 @@ export default function CustomSelect({
                     className={`
             w-full bg-white/5 border rounded-xl p-4 text-left flex items-center justify-between
             transition-all duration-300 outline-none
-            ${isOpen ? 'border-slate-300 bg-white/10 ring-1 ring-slate-300/50' : 'border-white/10 hover:border-white/30'}
+            ${error
+                            ? 'border-red-500/50 bg-red-500/5 ring-1 ring-red-500/20'
+                            : isOpen
+                                ? 'border-slate-300 bg-white/10 ring-1 ring-slate-300/50'
+                                : 'border-white/10 hover:border-white/30'}
           `}
                 >
                     <span className={`${value ? 'text-white' : 'text-white/40'} font-orbitron tracking-wide`}>
@@ -64,7 +70,7 @@ export default function CustomSelect({
                         animate={{ rotate: isOpen ? 180 : 0 }}
                         transition={{ duration: 0.2 }}
                     >
-                        <ChevronDown className="w-5 h-5 text-slate-400" />
+                        <ChevronDown className={`w-5 h-5 ${error ? 'text-red-400' : 'text-slate-400'}`} />
                     </motion.div>
                 </button>
 
@@ -100,6 +106,15 @@ export default function CustomSelect({
                     )}
                 </AnimatePresence>
             </div>
+            {error && (
+                <motion.p
+                    initial={{ opacity: 0, y: -5 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className="text-red-400 text-xs ml-1 font-bold tracking-wide flex items-center gap-1"
+                >
+                    <span className="inline-block w-1 h-1 rounded-full bg-red-400" /> {error}
+                </motion.p>
+            )}
         </div>
     );
 }

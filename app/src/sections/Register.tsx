@@ -9,6 +9,7 @@ import useGoogleSheet from '../hooks/useGoogleSheet';
 import { eventData } from '../data/events';
 import { compressImage } from '../utils/imageCompression';
 import { COMBOS, type ComboType } from '../data/combos';
+import { useToast } from '../context/ToastContext';
 
 // PLACHOLDER - User needs to replace this after deploying their script
 const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbx8jpAeeTrsy3mFo3kjhF8r6-PLUSFB9Z4FyspTmRb6IOhIoIB_IbT5myojpXY2V72qow/exec';
@@ -25,6 +26,8 @@ const sanitizePhone = (val: string) => val.replace(/\D/g, '').slice(0, 10);
 
 export default function Register({ onBack }: RegisterProps) {
   const { submitToSheet, loading, error, success } = useGoogleSheet();
+  const { showToast } = useToast();
+  const [errors, setErrors] = useState<Record<string, string>>({});
   const [step, setStep] = useState(1);
   const scrollRef = useRef<HTMLDivElement>(null);
   const nextButtonRef = useRef<HTMLButtonElement>(null);
@@ -83,7 +86,8 @@ export default function Register({ onBack }: RegisterProps) {
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-    let { name, value } = e.target;
+    const { name } = e.target;
+    let { value } = e.target;
 
     // Strict Input Sanitization
     if (name === 'fullName' || name === 'college' || name === 'department') {
@@ -116,7 +120,7 @@ export default function Register({ onBack }: RegisterProps) {
       const validation = combo?.validateAdd(formData.events, eventId);
 
       if (validation && !validation.valid) {
-        alert(validation.message);
+        showToast(validation.message || 'Invalid selection', 'error');
         return;
       }
     }
@@ -241,7 +245,7 @@ export default function Register({ onBack }: RegisterProps) {
         setFormData(prev => ({ ...prev, paymentScreenshot: compressedBase64 }));
       } catch (err) {
         console.error("Compression failed", err);
-        alert("Failed to process image. Please try another one.");
+        showToast("Failed to process image. Please try another one.", 'error');
       } finally {
         setCompressing(false);
       }
@@ -250,7 +254,7 @@ export default function Register({ onBack }: RegisterProps) {
 
   const validateStep1 = () => {
     if (!selectedCombo) {
-      alert('Please select a combo plan.');
+      showToast('Please select a combo plan to continue', 'error');
       return false;
     }
     return true;
@@ -258,7 +262,7 @@ export default function Register({ onBack }: RegisterProps) {
 
   const validateStep2 = () => {
     if (formData.events.length === 0) {
-      alert('Please select at least one event to proceed.');
+      showToast('Please select at least one event to proceed', 'error');
       return false;
     }
 
@@ -267,7 +271,7 @@ export default function Register({ onBack }: RegisterProps) {
       const combo = COMBOS.find(c => c.id === selectedCombo);
       const validation = combo?.validateNext(formData.events);
       if (validation && !validation.valid) {
-        alert(validation.message);
+        showToast(validation.message || 'Invalid selection', 'error');
         return false;
       }
     }
@@ -276,43 +280,51 @@ export default function Register({ onBack }: RegisterProps) {
   };
 
   const validateStep3 = () => {
-    if (!formData.fullName || !formData.email || !formData.phone || !formData.college || !formData.department || !formData.year || !formData.gender || !formData.food || !formData.accommodation) {
-      alert('Please fill in all personal and academic details.');
-      return false;
-    }
+    const newErrors: Record<string, string> = {};
+    let isValid = true;
 
-    if (formData.phone.length !== 10) {
-      alert("Phone number must be exactly 10 digits.");
-      return false;
-    }
+    if (!formData.fullName) newErrors.fullName = "Full Name is required";
+    if (!formData.email) newErrors.email = "Email is required";
+    if (!formData.phone) newErrors.phone = "Phone number is required";
+    else if (formData.phone.length !== 10) newErrors.phone = "Phone number must be exactly 10 digits";
+
+    if (!formData.college) newErrors.college = "College name is required";
+    if (!formData.department) newErrors.department = "Department is required";
+    if (!formData.year) newErrors.year = "Year is required";
+    if (!formData.gender) newErrors.gender = "Gender is required";
+    if (!formData.food) newErrors.food = "Food preference is required";
+    if (!formData.accommodation) newErrors.accommodation = "Accommodation preference is required";
 
     // Validate Team Details
     for (const eventId of formData.events) {
       const eventDetails = eventData[eventId];
       if (eventDetails && eventDetails.maxMembers > 1) {
         const teamInfo = formData.teamDetails[eventId];
-        if (!teamInfo?.leadName || !teamInfo?.leadPhone) {
-          alert(`Please fill in Team Lead details for ${eventDetails.name}`);
-          return false;
-        }
-        if (teamInfo.leadPhone.length !== 10) {
-          alert(`Team Lead phone number for ${eventDetails.name} must be exactly 10 digits.`);
-          return false;
-        }
+
+        if (!teamInfo?.leadName) newErrors[`${eventId}-leadName`] = "Team Lead Name is required";
+        if (!teamInfo?.leadPhone) newErrors[`${eventId}-leadPhone`] = "Team Lead Phone is required";
+        else if (teamInfo.leadPhone.length !== 10) newErrors[`${eventId}-leadPhone`] = "Phone must be 10 digits";
 
         // Validate Minimum Members Requirement
         if (eventDetails.minMembers > 1) {
-          const filledMembers = teamInfo.members.filter(m => m.trim().length > 0).length;
-          // Total participants = 1 (Lead) + filledMembers
-          // But minMembers includes Lead. So we need (1 + filledMembers) >= minMembers
+          const filledMembers = teamInfo?.members.filter(m => m.trim().length > 0).length || 0;
           if ((1 + filledMembers) < eventDetails.minMembers) {
-            alert(`${eventDetails.name} requires at least ${eventDetails.minMembers} members (Lead + ${eventDetails.minMembers - 1} Members). Please fill in all team member details.`);
-            return false;
+            showToast(`${eventDetails.name} requires at least ${eventDetails.minMembers} members`, 'error');
+            isValid = false;
           }
         }
       }
     }
-    return true;
+
+    if (Object.keys(newErrors).length > 0) {
+      setErrors(newErrors);
+      showToast('Please fill in all mandatory fields', 'error');
+      isValid = false;
+    } else {
+      setErrors({});
+    }
+
+    return isValid;
   }
 
   const handleNext = () => {
@@ -328,17 +340,17 @@ export default function Register({ onBack }: RegisterProps) {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (GOOGLE_SCRIPT_URL.includes('REPLACE')) {
-      alert('Please deploy the Google Script and update the URL in Register.tsx');
+      showToast('Please deploy the Google Script and update the URL in Register.tsx', 'error');
       return;
     }
 
     if (!formData.transactionId || !formData.paymentScreenshot) {
-      alert('Please provide transaction ID and payment screenshot.');
+      showToast('Please provide transaction ID and payment screenshot', 'error');
       return;
     }
 
     if (!/^\d{12}$/.test(formData.transactionId)) {
-      alert('Transaction ID (UTR) must be exactly 12 numeric digits.');
+      showToast('Transaction ID (UTR) must be exactly 12 numeric digits', 'error');
       return;
     }
 
@@ -646,8 +658,25 @@ export default function Register({ onBack }: RegisterProps) {
 
               {/* Personal Info Grid */}
               <div className="grid md:grid-cols-2 gap-6 mb-8">
-                <InputGroup label="Full Name" name="fullName" value={formData.fullName} onChange={handleChange} placeholder="ENTER NAME" required />
-                <InputGroup label="Email" name="email" value={formData.email} onChange={handleChange} placeholder="EMAIL ID" type="email" required />
+                <InputGroup
+                  label="Full Name"
+                  name="fullName"
+                  value={formData.fullName}
+                  onChange={handleChange}
+                  placeholder="ENTER NAME"
+                  required
+                  error={errors.fullName}
+                />
+                <InputGroup
+                  label="Email"
+                  name="email"
+                  value={formData.email}
+                  onChange={handleChange}
+                  placeholder="EMAIL ID"
+                  type="email"
+                  required
+                  error={errors.email}
+                />
                 <InputGroup
                   label="Phone"
                   name="phone"
@@ -657,7 +686,7 @@ export default function Register({ onBack }: RegisterProps) {
                   type="tel"
                   required
                   maxLength={10}
-                  error={formData.phone.length > 0 && formData.phone.length < 10 ? "Must be 10 digits" : null}
+                  error={errors.phone || (formData.phone.length > 0 && formData.phone.length < 10 ? "Must be 10 digits" : null)}
                 />
 
                 <div className="space-y-2">
@@ -668,6 +697,7 @@ export default function Register({ onBack }: RegisterProps) {
                     onChange={(val) => setFormData(prev => ({ ...prev, gender: val }))}
                     options={[{ value: 'Male', label: 'Male' }, { value: 'Female', label: 'Female' }, { value: 'Other', label: 'Other' }]}
                     placeholder="SELECT GENDER"
+                    error={errors.gender}
                   />
                 </div>
 
@@ -682,8 +712,24 @@ export default function Register({ onBack }: RegisterProps) {
                   </div>
                 </div>
 
-                <InputGroup label="College" name="college" value={formData.college} onChange={handleChange} placeholder="COLLEGE NAME" required />
-                <InputGroup label="Department" name="department" value={formData.department} onChange={handleChange} placeholder="DEPARTMENT" required />
+                <InputGroup
+                  label="College"
+                  name="college"
+                  value={formData.college}
+                  onChange={handleChange}
+                  placeholder="COLLEGE NAME"
+                  required
+                  error={errors.college}
+                />
+                <InputGroup
+                  label="Department"
+                  name="department"
+                  value={formData.department}
+                  onChange={handleChange}
+                  placeholder="DEPARTMENT"
+                  required
+                  error={errors.department}
+                />
 
                 <div className="space-y-2">
                   <CustomSelect
@@ -693,6 +739,7 @@ export default function Register({ onBack }: RegisterProps) {
                     onChange={(val) => setFormData(prev => ({ ...prev, year: val }))}
                     options={[{ value: '1', label: '1st Year' }, { value: '2', label: '2nd Year' }, { value: '3', label: '3rd Year' }, { value: '4', label: '4th Year' }]}
                     placeholder="SELECT YEAR"
+                    error={errors.year}
                   />
                 </div>
 
@@ -704,6 +751,7 @@ export default function Register({ onBack }: RegisterProps) {
                     onChange={(val) => setFormData(prev => ({ ...prev, food: val }))}
                     options={[{ value: 'Veg', label: 'Veg' }, { value: 'Non-Veg', label: 'Non-Veg' }]}
                     placeholder="SELECT FOOD"
+                    error={errors.food}
                   />
                 </div>
 
@@ -715,6 +763,7 @@ export default function Register({ onBack }: RegisterProps) {
                     onChange={(val) => setFormData(prev => ({ ...prev, accommodation: val }))}
                     options={[{ value: 'Yes', label: 'Yes' }, { value: 'No', label: 'No' }]}
                     placeholder="ACCOMMODATION REQUIRED?"
+                    error={errors.accommodation}
                   />
                 </div>
               </div>
@@ -808,6 +857,7 @@ export default function Register({ onBack }: RegisterProps) {
                               value={formData.teamDetails[eventId]?.leadName || ''}
                               onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleTeamDetailChange(eventId, 'leadName', e.target.value)}
                               placeholder="LEAD NAME"
+                              error={errors[`${eventId}-leadName`]}
                             />
                             <InputGroup
                               label="Lead Phone"
@@ -816,7 +866,7 @@ export default function Register({ onBack }: RegisterProps) {
                               placeholder="LEAD PHONE"
                               type="tel"
                               maxLength={10}
-                              error={formData.teamDetails[eventId]?.leadPhone && formData.teamDetails[eventId]?.leadPhone.length > 0 && formData.teamDetails[eventId]?.leadPhone.length < 10 ? "Must be 10 digits" : null}
+                              error={errors[`${eventId}-leadPhone`] || (formData.teamDetails[eventId]?.leadPhone && formData.teamDetails[eventId]?.leadPhone.length > 0 && formData.teamDetails[eventId]?.leadPhone.length < 10 ? "Must be 10 digits" : null)}
                             />
                           </div>
 

@@ -73,7 +73,8 @@ export default function LocateUs() {
                             whileInView={{ opacity: 1, scale: 1 }}
                             viewport={{ once: true }}
                             transition={{ delay: 0.3 }}
-                            className="w-full h-[400px] rounded-3xl overflow-hidden border border-white/10 shadow-2xl relative group"
+                            className="w-full h-[400px] rounded-3xl overflow-hidden border border-white/10 shadow-2xl relative group transform-gpu"
+                            style={{ transform: 'translateZ(0)' }} // Force hardware acceleration
                         >
                             {/* Overlay instructions */}
                             <div className="absolute top-4 left-1/2 -translate-x-1/2 z-10 bg-black/70 backdrop-blur-sm px-4 py-2 rounded-full pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-300">
@@ -81,14 +82,15 @@ export default function LocateUs() {
                             </div>
 
                             <iframe
-                                src="https://maps.google.com/maps?q=Government+College+of+Engineering,+Erode&t=&z=15&ie=UTF8&iwloc=&output=embed"
+                                src="https://maps.google.com/maps?q=11.2740,77.6070&z=15&output=embed"
                                 width="100%"
                                 height="100%"
-                                style={{ border: 0 }}
+                                style={{ border: 0, pointerEvents: 'auto' }}
                                 allowFullScreen={true}
                                 loading="lazy"
                                 referrerPolicy="no-referrer-when-downgrade"
                                 className="w-full h-full rounded-2xl"
+                                title="Google Map of GCE Erode"
                             ></iframe>
                         </motion.div>
                     </div>

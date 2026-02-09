@@ -9,6 +9,7 @@ import RadialMenu from './components/RadialMenu';
 import Footer from './components/Footer';
 
 import Hero from './sections/Hero';
+import { ToastProvider } from './context/ToastContext';
 
 const About = lazy(() => import('./sections/About'));
 const Events = lazy(() => import('./sections/Events'));
@@ -102,184 +103,186 @@ function App() {
   };
 
   return (
-    <div className="relative min-h-[100dvh] text-white selection:bg-purple-500/30 overflow-x-hidden">
+    <ToastProvider>
+      <div className="relative min-h-[100dvh] text-white selection:bg-purple-500/30 overflow-x-hidden">
 
-      {/* Galaxy Background - Fixed and behind everything */}
-      <div className="fixed inset-0 z-[-1]">
-        <div className="absolute inset-0 bg-black/80 z-0" /> {/* Dark overlay to ensure text readability */}
-        <Galaxy
-          mouseRepulsion={window.innerWidth >= 768}
-          mouseInteraction={window.innerWidth >= 768}
-          density={window.innerWidth < 768 ? 1.2 : 1.5}
-          glowIntensity={window.innerWidth < 768 ? 0.12 : 0.15}
-          saturation={0}
-          hueShift={140}
-          twinkleIntensity={window.innerWidth < 768 ? 0.15 : 0.2}
-          rotationSpeed={0}
-          repulsionStrength={1.5}
-          autoCenterRepulsion={0}
-          starSpeed={window.innerWidth < 768 ? 0.3 : 0.5}
-          speed={1}
-        />
-      </div>
+        {/* Galaxy Background - Fixed and behind everything */}
+        <div className="fixed inset-0 z-[-1]">
+          <div className="absolute inset-0 bg-black/80 z-0" /> {/* Dark overlay to ensure text readability */}
+          <Galaxy
+            mouseRepulsion={window.innerWidth >= 768}
+            mouseInteraction={window.innerWidth >= 768}
+            density={window.innerWidth < 768 ? 1.2 : 1.5}
+            glowIntensity={window.innerWidth < 768 ? 0.12 : 0.15}
+            saturation={0}
+            hueShift={140}
+            twinkleIntensity={window.innerWidth < 768 ? 0.15 : 0.2}
+            rotationSpeed={0}
+            repulsionStrength={1.5}
+            autoCenterRepulsion={0}
+            starSpeed={window.innerWidth < 768 ? 0.3 : 0.5}
+            speed={1}
+          />
+        </div>
 
-      <ClickSpark
-        sparkColor='#fff'
-        sparkSize={10}
-        sparkRadius={15}
-        sparkCount={8}
-        duration={400}
-      >
+        <ClickSpark
+          sparkColor='#fff'
+          sparkSize={10}
+          sparkRadius={15}
+          sparkCount={8}
+          duration={400}
+        >
 
-        {/* Main Views - Static/Instant Switching */}
-        {/* Main Views - Static/Instant Switching */}
-        {currentView === 'home' && (
-          <div>
-            <main>
-              <Hero onRegister={() => navigateTo('register')} onViewEvents={() => {
-                navigateTo('events');
-                // Timeout to allow render
-                setTimeout(() => {
-                  if (window.innerWidth < 768) {
-                    const passesSection = document.getElementById('galactic-passes');
-                    if (passesSection) {
-                      passesSection.scrollIntoView({ behavior: 'smooth' });
+          {/* Main Views - Static/Instant Switching */}
+          {/* Main Views - Static/Instant Switching */}
+          {currentView === 'home' && (
+            <div>
+              <main>
+                <Hero onRegister={() => navigateTo('register')} onViewEvents={() => {
+                  navigateTo('events');
+                  // Timeout to allow render
+                  setTimeout(() => {
+                    if (window.innerWidth < 768) {
+                      const passesSection = document.getElementById('galactic-passes');
+                      if (passesSection) {
+                        passesSection.scrollIntoView({ behavior: 'smooth' });
+                      }
+                    } else {
+                      window.scrollTo({ top: 0, behavior: 'smooth' });
                     }
-                  } else {
-                    window.scrollTo({ top: 0, behavior: 'smooth' });
-                  }
-                }, 100);
-              }} />
-              <Suspense fallback={<div className="h-20" />}>
-                <LocateUs />
-              </Suspense>
-            </main>
-            <Footer onNavigate={handleNavigate} />
-          </div>
-        )}
+                  }, 100);
+                }} />
+                <Suspense fallback={<div className="h-20" />}>
+                  <LocateUs />
+                </Suspense>
+              </main>
+              <Footer onNavigate={handleNavigate} />
+            </div>
+          )}
 
-        {currentView === 'events' && (
-          <div className="pt-24">
-            <Suspense fallback={<div className="min-h-screen flex items-center justify-center text-white/50">Loading Events...</div>}>
-              <Events
-                onEventClick={handleEventClick}
-                onRegister={(comboId) => {
-                  const url = `?view=register&combo=${comboId}`;
-                  window.history.pushState({ view: 'register', combo: comboId }, '', url);
-                  setCurrentView('register');
-                }}
-              />
-            </Suspense>
-            <Footer onNavigate={handleNavigate} />
-          </div>
-        )}
-
-        {currentView === 'about' && (
-          <div className="pt-24 min-h-screen flex flex-col justify-between">
-            <Suspense fallback={<div className="min-h-screen flex items-center justify-center text-white/50">Loading...</div>}>
-              <About />
-            </Suspense>
-            <Footer onNavigate={handleNavigate} />
-          </div>
-        )}
-
-        {/* Modals - Animate In/Out */}
-        <AnimatePresence>
-          {currentView === 'event-detail' && selectedEventId && (
-            <motion.div
-              key="event-detail"
-              initial={{ opacity: 0, scale: 0.95 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.95 }}
-              transition={{ duration: 0.3 }}
-              className="fixed inset-0 z-50 overflow-y-auto bg-black/50 md:bg-black/60 md:backdrop-blur-sm"
-            >
-              <Suspense fallback={<div className="min-h-screen flex items-center justify-center text-white/50">Loading Details...</div>}>
-                <EventDetail
-                  eventId={selectedEventId}
-                  onBack={handleBack}
-                  onRegister={() => navigateTo('register')}
+          {currentView === 'events' && (
+            <div className="pt-24">
+              <Suspense fallback={<div className="min-h-screen flex items-center justify-center text-white/50">Loading Events...</div>}>
+                <Events
+                  onEventClick={handleEventClick}
+                  onRegister={(comboId) => {
+                    const url = `?view=register&combo=${comboId}`;
+                    window.history.pushState({ view: 'register', combo: comboId }, '', url);
+                    setCurrentView('register');
+                  }}
                 />
               </Suspense>
-            </motion.div>
+              <Footer onNavigate={handleNavigate} />
+            </div>
           )}
 
-          {currentView === 'register' && (
-            <motion.div
-              key="register"
-              initial={{ opacity: 0, y: 50 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: 50 }}
-              className="fixed inset-0 z-50 overflow-y-auto bg-black/50 md:bg-black/60 md:backdrop-blur-sm"
-            >
-              <div className="p-4 pt-20"> {/* Add padding for close button if needed or just navbar */}
-                <button
-                  onClick={handleBack}
-                  className="fixed top-6 right-6 z-50 px-6 py-2 bg-white/10 rounded-full backdrop-blur-md border border-white/20 hover:bg-white/20 transition-all font-orbitron text-sm"
-                >
-                  CLOSE
-                </button>
-                <Suspense fallback={<div className="min-h-screen flex items-center justify-center text-white/50">Loading Registration...</div>}>
-                  <Register
+          {currentView === 'about' && (
+            <div className="pt-24 min-h-screen flex flex-col justify-between">
+              <Suspense fallback={<div className="min-h-screen flex items-center justify-center text-white/50">Loading...</div>}>
+                <About />
+              </Suspense>
+              <Footer onNavigate={handleNavigate} />
+            </div>
+          )}
+
+          {/* Modals - Animate In/Out */}
+          <AnimatePresence>
+            {currentView === 'event-detail' && selectedEventId && (
+              <motion.div
+                key="event-detail"
+                initial={{ opacity: 0, scale: 0.95 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.95 }}
+                transition={{ duration: 0.3 }}
+                className="fixed inset-0 z-50 overflow-y-auto bg-black/50 md:bg-black/60 md:backdrop-blur-sm"
+              >
+                <Suspense fallback={<div className="min-h-screen flex items-center justify-center text-white/50">Loading Details...</div>}>
+                  <EventDetail
+                    eventId={selectedEventId}
                     onBack={handleBack}
-                    onLogin={() => { }} // No-op for now
+                    onRegister={() => navigateTo('register')}
                   />
                 </Suspense>
-              </div>
-            </motion.div>
-          )}
-        </AnimatePresence>
-      </ClickSpark>
+              </motion.div>
+            )}
 
-      <div className="hidden md:block">
-        <PillNav
-          items={NAV_ITEMS}
-          activeId={currentView === 'event-detail' ? 'events' : currentView}
-          onNavigate={(id) => handleNavigate(id as any)}
-        />
-      </div>
+            {currentView === 'register' && (
+              <motion.div
+                key="register"
+                initial={{ opacity: 0, y: 50 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: 50 }}
+                className="fixed inset-0 z-50 overflow-y-auto bg-black/50 md:bg-black/60 md:backdrop-blur-sm"
+              >
+                <div className="p-4 pt-20"> {/* Add padding for close button if needed or just navbar */}
+                  <button
+                    onClick={handleBack}
+                    className="fixed top-6 right-6 z-50 px-6 py-2 bg-white/10 rounded-full backdrop-blur-md border border-white/20 hover:bg-white/20 transition-all font-orbitron text-sm"
+                  >
+                    CLOSE
+                  </button>
+                  <Suspense fallback={<div className="min-h-screen flex items-center justify-center text-white/50">Loading Registration...</div>}>
+                    <Register
+                      onBack={handleBack}
+                      onLogin={() => { }} // No-op for now
+                    />
+                  </Suspense>
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </ClickSpark>
 
-      {/* Mobile Navigation Controls */}
-      <div className={`md:hidden ${['register', 'event-detail'].includes(currentView) ? 'hidden' : ''}`}>
-        <button
-          onClick={() => setIsMobileMenuOpen(true)}
-          className="fixed top-6 left-6 z-[60] p-3 bg-black/40 backdrop-blur-md border border-white/20 rounded-full text-white shadow-[0_0_15px_rgba(255,255,255,0.1)] hover:bg-white/20 transition-all cursor-pointer flex items-center justify-center"
-          aria-label="Open Menu"
-        >
-          <Menu size={24} />
-        </button>
+        <div className="hidden md:block">
+          <PillNav
+            items={NAV_ITEMS}
+            activeId={currentView === 'event-detail' ? 'events' : currentView}
+            onNavigate={(id) => handleNavigate(id as any)}
+          />
+        </div>
 
-        <button
-          onClick={() => {
-            navigateTo('home');
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-          }}
-          className="fixed top-6 right-6 z-[60] p-3 bg-black/40 backdrop-blur-md border border-white/20 rounded-full text-white shadow-[0_0_15px_rgba(255,255,255,0.1)] hover:bg-white/20 transition-all cursor-pointer flex items-center justify-center"
-          aria-label="Go Home"
-        >
-          <Home size={24} />
-        </button>
+        {/* Mobile Navigation Controls */}
+        <div className={`md:hidden ${['register', 'event-detail'].includes(currentView) ? 'hidden' : ''}`}>
+          <button
+            onClick={() => setIsMobileMenuOpen(true)}
+            className="fixed top-6 left-6 z-[60] p-3 bg-black/40 backdrop-blur-md border border-white/20 rounded-full text-white shadow-[0_0_15px_rgba(255,255,255,0.1)] hover:bg-white/20 transition-all cursor-pointer flex items-center justify-center"
+            aria-label="Open Menu"
+          >
+            <Menu size={24} />
+          </button>
 
-        {/* Mobile Menu Overlay */}
-        <AnimatePresence>
-          {isMobileMenuOpen && (
-            <RadialMenu
-              key="radial-menu"
-              onClose={() => setIsMobileMenuOpen(false)}
-              onNavigate={(id) => {
-                handleNavigate(id as any);
-                setIsMobileMenuOpen(false);
-              }}
-              onAuthNavigate={(view) => {
-                navigateTo(view as any);
-                setIsMobileMenuOpen(false);
-              }}
-            />
-          )}
-        </AnimatePresence>
-      </div>
+          <button
+            onClick={() => {
+              navigateTo('home');
+              window.scrollTo({ top: 0, behavior: 'smooth' });
+            }}
+            className="fixed top-6 right-6 z-[60] p-3 bg-black/40 backdrop-blur-md border border-white/20 rounded-full text-white shadow-[0_0_15px_rgba(255,255,255,0.1)] hover:bg-white/20 transition-all cursor-pointer flex items-center justify-center"
+            aria-label="Go Home"
+          >
+            <Home size={24} />
+          </button>
 
-    </div >
+          {/* Mobile Menu Overlay */}
+          <AnimatePresence>
+            {isMobileMenuOpen && (
+              <RadialMenu
+                key="radial-menu"
+                onClose={() => setIsMobileMenuOpen(false)}
+                onNavigate={(id) => {
+                  handleNavigate(id as any);
+                  setIsMobileMenuOpen(false);
+                }}
+                onAuthNavigate={(view) => {
+                  navigateTo(view as any);
+                  setIsMobileMenuOpen(false);
+                }}
+              />
+            )}
+          </AnimatePresence>
+        </div>
+
+      </div >
+    </ToastProvider>
   );
 }
 
