@@ -1,3 +1,4 @@
+
 import { useState, useRef, useEffect } from 'react';
 import QRCode from "react-qr-code";
 import { motion } from 'framer-motion';
@@ -67,10 +68,14 @@ export default function Register({ onBack }: RegisterProps) {
     events: [] as string[],
     transactionId: '',
     paymentScreenshot: '',
-    teamDetails: {} as Record<string, {
-      leadName: string;
-      leadPhone: string;
-      members: string[];
+    // Shared team details for ALL events
+    commonTeamDetails: {
+      leadName: '',
+      leadPhone: '',
+      members: ['', '', ''] // Max 3 extra members (Total 4)
+    },
+    // Event specific details (Project Title, etc.)
+    eventSpecificDetails: {} as Record<string, {
       projectTitle?: string;
       projectDomain?: string;
       paperTitle?: string;
@@ -103,7 +108,7 @@ export default function Register({ onBack }: RegisterProps) {
 
   const handleCom = (comboId: ComboType) => {
     setSelectedCombo(comboId);
-    setFormData(prev => ({ ...prev, events: [], teamDetails: {} })); // Reset events & team details
+    setFormData(prev => ({ ...prev, events: [], eventSpecificDetails: {} })); // Reset events & specific details
 
     // Auto-scroll to next button
     setTimeout(() => {
@@ -130,34 +135,26 @@ export default function Register({ onBack }: RegisterProps) {
         ? [...prev.events, eventId]
         : prev.events.filter(id => id !== eventId);
 
-      const newTeamDetails = { ...prev.teamDetails };
+      const newSpecificDetails = { ...prev.eventSpecificDetails };
 
-      if (!isChecked) {
-        // Initialize team details if checking a team event
-        const eventConfig = eventData[eventId];
-        if (eventConfig && eventConfig.maxMembers > 1) {
-          newTeamDetails[eventId] = {
-            leadName: '',
-            leadPhone: '',
-            members: Array(eventConfig.maxMembers - 1).fill('')
-          };
-        }
-      } else {
-        // Remove team details if unchecking
-        delete newTeamDetails[eventId];
+      if (isChecked) {
+        // Remove specific details if unchecking
+        delete newSpecificDetails[eventId];
       }
+      // Note: We DO NOT clear commonTeamDetails when events change, 
+      // as they might select another team event later.
 
       return {
         ...prev,
         events: newEvents,
-        teamDetails: newTeamDetails
+        eventSpecificDetails: newSpecificDetails
       };
     });
   };
 
-  const handleTeamDetailChange = (eventId: string, field: 'leadName' | 'leadPhone' | 'member' | 'projectTitle' | 'projectDomain' | 'paperTitle', value: string, index?: number) => {
+  const handleCommonTeamChange = (field: 'leadName' | 'leadPhone' | 'member', value: string, index?: number) => {
     setFormData(prev => {
-      const currentDetails = prev.teamDetails[eventId] || { leadName: '', leadPhone: '', members: [] };
+      const currentDetails = prev.commonTeamDetails;
       let finalValue = value;
 
       if (field === 'leadName' || field === 'member') {
@@ -171,68 +168,55 @@ export default function Register({ onBack }: RegisterProps) {
         newMembers[index] = finalValue;
         return {
           ...prev,
-          teamDetails: {
-            ...prev.teamDetails,
-            [eventId]: { ...currentDetails, members: newMembers }
-          }
+          commonTeamDetails: { ...currentDetails, members: newMembers }
         };
       }
 
       return {
         ...prev,
-        teamDetails: {
-          ...prev.teamDetails,
-          [eventId]: { ...currentDetails, [field]: finalValue }
-        }
+        commonTeamDetails: { ...currentDetails, [field]: finalValue }
       };
     });
   };
 
-  const handleCopyTeamMembersOnly = (toEventId: string) => {
-    if (formData.events.length === 0) return;
-    const fromEventId = formData.events[0];
-    const sourceTeam = formData.teamDetails[fromEventId];
-
-    if (!sourceTeam) return;
-
-    setFormData(prev => {
-      // Check if already same to toggle
-      const currentMembers = prev.teamDetails[toEventId]?.members || [];
-      const sourceMembers = sourceTeam.members;
-
-      const isSame = JSON.stringify(currentMembers) === JSON.stringify(sourceMembers);
-
-      let newMembers;
-      if (isSame) {
-        // Clear if toggling off? Or re-copy? 
-        // "Same as Participant Details" toggles. 
-        // If I untick "Same as Participant", it clears the field.
-        // So here, if I untick, I should probably clear the members.
-        // But members array size depends on event constraints.
-        // Let's just clear values but keep array size.
-        const eventConfig = eventData[toEventId];
-        newMembers = Array(eventConfig.maxMembers - 1).fill('');
-      } else {
-        // Copy logic: maintain size of target event
-        const eventConfig = eventData[toEventId];
-        // We can only copy up to the max members of the target event
-        const maxCopy = eventConfig.maxMembers - 1;
-        // Source members might be more or less.
-        // Actually source members array size is fixed based on source event.
-        // We should map source members to target members.
-        newMembers = Array(maxCopy).fill('').map((_, i) => sourceMembers[i] || '');
-      }
-
-      return {
-        ...prev,
-        teamDetails: {
-          ...prev.teamDetails,
-          [toEventId]: {
-            ...prev.teamDetails[toEventId],
-            members: newMembers
-          }
+  // Handle specific fields (Project Title, Paper Title)
+  const handleSpecificDetailChange = (eventId: string, field: 'projectTitle' | 'projectDomain' | 'paperTitle', value: string) => {
+    setFormData(prev => ({
+      ...prev,
+      eventSpecificDetails: {
+        ...prev.eventSpecificDetails,
+        [eventId]: {
+          ...prev.eventSpecificDetails[eventId],
+          [field]: value
         }
-      };
+      }
+    }));
+  };
+
+  const handleApplyParticipantToLead = () => {
+    setFormData(prev => {
+      const isSame = prev.commonTeamDetails.leadName === prev.fullName &&
+        prev.commonTeamDetails.leadPhone === prev.phone;
+
+      if (!isSame) {
+        return {
+          ...prev,
+          commonTeamDetails: {
+            ...prev.commonTeamDetails,
+            leadName: prev.fullName,
+            leadPhone: prev.phone
+          }
+        };
+      } else {
+        return {
+          ...prev,
+          commonTeamDetails: {
+            ...prev.commonTeamDetails,
+            leadName: '',
+            leadPhone: ''
+          }
+        };
+      }
     });
   };
 
@@ -295,23 +279,35 @@ export default function Register({ onBack }: RegisterProps) {
     if (!formData.food) newErrors.food = "Food preference is required";
     if (!formData.accommodation) newErrors.accommodation = "Accommodation preference is required";
 
-    // Validate Team Details
-    for (const eventId of formData.events) {
-      const eventDetails = eventData[eventId];
-      if (eventDetails && eventDetails.maxMembers > 1) {
-        const teamInfo = formData.teamDetails[eventId];
+    // Validate Team Details ONCE if any team event is selected
+    const hasTeamEvent = formData.events.some(id => eventData[id]?.maxMembers > 1);
 
-        if (!teamInfo?.leadName) newErrors[`${eventId}-leadName`] = "Team Lead Name is required";
-        if (!teamInfo?.leadPhone) newErrors[`${eventId}-leadPhone`] = "Team Lead Phone is required";
-        else if (teamInfo.leadPhone.length !== 10) newErrors[`${eventId}-leadPhone`] = "Phone must be 10 digits";
+    if (hasTeamEvent) {
+      const { leadName, leadPhone, members } = formData.commonTeamDetails;
 
-        // Validate Minimum Members Requirement
-        if (eventDetails.minMembers > 1) {
-          const filledMembers = teamInfo?.members.filter(m => m.trim().length > 0).length || 0;
-          if ((1 + filledMembers) < eventDetails.minMembers) {
-            showToast(`${eventDetails.name} requires at least ${eventDetails.minMembers} members`, 'error');
-            isValid = false;
-          }
+      if (!leadName) newErrors[`team-leadName`] = "Team Lead Name is required";
+      if (!leadPhone) newErrors[`team-leadPhone`] = "Team Lead Phone is required";
+      else if (leadPhone.length !== 10) newErrors[`team-leadPhone`] = "Phone must be 10 digits";
+
+      // Validate Minimum Members Requirement against the max requirement of all selected events
+      // Find the event with the highest minMembers requirement
+      let maxMinMembersRequired = 0;
+      let demandingEventName = '';
+
+      formData.events.forEach(id => {
+        const ev = eventData[id];
+        if (ev && ev.minMembers > maxMinMembersRequired) {
+          maxMinMembersRequired = ev.minMembers;
+          demandingEventName = ev.name;
+        }
+      });
+
+      if (maxMinMembersRequired > 1) {
+        const filledMembers = members.filter(m => m.trim().length > 0).length;
+        // Total team size = 1 (Lead) + filledMembers
+        if ((1 + filledMembers) < maxMinMembersRequired) {
+          showToast(`${demandingEventName} requires at least ${maxMinMembersRequired} members. Please add more members.`, 'error');
+          isValid = false;
         }
       }
     }
@@ -356,10 +352,22 @@ export default function Register({ onBack }: RegisterProps) {
 
     const eventNames = formData.events.map(id => eventData[id]?.name);
 
+    // Construct teamDetailsByName mapping the SINGLE team details to ALL events
     const teamDetailsByName: any = {};
-    Object.entries(formData.teamDetails).forEach(([id, details]) => {
-      const name = eventData[id]?.name;
-      if (name) teamDetailsByName[name] = details;
+
+    formData.events.forEach(id => {
+      const event = eventData[id];
+      if (event?.maxMembers > 1) {
+        const specific = formData.eventSpecificDetails[id] || {};
+
+        // Merge common details with specific details
+        teamDetailsByName[event.name] = {
+          leadName: formData.commonTeamDetails.leadName,
+          leadPhone: formData.commonTeamDetails.leadPhone,
+          members: formData.commonTeamDetails.members,
+          ...specific
+        };
+      }
     });
 
     const submissionData = {
@@ -383,22 +391,20 @@ export default function Register({ onBack }: RegisterProps) {
       uniqueParticipants.add(normalize(formData.fullName));
     }
 
-    // Add unique names from selected events (Leads + Members)
-    // The user explicitly requested: "check the name with the previous event... if added as team lead... dont consider as new"
-    // The Set data structure automatically checks membership and ignores duplicates.
-    formData.events.forEach(eventId => {
-      const details = formData.teamDetails[eventId];
-      if (details) {
-        if (details.leadName && details.leadName.trim()) {
-          uniqueParticipants.add(normalize(details.leadName));
-        }
-        details.members.forEach(m => {
-          if (m && m.trim()) {
-            uniqueParticipants.add(normalize(m));
-          }
-        });
+    // Add shared team members (Lead + Members) if ANY team event is selected
+    const hasTeamEvent = formData.events.some(id => eventData[id]?.maxMembers > 1);
+
+    if (hasTeamEvent) {
+      const { leadName, members } = formData.commonTeamDetails;
+      if (leadName && leadName.trim()) {
+        uniqueParticipants.add(normalize(leadName));
       }
-    });
+      members.forEach(m => {
+        if (m && m.trim()) {
+          uniqueParticipants.add(normalize(m));
+        }
+      });
+    }
 
     return Math.max(1, uniqueParticipants.size);
   };
@@ -543,16 +549,7 @@ export default function Register({ onBack }: RegisterProps) {
                       if (combo && combo.id !== 'BASIC') {
                         setFormData(prev => {
                           if (!prev.events.includes('stranger-things')) {
-                            const stEvent = eventData['stranger-things'];
-                            const newTeamDetails = { ...prev.teamDetails };
-                            if (stEvent && stEvent.maxMembers > 1) {
-                              newTeamDetails['stranger-things'] = {
-                                leadName: '',
-                                leadPhone: '',
-                                members: Array(stEvent.maxMembers - 1).fill('')
-                              };
-                            }
-                            return { ...prev, events: [...prev.events, 'stranger-things'], teamDetails: newTeamDetails };
+                            return { ...prev, events: [...prev.events, 'stranger-things'] };
                           }
                           return prev;
                         });
@@ -768,144 +765,120 @@ export default function Register({ onBack }: RegisterProps) {
                 </div>
               </div>
 
-              {/* Team Details */}
+              {/* SHARED TEAM DETAILS SECTION */}
               {formData.events.some(eventId => {
                 const ev = eventData[eventId];
                 return ev && ev.maxMembers > 1;
               }) && (
-                  <div className="space-y-6 pt-8 border-t border-white/10">
-                    <h3 className="font-orbitron text-xl text-white">TEAM DETAILS</h3>
-                    {formData.events.map((eventId, index) => {
-                      const event = eventData[eventId];
-                      if (!event || event.maxMembers <= 1) return null;
-
-
-
-
-                      return (
-                        <div key={eventId} className="bg-white/5 border border-white/10 rounded-xl p-6">
-
-
-                          <div className="flex items-center gap-3 mb-4">
-                            <div className="w-1 h-6 bg-purple-500 rounded-full"></div>
-                            <h4 className="font-orbitron font-bold text-white">{event.name}</h4>
-                            <span className="text-xs text-white/50 bg-white/10 px-2 py-0.5 rounded">Min {event.minMembers} Members</span>
-                          </div>
-
-                          {/* OPTIONAL: Project War Specific Fields */}
-                          {eventId === 'project-war' && (
-                            <div className="grid md:grid-cols-2 gap-4 mb-4 p-4 bg-white/5 rounded-lg border border-white/5">
-                              <InputGroup
-                                label="Project Title (Optional)"
-                                value={formData.teamDetails[eventId]?.projectTitle || ''}
-                                onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleTeamDetailChange(eventId, 'projectTitle', e.target.value)}
-                                placeholder="YOUR PROJECT TITLE"
-                              />
-                              <div className="space-y-2">
-                                <CustomSelect
-                                  label="Project Domain (Optional)"
-                                  value={formData.teamDetails[eventId]?.projectDomain || ''}
-                                  onChange={(val) => handleTeamDetailChange(eventId, 'projectDomain', val)}
-                                  options={[{ value: 'Hardware', label: 'Hardware' }, { value: 'Software', label: 'Software' }]}
-                                  placeholder="SELECT DOMAIN"
-                                />
-                              </div>
-                            </div>
-                          )}
-
-                          {/* OPTIONAL: Paper Presentation Specific Fields */}
-                          {eventId === 'paper-presentation' && (
-                            <div className="mb-4 p-4 bg-white/5 rounded-lg border border-white/5">
-                              <InputGroup
-                                label="Paper Title (Optional)"
-                                value={formData.teamDetails[eventId]?.paperTitle || ''}
-                                onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleTeamDetailChange(eventId, 'paperTitle', e.target.value)}
-                                placeholder="YOUR PAPER TITLE"
-                              />
-                            </div>
-                          )}
-
-                          <div className="grid md:grid-cols-2 gap-4 mb-4">
-                            <div className="md:col-span-2 flex items-center gap-2 mb-2 p-3 bg-white/5 rounded-lg border border-white/5 cursor-pointer hover:bg-white/10 transition-colors"
-                              onClick={() => {
-                                // Toggle logic: if already filled with main data, clear it? No, just overwrite is standard "copy" behavior.
-                                // Or better, toggle check state. But for simplicity, just a button action or a checkbox state.
-                                // Let's use a checkbox style div.
-                                const isSame = formData.teamDetails[eventId]?.leadName === formData.fullName &&
-                                  formData.teamDetails[eventId]?.leadPhone === formData.phone;
-
-                                if (!isSame) {
-                                  handleTeamDetailChange(eventId, 'leadName', formData.fullName);
-                                  handleTeamDetailChange(eventId, 'leadPhone', formData.phone);
-                                } else {
-                                  handleTeamDetailChange(eventId, 'leadName', '');
-                                  handleTeamDetailChange(eventId, 'leadPhone', '');
-                                }
-                              }}
-                            >
-                              <div className={`w-5 h-5 rounded border border-white/30 flex items-center justify-center transition-colors ${(formData.teamDetails[eventId]?.leadName === formData.fullName && formData.teamDetails[eventId]?.leadName !== '')
-                                ? 'bg-purple-500 border-purple-500'
-                                : 'bg-transparent'
-                                }`}>
-                                {(formData.teamDetails[eventId]?.leadName === formData.fullName && formData.teamDetails[eventId]?.leadName !== '') && <Check size={14} className="text-white" />}
-                              </div>
-                              <span className="text-sm text-slate-300 select-none">Same as Participant Details</span>
-                            </div>
-
-                            <InputGroup
-                              label="Lead Name"
-                              value={formData.teamDetails[eventId]?.leadName || ''}
-                              onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleTeamDetailChange(eventId, 'leadName', e.target.value)}
-                              placeholder="LEAD NAME"
-                              error={errors[`${eventId}-leadName`]}
-                            />
-                            <InputGroup
-                              label="Lead Phone"
-                              value={formData.teamDetails[eventId]?.leadPhone || ''}
-                              onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleTeamDetailChange(eventId, 'leadPhone', e.target.value)}
-                              placeholder="LEAD PHONE"
-                              type="tel"
-                              maxLength={10}
-                              error={errors[`${eventId}-leadPhone`] || (formData.teamDetails[eventId]?.leadPhone && formData.teamDetails[eventId]?.leadPhone.length > 0 && formData.teamDetails[eventId]?.leadPhone.length < 10 ? "Must be 10 digits" : null)}
-                            />
-                          </div>
-
-                          <div className="flex items-center gap-3 mb-4 mt-6 pt-4 border-t border-white/5">
-                            <h4 className="font-orbitron font-bold text-white/80 text-sm tracking-wider">TEAM MEMBERS</h4>
-                          </div>
-
-                          {index > 0 && (
-                            <div className="md:col-span-2 flex items-start sm:items-center gap-3 mb-4 p-3 bg-white/5 rounded-lg border border-white/5 cursor-pointer hover:bg-white/10 transition-colors group"
-                              onClick={() => handleCopyTeamMembersOnly(eventId)}
-                            >
-                              <div className={`w-5 h-5 rounded border border-white/30 flex items-center justify-center transition-colors flex-shrink-0 mt-0.5 sm:mt-0 ${JSON.stringify(formData.teamDetails[eventId]?.members) === JSON.stringify(formData.teamDetails[formData.events[0]]?.members)
-                                ? 'bg-purple-500 border-purple-500'
-                                : 'bg-transparent group-hover:border-white/50'
-                                }`}>
-                                {JSON.stringify(formData.teamDetails[eventId]?.members) === JSON.stringify(formData.teamDetails[formData.events[0]]?.members) &&
-                                  <Check size={14} className="text-white" />
-                                }
-                              </div>
-                              <span className="text-sm text-slate-300 select-none leading-snug">Same as Team Members Details</span>
-                            </div>
-                          )}
-
-                          <div className="space-y-3">
-                            {formData.teamDetails[eventId]?.members.map((member, idx) => (
-                              <InputGroup
-                                key={idx}
-                                label={`Member ${idx + 2} Name`}
-                                value={member}
-                                onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleTeamDetailChange(eventId, 'member', e.target.value, idx)}
-                                placeholder={`MEMBER ${idx + 2} NAME`}
-                              />
-                            ))}
-                          </div>
+                  <div className="space-y-8 pt-10 border-t border-white/10">
+                    <div className="relative overflow-hidden rounded-2xl p-[1px] group">
+                      <div className="absolute inset-0 bg-gradient-to-r from-white/40 via-slate-400/40 to-white/40 opacity-50 group-hover:opacity-100 transition-opacity duration-500 animate-gradient-xy"></div>
+                      <div className="relative bg-black/80 backdrop-blur-xl p-6 rounded-2xl flex items-center gap-5">
+                        <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-white to-slate-400 flex items-center justify-center shadow-lg shadow-white/10">
+                          <UsersIcon size={24} className="text-black" />
                         </div>
-                      );
-                    })}
+                        <div>
+                          <h3 className="font-orbitron text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-white to-slate-300 tracking-wider mb-1">TEAM DETAILS</h3>
+                          <p className="text-sm text-slate-400 font-light tracking-wide">Enter team members <span className="text-white font-bold">once</span> for all selected team events.</p>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="bg-white/5 border border-white/10 rounded-2xl p-8 hover:border-white/30 transition-colors shadow-[0_0_30px_rgba(255,255,255,0.05)]">
+
+                      <div className="grid md:grid-cols-2 gap-4 mb-4">
+                        <div className="md:col-span-2 flex items-center gap-2 mb-2 p-3 bg-white/5 rounded-lg border border-white/5 cursor-pointer hover:bg-white/10 transition-colors"
+                          onClick={handleApplyParticipantToLead}
+                        >
+                          <div className={`w-5 h-5 rounded border border-white/30 flex items-center justify-center transition-colors ${(formData.commonTeamDetails.leadName === formData.fullName && formData.commonTeamDetails.leadName !== '')
+                            ? 'bg-white border-white'
+                            : 'bg-transparent'
+                            }`}>
+                            {(formData.commonTeamDetails.leadName === formData.fullName && formData.commonTeamDetails.leadName !== '') && <Check size={14} className="text-black" />}
+                          </div>
+                          <span className="text-sm text-slate-300 select-none">Same as Participant Details</span>
+                        </div>
+
+                        <InputGroup
+                          label="Team Lead Name"
+                          value={formData.commonTeamDetails.leadName}
+                          onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleCommonTeamChange('leadName', e.target.value)}
+                          placeholder="LEAD NAME"
+                          error={errors[`team-leadName`]}
+                        />
+                        <InputGroup
+                          label="Team Lead Phone"
+                          value={formData.commonTeamDetails.leadPhone}
+                          onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleCommonTeamChange('leadPhone', e.target.value)}
+                          placeholder="LEAD PHONE"
+                          type="tel"
+                          maxLength={10}
+                          error={errors[`team-leadPhone`] || (formData.commonTeamDetails.leadPhone && formData.commonTeamDetails.leadPhone.length > 0 && formData.commonTeamDetails.leadPhone.length < 10 ? "Must be 10 digits" : null)}
+                        />
+                      </div>
+
+                      <div className="flex items-center gap-3 mb-4 mt-6 pt-4 border-t border-white/5">
+                        <h4 className="font-orbitron font-bold text-white/80 text-sm tracking-wider">TEAM MEMBERS (OPTIONAL)</h4>
+                      </div>
+
+                      <div className="space-y-3">
+                        {formData.commonTeamDetails.members.map((member, idx) => (
+                          <InputGroup
+                            key={idx}
+                            label={`Member ${idx + 2} Name`}
+                            value={member}
+                            onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleCommonTeamChange('member', e.target.value, idx)}
+                            placeholder={`MEMBER ${idx + 2} NAME`}
+                          />
+                        ))}
+                      </div>
+                    </div>
                   </div>
                 )}
+
+              {/* EVENT SPECIFIC FIELDS */}
+              {formData.events.map(eventId => {
+                if (eventId === 'project-war') {
+                  return (
+                    <div key={eventId} className="mt-6 pt-6 border-t border-white/10">
+                      <h3 className="font-orbitron text-lg text-white mb-4">PROJECT WAR DETAILS</h3>
+                      <div className="grid md:grid-cols-2 gap-4 mb-4 p-4 bg-white/5 rounded-lg border border-white/5">
+                        <InputGroup
+                          label="Project Title (Optional)"
+                          value={formData.eventSpecificDetails[eventId]?.projectTitle || ''}
+                          onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleSpecificDetailChange(eventId, 'projectTitle', e.target.value)}
+                          placeholder="YOUR PROJECT TITLE"
+                        />
+                        <div className="space-y-2">
+                          <CustomSelect
+                            label="Project Domain (Optional)"
+                            value={formData.eventSpecificDetails[eventId]?.projectDomain || ''}
+                            onChange={(val) => handleSpecificDetailChange(eventId, 'projectDomain', val)}
+                            options={[{ value: 'Hardware', label: 'Hardware' }, { value: 'Software', label: 'Software' }]}
+                            placeholder="SELECT DOMAIN"
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  );
+                }
+                if (eventId === 'paper-presentation') {
+                  return (
+                    <div key={eventId} className="mt-6 pt-6 border-t border-white/10">
+                      <h3 className="font-orbitron text-lg text-white mb-4">PAPER PRESENTATION DETAILS</h3>
+                      <div className="mb-4 p-4 bg-white/5 rounded-lg border border-white/5">
+                        <InputGroup
+                          label="Paper Title (Optional)"
+                          value={formData.eventSpecificDetails[eventId]?.paperTitle || ''}
+                          onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleSpecificDetailChange(eventId, 'paperTitle', e.target.value)}
+                          placeholder="YOUR PAPER TITLE"
+                        />
+                      </div>
+                    </div>
+                  );
+                }
+                return null;
+              })}
 
               <div className="flex justify-between items-center mt-12">
                 <button onClick={handlePrev} className="px-6 py-2 border border-white/20 rounded-lg text-white hover:bg-white/10">BACK</button>
@@ -1088,4 +1061,16 @@ function InputGroup({ label, error, ...props }: any) {
       {error && <p className="text-red-400 text-xs ml-1 font-bold tracking-wide flex items-center gap-1"><AlertCircle size={10} /> {error}</p>}
     </div>
   );
+}
+
+// Simple Icon component to avoid import error if Users is not imported
+function UsersIcon({ size = 24, className = "" }: { size?: number, className?: string }) {
+  return (
+    <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
+      <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path>
+      <circle cx="9" cy="7" r="4"></circle>
+      <path d="M22 21v-2a4 4 0 0 0-3-3.87"></path>
+      <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+    </svg>
+  )
 }
