@@ -773,12 +773,12 @@ export default function Register({ onBack }: RegisterProps) {
                   <div className="space-y-8 pt-10 border-t border-white/10">
                     <div className="relative overflow-hidden rounded-2xl p-[1px] group">
                       <div className="absolute inset-0 bg-gradient-to-r from-white/40 via-slate-400/40 to-white/40 opacity-50 group-hover:opacity-100 transition-opacity duration-500 animate-gradient-xy"></div>
-                      <div className="relative bg-black/80 backdrop-blur-xl p-6 rounded-2xl flex items-center gap-5">
-                        <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-white to-slate-400 flex items-center justify-center shadow-lg shadow-white/10">
+                      <div className="relative bg-black/80 backdrop-blur-xl p-6 rounded-2xl flex flex-col md:flex-row items-center text-center md:text-left gap-4 md:gap-5">
+                        <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-white to-slate-400 flex items-center justify-center shadow-lg shadow-white/10 shrink-0">
                           <UsersIcon size={24} className="text-black" />
                         </div>
                         <div>
-                          <h3 className="font-orbitron text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-white to-slate-300 tracking-wider mb-1">TEAM DETAILS</h3>
+                          <h3 className="font-orbitron text-xl md:text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-white to-slate-300 tracking-wider mb-1">TEAM DETAILS</h3>
                           <p className="text-sm text-slate-400 font-light tracking-wide">Enter team members <span className="text-white font-bold">once</span> for all selected team events.</p>
                         </div>
                       </div>
