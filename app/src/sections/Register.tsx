@@ -546,7 +546,7 @@ export default function Register({ onBack }: RegisterProps) {
                     if (step === 1 && selectedCombo) {
                       const combo = COMBOS.find(c => c.id === selectedCombo);
                       // Auto-select Stranger Things for Flagship combos if not already selected
-                      if (combo && combo.id !== 'BASIC') {
+                      if (combo && (combo.id === 'PREMIUM' || combo.id === 'ELITE')) {
                         setFormData(prev => {
                           if (!prev.events.includes('stranger-things')) {
                             return { ...prev, events: [...prev.events, 'stranger-things'] };
