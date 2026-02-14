@@ -414,7 +414,13 @@ export default function Register({ onBack }: RegisterProps) {
     if (!combo) return 0;
     // Fixed price logic now, regardless of members (based on user request "1.2 Tech +3 Non tech... - 299")
     // Price calculation logic: Fixed price per participant based on selected combo.
-    return combo.price * getParticipantCount();
+    let total = combo.price * getParticipantCount();
+
+    if (formData.accommodation === 'Yes') {
+      total += 200 * getParticipantCount();
+    }
+
+    return total;
   };
 
   const getFilteredEventEntries = () => {
@@ -907,6 +913,14 @@ export default function Register({ onBack }: RegisterProps) {
                     <span>Participants</span>
                     <span className="text-white font-bold">{getParticipantCount()} (Covered in Pass)</span>
                   </div>
+                  {formData.accommodation === 'Yes' && (
+                    <div className="flex justify-between text-sm text-slate-300 mb-2">
+                      <span>Accommodation</span>
+                      <span className="text-white font-bold text-yellow-400">
+                        ₹200 x {getParticipantCount()} = ₹{200 * getParticipantCount()}
+                      </span>
+                    </div>
+                  )}
                   <div className="space-y-2 mt-4">
                     <p className="text-xs text-white/50 uppercase">Events Selected</p>
                     {formData.events.map(id => (

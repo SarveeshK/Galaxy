@@ -15,7 +15,7 @@ export default function Footer({ onNavigate }: FooterProps) {
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-8 md:gap-12 md:mb-16">
 
                     {/* Brand Column */}
-                    <div className="space-y-6">
+                    <div className="space-y-6 order-1">
                         <h2 className="font-orbitron text-3xl font-bold text-white tracking-wider">
                             GALAXY 2K26
                         </h2>
@@ -43,7 +43,7 @@ export default function Footer({ onNavigate }: FooterProps) {
                     </div>
 
                     {/* Navigation Column */}
-                    <div className="space-y-6">
+                    <div className="space-y-6 order-2">
                         <h3 className="font-orbitron text-sm font-bold text-slate-200 tracking-widest uppercase">
                             Navigation
                         </h3>
@@ -69,8 +69,8 @@ export default function Footer({ onNavigate }: FooterProps) {
                         </ul>
                     </div>
 
-                    {/* Contact Column */}
-                    <div className="space-y-6">
+                    {/* Contact Column - Order 4 on Mobile, Order 3 on Desktop (swapped with coordinators) */}
+                    <div className="space-y-6 order-4 md:order-3">
                         <h3 className="font-orbitron text-sm font-bold text-slate-200 tracking-widest uppercase">
                             Contact
                         </h3>
@@ -80,22 +80,22 @@ export default function Footer({ onNavigate }: FooterProps) {
                                 <span>Department of ECE,<br />Government College of Engineering,<br />Erode - 638316</span>
                             </li>
                             <li>
-                                <a href="mailto:galaxyece2k26@gmail.com" className="flex items-center gap-3 text-white/60 text-sm hover:text-white transition-colors">
-                                    <Mail size={18} className="text-slate-200 shrink-0" />
+                                <a href="mailto:galaxyece2k26@gmail.com" className="flex items-start gap-3 text-white/60 text-sm hover:text-white transition-colors">
+                                    <Mail size={18} className="text-slate-200 shrink-0 mt-0.5" />
                                     <span>galaxyece2k26@gmail.com</span>
                                 </a>
                             </li>
                             <li>
-                                <a href="tel:+916382310115" className="flex items-center gap-3 text-white/60 text-sm hover:text-white transition-colors">
-                                    <Phone size={18} className="text-slate-200 shrink-0" />
+                                <a href="tel:+916382310115" className="flex items-start gap-3 text-white/60 text-sm hover:text-white transition-colors">
+                                    <Phone size={18} className="text-slate-200 shrink-0 mt-0.5" />
                                     <span>+91 63823 10115</span>
                                 </a>
                             </li>
                         </ul>
                     </div>
 
-                    {/* Coordinators Column */}
-                    <div className="space-y-6">
+                    {/* Coordinators Column - Order 3 on Mobile, Order 4 on Desktop */}
+                    <div className="space-y-6 order-3 md:order-4">
                         <h3 className="font-orbitron text-sm font-bold text-slate-200 tracking-widest uppercase mb-4">
                             Faculty Coordinator
                         </h3>
@@ -129,11 +129,13 @@ export default function Footer({ onNavigate }: FooterProps) {
                     </p>
                     <div className="flex flex-wrap justify-center gap-2 text-white/40 text-xs items-center">
                         <span>Designed & Developed by</span>
-                        <span className="text-slate-200 font-medium">Sarveesh Kaarthic
-
-                        </span>
+                        <a href="https://www.linkedin.com/in/sarveeshkaarthicrameshkannan" target="_blank" rel="noopener noreferrer" className="text-slate-200 font-medium hover:text-white transition-colors">
+                            Sarveesh Kaarthic
+                        </a>
                         <span className="text-white/40 px-1">|</span>
-                        <span className="text-slate-200 font-medium">Prainart Francis</span>
+                        <a href="https://www.linkedin.com/in/prainart-francis-69450127b/" target="_blank" rel="noopener noreferrer" className="text-slate-200 font-medium hover:text-white transition-colors">
+                            Prainart Francis
+                        </a>
                     </div>
                 </div>
             </div>
