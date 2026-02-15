@@ -1,6 +1,6 @@
 import { eventData } from './events';
 
-export type ComboType = 'PREMIUM' | 'ELITE' | 'STANDARD' | 'BASIC' | 'HACKATHON';
+export type ComboType = 'PREMIUM' | 'ELITE' | 'BASIC' | 'HACKATHON';
 
 export interface Combo {
     id: ComboType;
@@ -19,7 +19,7 @@ export const COMBOS: Combo[] = [
     {
         id: 'PREMIUM',
         name: 'PREMIUM PASS',
-        price: 279,
+        price: 249,
         description: '2 Tech + 2 Non-Tech + Stranger Things',
         condition: '4 Events + Flagship Event',
         filter: (e) => e.type !== 'HACKATHON',
@@ -51,7 +51,7 @@ export const COMBOS: Combo[] = [
     {
         id: 'ELITE',
         name: 'ELITE PASS',
-        price: 249,
+        price: 199,
         description: '1 Tech + 1 Non-Tech + Stranger Things',
         condition: '2 Events + Flagship Event',
         filter: (e) => e.type !== 'HACKATHON',
@@ -80,35 +80,7 @@ export const COMBOS: Combo[] = [
             return { valid: true };
         }
     },
-    {
-        id: 'STANDARD',
-        name: 'STANDARD PASS',
-        price: 199,
-        description: '2 Tech + 2 Non-Tech',
-        condition: 'Standard Events Only',
-        filter: (e) => e.type !== 'FLAGSHIP' && e.type !== 'HACKATHON',
-        validateAdd: (events, newId) => {
-            const nextEvents = [...events, newId];
-            const techCount = nextEvents.filter(id => eventData[id]?.type === 'TECHNICAL').length;
-            const nonTechCount = nextEvents.filter(id => eventData[id]?.type === 'NON TECHNICAL').length;
 
-            if (eventData[newId]?.type === 'FLAGSHIP') return { valid: false, message: 'This pass does not include Stranger Things.' };
-            if (eventData[newId]?.type === 'HACKATHON') return { valid: false, message: 'Hackathon requires a separate pass.' };
-            if (eventData[newId]?.type === 'TECHNICAL' && techCount > 2) return { valid: false, message: 'Max 2 Technical events allowed.' };
-            if (eventData[newId]?.type === 'NON TECHNICAL' && nonTechCount > 2) return { valid: false, message: 'Max 2 Non-Technical events allowed.' };
-
-            return { valid: true };
-        },
-        validateNext: (events) => {
-            const techCount = events.filter(id => eventData[id]?.type === 'TECHNICAL').length;
-            const nonTechCount = events.filter(id => eventData[id]?.type === 'NON TECHNICAL').length;
-
-            if (techCount !== 2) return { valid: false, message: `Select exactly 2 Technical events.` };
-            if (nonTechCount !== 2) return { valid: false, message: `Select exactly 2 Non-Technical events.` };
-
-            return { valid: true };
-        }
-    },
     {
         id: 'BASIC',
         name: 'BASIC PASS',
