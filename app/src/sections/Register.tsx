@@ -434,6 +434,7 @@ export default function Register({ onBack }: RegisterProps) {
   const techEvents = filteredEventEntries.filter(([_, e]) => e.type === 'TECHNICAL');
   const nonTechEvents = filteredEventEntries.filter(([_, e]) => e.type === 'NON TECHNICAL');
   const flagshipEvents = filteredEventEntries.filter(([_, e]) => e.type === 'FLAGSHIP');
+  const hackathonEvents = filteredEventEntries.filter(([_, e]) => e.type === 'HACKATHON');
 
   if (success) {
     return (
@@ -596,6 +597,24 @@ export default function Register({ onBack }: RegisterProps) {
                           selected={formData.events.includes(id)}
                           onToggle={() => handleEventToggle(id)}
                           isFlagship={true}
+                        />
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {hackathonEvents.length > 0 && (
+                  <div>
+                    <h3 className="text-sm font-bold text-white mb-6 uppercase tracking-[0.2em] flex items-center gap-2 border-l-2 border-purple-500 pl-4">
+                      Hackathon
+                    </h3>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                      {hackathonEvents.map(([id, event]) => (
+                        <EventCard
+                          key={id}
+                          event={event}
+                          selected={formData.events.includes(id)}
+                          onToggle={() => handleEventToggle(id)}
                         />
                       ))}
                     </div>

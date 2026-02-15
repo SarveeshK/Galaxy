@@ -1,6 +1,6 @@
 import { eventData } from './events';
 
-export type ComboType = 'PREMIUM' | 'ELITE' | 'STANDARD' | 'BASIC';
+export type ComboType = 'PREMIUM' | 'ELITE' | 'STANDARD' | 'BASIC' | 'HACKATHON';
 
 export interface Combo {
     id: ComboType;
@@ -29,11 +29,6 @@ export const COMBOS: Combo[] = [
             const nonTechCount = nextEvents.filter(id => eventData[id]?.type === 'NON TECHNICAL').length;
             const flagshipCount = nextEvents.filter(id => eventData[id]?.type === 'FLAGSHIP').length;
 
-            // Mutual Exclusion: Paper Presentation vs Project War
-            const hasPaper = nextEvents.includes('paper-presentation');
-            const hasProject = nextEvents.includes('project-war');
-            if (hasPaper && hasProject) return { valid: false, message: 'You can choose either Paper Presentation OR Project War, not both.' };
-
             if (eventData[newId]?.type === 'TECHNICAL' && techCount > 2) return { valid: false, message: 'Max 2 Technical events allowed.' };
             if (eventData[newId]?.type === 'NON TECHNICAL' && nonTechCount > 2) return { valid: false, message: 'Max 2 Non-Technical events allowed.' };
             if (eventData[newId]?.type === 'FLAGSHIP' && flagshipCount > 1) return { valid: false, message: 'Already selected Flagship event.' };
@@ -44,10 +39,7 @@ export const COMBOS: Combo[] = [
             const techCount = events.filter(id => eventData[id]?.type === 'TECHNICAL').length;
             const nonTechCount = events.filter(id => eventData[id]?.type === 'NON TECHNICAL').length;
             const hasST = events.includes('stranger-things');
-            const hasPaper = events.includes('paper-presentation');
-            const hasProject = events.includes('project-war');
 
-            if (!hasPaper && !hasProject) return { valid: false, message: 'You must select either Paper Presentation OR Project War.' };
             if (techCount !== 2) return { valid: false, message: `Select exactly 2 Technical events.` };
             if (nonTechCount !== 2) return { valid: false, message: `Select exactly 2 Non-Technical events.` };
             if (!hasST) return { valid: false, message: 'Stranger Things is required for this pass.' };
@@ -127,6 +119,24 @@ export const COMBOS: Combo[] = [
         },
         validateNext: (events) => {
             if (events.length !== 1) return { valid: false, message: 'Select exactly 1 event.' };
+            return { valid: true };
+        },
+    },
+    {
+        id: 'HACKATHON',
+        name: 'HACKATHON PASS',
+        price: 199,
+        description: 'Entry to Hackathon Event Only',
+        condition: 'Hackathon Entry',
+        filter: (e) => e.type === 'HACKATHON',
+        validateAdd: (events, newId) => {
+            if (eventData[newId]?.type !== 'HACKATHON') return { valid: false, message: 'This pass is for Hackathon only.' };
+            if (events.length >= 1) return { valid: false, message: 'Only 1 event allowed.' };
+            return { valid: true };
+        },
+        validateNext: (events) => {
+            const hasHackathon = events.some(id => eventData[id]?.type === 'HACKATHON');
+            if (!hasHackathon || events.length !== 1) return { valid: false, message: 'Select the Hackathon event.' };
             return { valid: true };
         }
     }

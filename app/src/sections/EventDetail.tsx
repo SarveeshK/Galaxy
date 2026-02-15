@@ -42,7 +42,8 @@ export default function EventDetail({ eventId, onBack, onRegister }: EventDetail
             <p className="text-white/60 text-sm tracking-[0.3em] font-orbitron">
               {event.type === 'FLAGSHIP' ? 'FLAGSHIP EVENT' :
                 event.type === 'TECHNICAL' ? 'TECHNICAL EVENT' :
-                  'NON TECH EVENT'}
+                  event.type === 'HACKATHON' ? 'TECH EVENT' :
+                    'NON TECH EVENT'}
             </p>
           </div>
           <h1 className="font-orbitron text-4xl md:text-6xl font-black text-white mb-4 leading-tight">

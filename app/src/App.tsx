@@ -11,6 +11,8 @@ import Footer from './components/Footer';
 import Hero from './sections/Hero';
 import { ToastProvider } from './context/ToastContext';
 
+import { useIsMobileHardware } from './hooks/use-mobile-hardware';
+
 const About = lazy(() => import('./sections/About'));
 const Events = lazy(() => import('./sections/Events'));
 const Register = lazy(() => import('./sections/Register'));
@@ -26,6 +28,9 @@ const NAV_ITEMS = [
 ];
 
 function App() {
+  const isMobileHardware = useIsMobileHardware();
+  const isLowPerf = window.innerWidth < 768 || isMobileHardware;
+
   const [currentView, setCurrentView] = useState<View>('home');
   const [selectedEventId, setSelectedEventId] = useState<string | null>(null);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -110,17 +115,17 @@ function App() {
         <div className="fixed inset-0 z-[-1]">
           <div className="absolute inset-0 bg-black/80 z-0" /> {/* Dark overlay to ensure text readability */}
           <Galaxy
-            mouseRepulsion={window.innerWidth >= 768}
-            mouseInteraction={window.innerWidth >= 768}
-            density={window.innerWidth < 768 ? 1.2 : 1.5}
-            glowIntensity={window.innerWidth < 768 ? 0.12 : 0.15}
+            mouseRepulsion={!isLowPerf}
+            mouseInteraction={!isLowPerf}
+            density={isLowPerf ? 1.0 : 1.5}
+            glowIntensity={isLowPerf ? 0.08 : 0.15}
             saturation={0}
             hueShift={140}
-            twinkleIntensity={window.innerWidth < 768 ? 0.15 : 0.2}
+            twinkleIntensity={isLowPerf ? 0.1 : 0.2}
             rotationSpeed={0}
             repulsionStrength={1.5}
             autoCenterRepulsion={0}
-            starSpeed={window.innerWidth < 768 ? 0.3 : 0.5}
+            starSpeed={isLowPerf ? 0.2 : 0.5}
             speed={1}
           />
         </div>
@@ -129,7 +134,7 @@ function App() {
           sparkColor='#fff'
           sparkSize={10}
           sparkRadius={15}
-          sparkCount={8}
+          sparkCount={isLowPerf ? 4 : 8}
           duration={400}
         >
 

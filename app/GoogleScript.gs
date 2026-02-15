@@ -19,7 +19,8 @@ const CONFIG = {
         "PAPER PRESENTATION",
         "ARDUINO HACKATHON",
         "CIRCUIT DEBUGGING",
-        "CHASE AND BUILD"
+        "CHASE AND BUILD",
+        "HACKATHON"
     ],
     LOGO_URL: "https://lh3.googleusercontent.com/d/18EQeNdPIj-9CnQjPz2gt_shdXtlYzC6l"
 };

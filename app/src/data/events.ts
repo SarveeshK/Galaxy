@@ -16,12 +16,13 @@ export const eventData: Record<string, {
     icon: any; // Lucide icon or string char
     posterImage?: string;
     description?: string;
-    type: 'TECHNICAL' | 'NON TECHNICAL' | 'FLAGSHIP';
+    type: 'TECHNICAL' | 'NON TECHNICAL' | 'FLAGSHIP' | 'HACKATHON';
     price: number;
+    size?: 'small' | 'medium' | 'large';
 }> = {
     'project-war': {
         name: 'PROJECT WAR',
-        tagline: 'SHOWCASE YOUR INNOVATIVE PROJECTS AND COMPETE FOR GLORY',
+        tagline: 'Showcase your innovative projects and compete for glory',
         teamSize: '3-4 Members',
         minMembers: 3,
         maxMembers: 4,
@@ -45,7 +46,7 @@ export const eventData: Record<string, {
     },
     'paper-presentation': {
         name: 'PAPER PRESENTATION',
-        tagline: 'PRESENT YOUR RESEARCH AND IDEAS TO A PANEL OF EXPERTS',
+        tagline: 'Present your research and ideas to a panel of experts',
         teamSize: '3-4 Members',
         minMembers: 3,
         maxMembers: 4,
@@ -68,7 +69,7 @@ export const eventData: Record<string, {
     },
     'ai-prompt-battle': {
         name: 'AI PROMPT BATTLE',
-        tagline: 'MASTER THE ART OF PROMPTING IN THIS AI SHOWDOWN',
+        tagline: 'Master the art of prompting in this AI showdown',
         teamSize: '3-4 Members',
         minMembers: 3,
         maxMembers: 4,
@@ -91,7 +92,7 @@ export const eventData: Record<string, {
     },
     'arduino-hackathon': {
         name: 'ARDUINO HACKATHON',
-        tagline: 'CODE . CREATE . INNOVATE',
+        tagline: 'Code . Create . Innovate',
         teamSize: '3-4 Members',
         minMembers: 3,
         maxMembers: 4,
@@ -116,7 +117,7 @@ Showcase creativity through real working models.`,
     },
     'circuit-debugging': {
         name: 'CIRCUIT DEBUGGING',
-        tagline: 'FIND FAULTS AND FIX CIRCUITS TO PROVE YOUR HARDWARE SKILLS',
+        tagline: 'Find faults and fix circuits to prove your hardware skills',
         teamSize: '3-4 Members',
         minMembers: 3,
         maxMembers: 4,
@@ -140,7 +141,7 @@ Showcase creativity through real working models.`,
     },
     'chase-and-build': {
         name: 'CHASE AND BUILD',
-        tagline: 'A THRILLING EVENT TO TEST YOUR SPEED AND BUILDING SKILLS',
+        tagline: 'A thrilling event to test your speed and building skills',
         teamSize: '3-4 Members',
         minMembers: 3,
         maxMembers: 4,
@@ -164,7 +165,7 @@ Showcase creativity through real working models.`,
     },
     'ipl-auction': {
         name: 'IPL AUCTION',
-        tagline: 'STRATEGIZE AND BUILD YOUR DREAM TEAM IN THIS AUCTION SIMULATION',
+        tagline: 'Strategize and build your dream team in this auction simulation',
         teamSize: '3-4 Members',
         minMembers: 3,
         maxMembers: 4,
@@ -192,7 +193,7 @@ Build a strong team, outbid your rivals, and prove your auction mastery.`,
     },
     'hintdrop': {
         name: 'HINTDROP',
-        tagline: 'FOLLOW THE CLUES AND SOLVE THE MYSTERY',
+        tagline: 'Follow the clues and solve the mystery',
         teamSize: '3-4 Members',
         minMembers: 3,
         maxMembers: 4,
@@ -218,7 +219,7 @@ Simple to Play! Thrilling to Win!`,
     },
     'short-film': {
         name: 'SHORT FILM',
-        tagline: 'EXPRESS YOUR CREATIVITY THROUGH THE LENS',
+        tagline: 'Express your creativity through the lens',
         teamSize: '3-4 Members',
         minMembers: 3,
         maxMembers: 4,
@@ -245,7 +246,7 @@ Simple to Play! Thrilling to Win!`,
     },
     'spin-and-win': {
         name: 'SPIN AND WIN',
-        tagline: 'WHERE LUCK MEETS STRATEGY',
+        tagline: 'Where luck meets strategy',
         teamSize: '3-4 Members',
         minMembers: 3,
         maxMembers: 4,
@@ -270,7 +271,7 @@ Simple to Play! Exciting to Conquer!`,
     },
     'stranger-things': {
         name: 'STRANGER THINGS',
-        tagline: 'ESCAPE FROM THE UPSIDE DOWN',
+        tagline: 'Escape from the Upside Down',
         teamSize: '3-4 Members',
         minMembers: 3,
         maxMembers: 4,
@@ -288,8 +289,39 @@ Simple to Play! Exciting to Conquer!`,
         type: 'FLAGSHIP',
         price: 200,
         posterImage: '/stranger-things-poster.jpg',
-        description: `Enter the world of Stranger Things, where clues are hidden and nothing is as it seems. Test your observation, logic and teamwork through fun challenges inspired by the Upside Down.
+        description: `Each team consists of 4 members taking on different roles in the mission.
 
-Think smart, act fast and trust your team to escape in time.`,
+                    Steve begins the journey from Hawkins, while Dustin helps navigate the town and reach the Laboratory. Eleven is locked inside the Lab and must be rescued. Mike is trapped in the Upside Down and needs to be saved.
+
+                    The team must work together, complete all four levels, and escape from the Upside Down to win the game.`,
+    },
+    'hackathon': {
+        name: 'HACKATHON',
+        tagline: 'Code . Build . Innovate',
+        teamSize: '3-4 Members',
+        minMembers: 3,
+        maxMembers: 4,
+        date: 'Feb 26',
+        time: '9:00 AM - 3:00 PM',
+        venue: 'ECE Department',
+        rounds: [
+            { name: 'Hackathon', description: 'Two levels of selection. Use of AI tools allowed but must be declared. Pre-built APIs/Libraries allowed.' }
+        ],
+        coordinators: [
+            { name: 'Raghull R', phone: '7904062848' },
+            { name: 'Madhumitha S', phone: '6380470427' },
+        ],
+        color: 'from-violet-500 to-fuchsia-500', // Distinct color
+        icon: Code,
+        type: 'HACKATHON',
+        price: 300,
+        posterImage: '/hackathon-poster.jpeg', // Placeholder
+        description: `Two levels of Selection.
+        
+        USE OF AI TOOLS IS ALLOWED BUT MUST BE DECLARED.
+        
+        TIMING : 9:00 AM TO 3:00 PM.
+        
+        PRE BUILT APIS / LIBRARIES ARE ALLOWED.`,
     },
 };
