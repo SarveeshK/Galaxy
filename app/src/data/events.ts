@@ -302,13 +302,13 @@ Simple to Play! Exciting to Conquer!`,
         minMembers: 3,
         maxMembers: 4,
         date: 'Feb 26',
-        time: '9:00 AM - 3:00 PM',
+        time: '9:00 AM - 5:00 PM',
         venue: 'ECE Department',
         rounds: [
             { name: 'Hackathon', description: 'Two levels of selection. Use of AI tools allowed but must be declared. Pre-built APIs/Libraries allowed.' }
         ],
         coordinators: [
-            { name: 'Raghull R', phone: '7904062848' },
+            { name: 'Raghul R A', phone: '7904062848' },
             { name: 'Madhumitha S', phone: '6380470427' },
         ],
         color: 'from-violet-500 to-fuchsia-500', // Distinct color
@@ -320,7 +320,7 @@ Simple to Play! Exciting to Conquer!`,
         
         USE OF AI TOOLS IS ALLOWED BUT MUST BE DECLARED.
         
-        TIMING : 9:00 AM TO 3:00 PM.
+        TIMING : 9:00 AM TO 5:00 PM.
         
         PRE BUILT APIS / LIBRARIES ARE ALLOWED.`,
     },

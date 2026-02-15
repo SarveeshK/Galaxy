@@ -19,10 +19,10 @@ export const COMBOS: Combo[] = [
     {
         id: 'PREMIUM',
         name: 'PREMIUM PASS',
-        price: 299,
+        price: 279,
         description: '2 Tech + 2 Non-Tech + Stranger Things',
         condition: '4 Events + Flagship Event',
-        filter: (_) => true,
+        filter: (e) => e.type !== 'HACKATHON',
         validateAdd: (events, newId) => {
             const nextEvents = [...events, newId];
             const techCount = nextEvents.filter(id => eventData[id]?.type === 'TECHNICAL').length;
@@ -32,6 +32,7 @@ export const COMBOS: Combo[] = [
             if (eventData[newId]?.type === 'TECHNICAL' && techCount > 2) return { valid: false, message: 'Max 2 Technical events allowed.' };
             if (eventData[newId]?.type === 'NON TECHNICAL' && nonTechCount > 2) return { valid: false, message: 'Max 2 Non-Technical events allowed.' };
             if (eventData[newId]?.type === 'FLAGSHIP' && flagshipCount > 1) return { valid: false, message: 'Already selected Flagship event.' };
+            if (eventData[newId]?.type === 'HACKATHON') return { valid: false, message: 'Hackathon requires a separate pass.' };
 
             return { valid: true };
         },
@@ -53,7 +54,7 @@ export const COMBOS: Combo[] = [
         price: 249,
         description: '1 Tech + 1 Non-Tech + Stranger Things',
         condition: '2 Events + Flagship Event',
-        filter: (_) => true,
+        filter: (e) => e.type !== 'HACKATHON',
         validateAdd: (events, newId) => {
             const nextEvents = [...events, newId];
             const techCount = nextEvents.filter(id => eventData[id]?.type === 'TECHNICAL').length;
@@ -63,6 +64,7 @@ export const COMBOS: Combo[] = [
             if (eventData[newId]?.type === 'TECHNICAL' && techCount > 1) return { valid: false, message: 'Max 1 Technical event allowed.' };
             if (eventData[newId]?.type === 'NON TECHNICAL' && nonTechCount > 1) return { valid: false, message: 'Max 1 Non-Technical event allowed.' };
             if (eventData[newId]?.type === 'FLAGSHIP' && flagshipCount > 1) return { valid: false, message: 'Already selected Flagship event.' };
+            if (eventData[newId]?.type === 'HACKATHON') return { valid: false, message: 'Hackathon requires a separate pass.' };
 
             return { valid: true };
         },
@@ -84,13 +86,14 @@ export const COMBOS: Combo[] = [
         price: 199,
         description: '2 Tech + 2 Non-Tech',
         condition: 'Standard Events Only',
-        filter: (e) => e.type !== 'FLAGSHIP',
+        filter: (e) => e.type !== 'FLAGSHIP' && e.type !== 'HACKATHON',
         validateAdd: (events, newId) => {
             const nextEvents = [...events, newId];
             const techCount = nextEvents.filter(id => eventData[id]?.type === 'TECHNICAL').length;
             const nonTechCount = nextEvents.filter(id => eventData[id]?.type === 'NON TECHNICAL').length;
 
             if (eventData[newId]?.type === 'FLAGSHIP') return { valid: false, message: 'This pass does not include Stranger Things.' };
+            if (eventData[newId]?.type === 'HACKATHON') return { valid: false, message: 'Hackathon requires a separate pass.' };
             if (eventData[newId]?.type === 'TECHNICAL' && techCount > 2) return { valid: false, message: 'Max 2 Technical events allowed.' };
             if (eventData[newId]?.type === 'NON TECHNICAL' && nonTechCount > 2) return { valid: false, message: 'Max 2 Non-Technical events allowed.' };
 
@@ -112,8 +115,9 @@ export const COMBOS: Combo[] = [
         price: 179,
         description: 'Any 1 Event (including Stranger Things)',
         condition: 'Single Event Entry',
-        filter: (_) => true,
-        validateAdd: (events) => {
+        filter: (e) => e.type !== 'HACKATHON',
+        validateAdd: (events, newId) => {
+            if (eventData[newId]?.type === 'HACKATHON') return { valid: false, message: 'Hackathon requires a separate pass.' };
             if (events.length >= 1) return { valid: false, message: 'Only 1 event allowed in Base Pass.' };
             return { valid: true };
         },
