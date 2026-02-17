@@ -13,7 +13,7 @@ import { COMBOS, type ComboType } from '../data/combos';
 import { useToast } from '../context/ToastContext';
 
 // PLACHOLDER - User needs to replace this after deploying their script
-const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbx8jpAeeTrsy3mFo3kjhF8r6-PLUSFB9Z4FyspTmRb6IOhIoIB_IbT5myojpXY2V72qow/exec';
+const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwCo3tZj_kgV4j47V-tX8p6QTcIG5oPeKxYLgv1fweO_ygorCALjV-owziVvj1xXAMQ/exec';
 
 interface RegisterProps {
   onBack: () => void;
@@ -417,7 +417,7 @@ export default function Register({ onBack }: RegisterProps) {
     let total = combo.price * getParticipantCount();
 
     if (formData.accommodation === 'Yes') {
-      total += 200 * getParticipantCount();
+      total += 300 * getParticipantCount();
     }
 
     return total;
@@ -936,7 +936,7 @@ export default function Register({ onBack }: RegisterProps) {
                     <div className="flex justify-between text-sm text-slate-300 mb-2">
                       <span>Accommodation</span>
                       <span className="text-white font-bold text-yellow-400">
-                        ₹200 x {getParticipantCount()} = ₹{200 * getParticipantCount()}
+                        ₹300 x {getParticipantCount()} = ₹{300 * getParticipantCount()}
                       </span>
                     </div>
                   )}

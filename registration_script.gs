@@ -307,7 +307,7 @@ function sendEmail(name, email, events, teamDetails) {
       <div style="max-width: 600px; margin: 20px auto; background: #0a0a0a; border-radius: 16px; overflow: hidden; box-shadow: 0 20px 50px rgba(0,0,0,0.7); border: 1px solid #333;">
         
         <div style="background-color: #000; padding: 0; text-align: center; border-bottom: 1px solid #222;">
-          <img src="${CONFIG.LOGO_URL}" alt="GALAXY 2K26" style="width: 100%; height: auto; display: block;">
+          <img src="cid:galaxyLogo" alt="GALAXY 2K26" style="width: 100%; height: auto; display: block;">
         </div>
         <div style="padding: 40px 30px; background: linear-gradient(180deg, #0a0a0a 0%, #111111 100%);">
           
@@ -357,9 +357,37 @@ function sendEmail(name, email, events, teamDetails) {
     </body>
     </html>
   `;
-    MailApp.sendEmail({
-        to: email,
-        subject: "Confirmed: Galaxy 2K26 Registration 🌌",
-        htmlBody: htmlBody
-    });
+    // --- INLINE IMAGE LOGIC ---
+    var logoBlob = null;
+    try {
+        // Use the ID from the previous URL: 18EQeNdPIj-9CnQjPz2gt_shdXtlYzC6l
+        logoBlob = DriveApp.getFileById("1cPRluWDGReC-p2Ac0hptbfZ5cGbpk-KU").getBlob().setName("galaxy_logo.png");
+    } catch(e) {
+        console.log("Error loading logo: " + e.toString());
+    }
+
+    // --- PDF BROCHURE LOGIC ---
+    var attachments = [];
+    try {
+        var brochureId = "11VtDy1w9x5QmHaj5SjfRfClLa7CnPqea"; 
+        var brochure = DriveApp.getFileById(brochureId);
+        attachments.push(brochure.getAs(MimeType.PDF));
+    } catch(e) {
+        console.log("Error attaching brochure: " + e.toString());
+    }
+
+    // Prepare advanced options
+    var options = {
+        htmlBody: htmlBody,
+        attachments: attachments,
+    };
+
+    if (logoBlob) {
+        options.inlineImages = {
+            galaxyLogo: logoBlob
+        };
+    }
+
+
+    MailApp.sendEmail(email, "Confirmed: Galaxy 2K26 Registration 🌌", "View this email in a modern browser.", options);
 }

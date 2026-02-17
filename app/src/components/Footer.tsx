@@ -80,9 +80,9 @@ export default function Footer({ onNavigate }: FooterProps) {
                                 <span>Department of ECE,<br />Government College of Engineering,<br />Erode - 638316</span>
                             </li>
                             <li>
-                                <a href="mailto:galaxyece2k26@gmail.com" className="flex items-start gap-3 text-white/60 text-sm hover:text-white transition-colors">
+                                <a href="mailto:galaxygcee@gmail.com" className="flex items-start gap-3 text-white/60 text-sm hover:text-white transition-colors">
                                     <Mail size={18} className="text-slate-200 shrink-0 mt-0.5" />
-                                    <span>galaxyece2k26@gmail.com</span>
+                                    <span>galaxygcee@gmail.com</span>
                                 </a>
                             </li>
                             <li>
