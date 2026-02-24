@@ -43,7 +43,9 @@ function doPost(e) {
             transactionId,
             paymentScreenshot,
             food,           // EXTRACTED
-            accommodation   // EXTRACTED
+            accommodation,   // EXTRACTED
+            combo,          // ADDED - Pass Type
+            totalAmount     // ADDED - Total Amount Paid
         } = data;
 
         const ss = SpreadsheetApp.getActiveSpreadsheet();
@@ -57,7 +59,8 @@ function doPost(e) {
                 "Timestamp", "Full Name", "Email", "Phone", "College", "Department", "Year", 
                 "Events", "Team Details", "Transaction ID", "Screenshot Link", 
                 "Project Title", "Project Domain", "Paper Title", 
-                "Food", "Accommodation" // ADDED HEADERS
+                "Food", "Accommodation", // ADDED HEADERS
+                "Pass Type", "Total Amount" // NEW COLUMNS
             ]);
             mainSheet.getRange(1, 1, 1, 16).setFontWeight("bold");
             mainSheet.setFrozenRows(1);
@@ -119,7 +122,9 @@ function doPost(e) {
             projectDomain, 
             paperTitle,
             food || "Not Selected",          // ADDED DATA
-            accommodation || "Not Selected"   // ADDED DATA
+            accommodation || "Not Selected",   // ADDED DATA
+            combo || "Unknown",                // NEW DATA
+            totalAmount || 0                   // NEW DATA
         ];
 
         mainSheet.appendRow(row);
@@ -131,7 +136,7 @@ function doPost(e) {
                 const isTech = CONFIG.TECH_EVENTS.includes(eventName.toUpperCase());
                 const targetCategorySheet = isTech ? CONFIG.TECH_SHEET : CONFIG.NON_TECH_SHEET;
                 
-                // Pass the extra data fields to the helper (Food/Accom included in row)
+                // Pass the extra data fields to the helper (Food/Accom/Combo/Total included in row)
                 const extras = { projectTitle, projectDomain, paperTitle };
                 addToCategorySheet(ss, targetCategorySheet, eventName, row, teamDetails?.[eventName], extras);
                 
@@ -169,10 +174,11 @@ function addToCategorySheet(ss, sheetName, eventName, mainRowData, teamInfo, ext
             "Timestamp", "Full Name", "Email", "Phone", "College", "Department", "Year", 
             "Specific Event", "Team Lead", "Members", "Transaction ID", "Screenshot Link", 
             "Project Title", "Project Domain", "Paper Title",
-            "Food", "Accommodation" // ADDED HEADERS
+            "Food", "Accommodation", // ADDED HEADERS
+            "Pass Type", "Total Amount" // NEW COLUMNS
         ]);
         sheet.setFrozenRows(1);
-        sheet.getRange(1, 1, 1, 17).setFontWeight("bold");
+        sheet.getRange(1, 1, 1, 19).setFontWeight("bold");
         
         // Color coding for tabs
         if (sheetName.includes("Technical") && !sheetName.includes("Non")) sheet.setTabColor("#4285f4"); // Blue for Tech
@@ -225,7 +231,9 @@ function addToCategorySheet(ss, sheetName, eventName, mainRowData, teamInfo, ext
         pDomain,        // Project Domain
         pptTitle,       // Paper Title
         mainRowData[14], // Food (New field from main row)
-        mainRowData[15]  // Accommodation (New field from main row)
+        mainRowData[15],  // Accommodation (New field from main row)
+        mainRowData[16], // Pass Type
+        mainRowData[17]  // Total Amount
     ];
 
     sheet.appendRow(newRow);
