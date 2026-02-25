@@ -35,7 +35,7 @@ export const eventData: Record<string, {
         ],
         coordinators: [
             { name: 'Shek Allavudhin Batsha', phone: '8778236418' },
-            { name: 'Shunmuga Lakshmi V', phone: '8825977538' },
+            { name: 'Abitha A', phone: '9123551977' },
         ],
         color: 'from-blue-400 to-blue-600',
         icon: Code,

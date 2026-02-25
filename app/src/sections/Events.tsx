@@ -11,11 +11,12 @@ interface EventsProps {
   onRegister: (comboId: string) => void;
 }
 
-// Transform eventData record to array for rendering
 const events = Object.entries(eventData).map(([id, data]) => ({
   id,
   ...data
 }));
+
+const IS_HACKATHON_CLOSED = new Date() > new Date('2026-02-25T17:00:00+05:30');
 
 export default function Events({ onEventClick, onRegister }: EventsProps) {
   const techEvents = events.filter(e => e.type === 'TECHNICAL');
@@ -24,58 +25,69 @@ export default function Events({ onEventClick, onRegister }: EventsProps) {
   const hackathonEvents = events.filter(e => e.type === 'HACKATHON');
 
 
-  const EventCard = ({ event, index }: { event: typeof events[0], index: number }) => (
-    <motion.div
-      initial={{ opacity: 0, y: 30 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      transition={{ delay: index * 0.1, duration: 0.8 }}
-      viewport={{ once: true }}
-      onClick={() => onEventClick(event.id)}
-      className={`
-        relative group cursor-pointer z-0 hover:z-50
+  const EventCard = ({ event, index }: { event: typeof events[0], index: number }) => {
+    const isEventClosed = event.type === 'HACKATHON' && IS_HACKATHON_CLOSED;
+    return (
+      <motion.div
+        initial={{ opacity: 0, y: 30 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        transition={{ delay: index * 0.1, duration: 0.8 }}
+        viewport={{ once: true }}
+        onClick={() => {
+          if (!isEventClosed) onEventClick(event.id);
+        }}
+        className={`
+        relative group z-0 
+        ${isEventClosed ? 'cursor-not-allowed opacity-75' : 'cursor-pointer hover:z-50'}
         ${event.size === 'large' ? 'md:col-span-2 lg:col-span-1' : ''}
         ${event.size === 'medium' ? 'md:col-span-1' : ''}
       `}
-    >
-      <StarBorder as="div" className="w-full h-full" color={event.color.split(' ')[1].replace('to-', '')} speed="5s">
-        <SpotlightCard className="h-full p-6 md:p-8 group" spotlightColor="rgba(255, 255, 255, 0.15)">
-          <div className="flex flex-col h-full">
-            {/* Header: Icon + Title */}
-            <div className="flex items-center gap-4 mb-6">
-              <div className={`
+      >
+        <StarBorder as="div" className="w-full h-full" color={event.color.split(' ')[1].replace('to-', '')} speed="5s">
+          <SpotlightCard className="h-full p-6 md:p-8 group relative overflow-hidden" spotlightColor="rgba(255, 255, 255, 0.15)">
+            {isEventClosed && (
+              <div className="absolute top-0 right-0 bg-red-600 text-white text-[10px] font-bold px-3 py-1.5 rounded-bl-xl z-20 font-orbitron tracking-wider shadow-md">
+                REGISTRATION CLOSED
+              </div>
+            )}
+            <div className="flex flex-col h-full">
+              {/* Header: Icon + Title */}
+              <div className="flex items-center gap-4 mb-6">
+                <div className={`
                 w-12 h-12 rounded-xl flex items-center justify-center 
                 bg-gradient-to-br from-white/10 to-transparent border border-white/5
                 group-hover:scale-110 transition-transform duration-300
                 `}>
-                <event.icon className="w-6 h-6 text-gray-400 group-hover:text-white transition-colors" />
+                  <event.icon className="w-6 h-6 text-gray-400 group-hover:text-white transition-colors" />
+                </div>
+                <div>
+                  <h3 className="font-orbitron text-xl font-bold text-white tracking-wide group-hover:text-purple-300 transition-colors">
+                    {event.name}
+                  </h3>
+                  <span className="text-[10px] uppercase tracking-[0.2em] text-white/40">
+                    {event.type}
+                  </span>
+                </div>
               </div>
-              <div>
-                <h3 className="font-orbitron text-xl font-bold text-white tracking-wide group-hover:text-purple-300 transition-colors">
-                  {event.name}
-                </h3>
-                <span className="text-[10px] uppercase tracking-[0.2em] text-white/40">
-                  {event.type}
-                </span>
+
+              {/* Description */}
+              <p className="text-gray-400 text-sm leading-relaxed mb-6 flex-grow">
+                {event.tagline}
+              </p>
+
+              {/* Action & Price */}
+              <div className="mt-auto flex items-center justify-between">
+                <div className={`flex items-center gap-2 transition-colors text-xs font-orbitron tracking-widest ${isEventClosed ? 'text-red-400' : 'text-white/30 group-hover:text-white'}`}>
+                  <span>{isEventClosed ? 'CLOSED' : 'EXPLORE'}</span>
+                  {!isEventClosed && <ArrowRight className="w-3 h-3 transform group-hover:translate-x-1 transition-transform" />}
+                </div>
               </div>
             </div>
-
-            {/* Description */}
-            <p className="text-gray-400 text-sm leading-relaxed mb-6 flex-grow">
-              {event.tagline}
-            </p>
-
-            {/* Action & Price */}
-            <div className="mt-auto flex items-center justify-between">
-              <div className="flex items-center gap-2 text-white/30 group-hover:text-white transition-colors text-xs font-orbitron tracking-widest">
-                <span>EXPLORE</span>
-                <ArrowRight className="w-3 h-3 transform group-hover:translate-x-1 transition-transform" />
-              </div>
-            </div>
-          </div>
-        </SpotlightCard>
-      </StarBorder>
-    </motion.div>
-  );
+          </SpotlightCard>
+        </StarBorder>
+      </motion.div>
+    );
+  };
 
   return (
     <section id="events" className="relative pt-16 pb-12 md:pt-24 px-4 transition-all ease-in-out duration-500">
@@ -238,56 +250,66 @@ export default function Events({ onEventClick, onRegister }: EventsProps) {
           {/* Horizontal Scroll Container */}
           <div className="overflow-x-auto pb-8 -mx-4 px-4 scrollbar-hide">
             <div className="flex gap-6 w-max md:w-full md:grid md:grid-cols-2 lg:grid-cols-3">
-              {COMBOS.map((combo, index) => (
-                <motion.div
-                  key={combo.id}
-                  initial={{ opacity: 0, scale: 0.9 }}
-                  whileInView={{ opacity: 1, scale: 1 }}
-                  transition={{ delay: index * 0.1 }}
-                  viewport={{ once: true }}
-                  className="w-[300px] md:w-auto"
-                >
-                  <SpotlightCard
-                    className="h-full border border-white/10 bg-white/5 rounded-2xl p-6 hover:border-white/40 transition-colors group relative overflow-hidden"
-                    spotlightColor="rgba(255, 255, 255, 0.1)"
+              {COMBOS.map((combo, index) => {
+                const isComboClosed = combo.id === 'HACKATHON' && IS_HACKATHON_CLOSED;
+                return (
+                  <motion.div
+                    key={combo.id}
+                    initial={{ opacity: 0, scale: 0.9 }}
+                    whileInView={{ opacity: 1, scale: 1 }}
+                    transition={{ delay: index * 0.1 }}
+                    viewport={{ once: true }}
+                    className="w-[300px] md:w-auto"
                   >
+                    <SpotlightCard
+                      className={`h-full border bg-white/5 rounded-2xl p-6 transition-colors group relative overflow-hidden ${isComboClosed ? 'border-red-500/30 opacity-75' : 'border-white/10 hover:border-white/40'}`}
+                      spotlightColor="rgba(255, 255, 255, 0.1)"
+                    >
 
 
 
-                    {/* Flagship Badge */}
-                    {(combo.id === 'PREMIUM' || combo.id === 'ELITE') && (
-                      <div className="absolute top-0 right-0 bg-gradient-to-bl from-red-600 to-red-900 text-white text-[9px] font-bold px-3 py-1.5 rounded-bl-xl z-20 font-orbitron tracking-wider shadow-md">
-                        INCLUDES FLAGSHIP
+                      {/* Flagship Badge */}
+                      {isComboClosed ? (
+                        <div className="absolute top-0 right-0 bg-gradient-to-bl from-red-600 to-red-900 text-white text-[9px] font-bold px-3 py-1.5 rounded-bl-xl z-20 font-orbitron tracking-wider shadow-md">
+                          REGISTRATION CLOSED
+                        </div>
+                      ) : (
+                        (combo.id === 'PREMIUM' || combo.id === 'ELITE') && (
+                          <div className="absolute top-0 right-0 bg-gradient-to-bl from-red-600 to-red-900 text-white text-[9px] font-bold px-3 py-1.5 rounded-bl-xl z-20 font-orbitron tracking-wider shadow-md">
+                            INCLUDES FLAGSHIP
+                          </div>
+                        )
+                      )}
+
+                      <div className="flex flex-col h-full pt-6"> {/* Added pt-6 for badge spacing */}
+                        <h4 className="font-orbitron font-bold text-xl text-white mb-2 group-hover:text-gray-300 transition-colors">{combo.name}</h4>
+                        <div className="text-3xl font-bold text-white font-orbitron mb-4">
+                          ₹{combo.price} <span className="text-sm text-white/40 font-normal">/ member</span>
+                        </div>
+
+                        <div className="w-full h-px bg-white/10 mb-4"></div>
+
+                        <p className="text-slate-400 text-sm mb-4 flex-grow italic">"{combo.description}"</p>
+
+                        <div className="bg-black/40 rounded-lg p-3 border border-white/5 mb-6">
+                          <p className="text-xs text-white/60 uppercase tracking-widest font-bold mb-1">INCLUDES</p>
+                          <p className="text-xs text-white">{combo.condition}</p>
+                        </div>
+
+                        <button
+                          onClick={() => {
+                            if (!isComboClosed && onRegister) onRegister(combo.id);
+                          }}
+                          disabled={isComboClosed}
+                          className={`w-full py-3 bg-white/10 border border-white/20 rounded-lg text-white font-orbitron font-bold tracking-wider transition-all uppercase text-sm ${isComboClosed ? 'opacity-50 cursor-not-allowed' : 'hover:bg-white hover:text-black hover:border-white'}`}
+                        >
+                          {isComboClosed ? 'CLOSED' : 'GET PASS'}
+                        </button>
                       </div>
-                    )}
-
-                    <div className="flex flex-col h-full pt-6"> {/* Added pt-6 for badge spacing */}
-                      <h4 className="font-orbitron font-bold text-xl text-white mb-2 group-hover:text-gray-300 transition-colors">{combo.name}</h4>
-                      <div className="text-3xl font-bold text-white font-orbitron mb-4">
-                        ₹{combo.price} <span className="text-sm text-white/40 font-normal">/ member</span>
-                      </div>
-
-                      <div className="w-full h-px bg-white/10 mb-4"></div>
-
-                      <p className="text-slate-400 text-sm mb-4 flex-grow italic">"{combo.description}"</p>
-
-                      <div className="bg-black/40 rounded-lg p-3 border border-white/5 mb-6">
-                        <p className="text-xs text-white/60 uppercase tracking-widest font-bold mb-1">INCLUDES</p>
-                        <p className="text-xs text-white">{combo.condition}</p>
-                      </div>
-
-                      <button
-                        onClick={() => {
-                          if (onRegister) onRegister(combo.id);
-                        }}
-                        className="w-full py-3 bg-white/10 border border-white/20 rounded-lg text-white font-orbitron font-bold tracking-wider hover:bg-white hover:text-black hover:border-white transition-all uppercase text-sm"
-                      >
-                        GET PASS
-                      </button>
-                    </div>
-                  </SpotlightCard>
-                </motion.div>
-              ))}
+                    </SpotlightCard>
+                  </motion.div>
+                );
+              })}
             </div>
           </div>
         </div>

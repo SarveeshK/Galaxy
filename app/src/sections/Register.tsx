@@ -12,6 +12,8 @@ import { compressImage } from '../utils/imageCompression';
 import { COMBOS, type ComboType } from '../data/combos';
 import { useToast } from '../context/ToastContext';
 
+const IS_HACKATHON_CLOSED = new Date() > new Date('2026-02-25T17:00:00+05:30');
+
 // PLACHOLDER - User needs to replace this after deploying their script
 const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwCo3tZj_kgV4j47V-tX8p6QTcIG5oPeKxYLgv1fweO_ygorCALjV-owziVvj1xXAMQ/exec';
 
@@ -45,8 +47,12 @@ export default function Register({ onBack }: RegisterProps) {
       // Validate it matches a known combo ID
       const validCombo = COMBOS.find(c => c.id === comboParam);
       if (validCombo) {
-        setSelectedCombo(validCombo.id);
-        setStep(2); // Auto-advance to Event Selection
+        if (validCombo.id === 'HACKATHON' && IS_HACKATHON_CLOSED) {
+          showToast('Hackathon registration is closed', 'error');
+        } else {
+          setSelectedCombo(validCombo.id);
+          setStep(2); // Auto-advance to Event Selection
+        }
         // Clean URL after selection
         const newUrl = new URL(window.location.href);
         newUrl.searchParams.delete('combo');
@@ -498,51 +504,63 @@ export default function Register({ onBack }: RegisterProps) {
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {COMBOS.map((combo) => ( // Rendering combos from data source
-                  <div
-                    key={combo.id}
-                    onClick={() => handleCom(combo.id)}
-                    className={`
-                                relative p-6 rounded-3xl border cursor-pointer transition-all duration-500 group overflow-hidden
-                                ${selectedCombo === combo.id
-                        ? 'bg-white/10 border-white/50 shadow-[0_0_30px_rgba(255,255,255,0.15)] scale-[1.02]'
-                        : 'bg-black/40 border-white/10 hover:border-white/30 hover:bg-white/5 hover:scale-[1.01]'}
+                {COMBOS.map((combo) => { // Rendering combos from data source
+                  const isComboClosed = combo.id === 'HACKATHON' && IS_HACKATHON_CLOSED;
+                  return (
+                    <div
+                      key={combo.id}
+                      onClick={() => {
+                        if (!isComboClosed) handleCom(combo.id);
+                      }}
+                      className={`
+                                relative p-6 rounded-3xl border transition-all duration-500 group overflow-hidden
+                                ${isComboClosed
+                          ? 'bg-black/80 border-red-500/30 cursor-not-allowed opacity-75'
+                          : selectedCombo === combo.id
+                            ? 'bg-white/10 border-white/50 shadow-[0_0_30px_rgba(255,255,255,0.15)] scale-[1.02] cursor-pointer'
+                            : 'bg-black/40 border-white/10 hover:border-white/30 hover:bg-white/5 hover:scale-[1.01] cursor-pointer'}
                             `}
-                  >
+                    >
 
+                      {/* Flagship Badge */}
+                      {isComboClosed ? (
+                        <div className="absolute top-0 right-0 bg-gradient-to-bl from-red-600 to-red-900 text-white text-[9px] font-bold px-3 py-1.5 rounded-bl-xl z-20 font-orbitron tracking-wider shadow-md">
+                          REGISTRATION CLOSED
+                        </div>
+                      ) : (
+                        (combo.id === 'PREMIUM' || combo.id === 'ELITE') && (
+                          <div className="absolute top-0 right-0 bg-gradient-to-bl from-red-600 to-red-900 text-white text-[9px] font-bold px-3 py-1.5 rounded-bl-xl z-10 font-orbitron tracking-wider shadow-md">
+                            INCLUDES FLAGSHIP
+                          </div>
+                        )
+                      )}
 
-                    {/* Flagship Badge */}
-                    {(combo.id === 'PREMIUM' || combo.id === 'ELITE') && (
-                      <div className="absolute top-0 right-0 bg-gradient-to-bl from-red-600 to-red-900 text-white text-[9px] font-bold px-3 py-1.5 rounded-bl-xl z-10 font-orbitron tracking-wider shadow-md">
-                        INCLUDES FLAGSHIP
-                      </div>
-                    )}
+                      {selectedCombo === combo.id && !isComboClosed && (
+                        <div className="absolute top-0 right-0 p-2 bg-gradient-to-bl from-white via-slate-200 to-slate-400 rounded-bl-2xl z-20 shadow-[0_0_15px_rgba(255,255,255,0.3)]">
+                          <Check className="w-5 h-5 text-black drop-shadow-sm" strokeWidth={3.5} />
+                        </div>
+                      )}
 
-                    {selectedCombo === combo.id && (
-                      <div className="absolute top-0 right-0 p-2 bg-gradient-to-bl from-white via-slate-200 to-slate-400 rounded-bl-2xl z-20 shadow-[0_0_15px_rgba(255,255,255,0.3)]">
-                        <Check className="w-5 h-5 text-black drop-shadow-sm" strokeWidth={3.5} />
-                      </div>
-                    )}
+                      <div className="absolute inset-0 bg-gradient-to-tr from-transparent via-white/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none" />
 
-                    <div className="absolute inset-0 bg-gradient-to-tr from-transparent via-white/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none" />
+                      <div className="h-full flex flex-col relative z-10">
+                        <h3 className={`font-orbitron font-bold text-xl mb-2 ${selectedCombo === combo.id ? 'text-white drop-shadow-md' : 'text-slate-300'}`}>
+                          {combo.name}
+                        </h3>
+                        <div className="text-3xl font-bold text-white mb-4 font-orbitron">
+                          ₹{combo.price}
+                        </div>
+                        <div className="w-full h-[1px] bg-white/10 mb-4"></div>
+                        <p className="text-slate-400 text-sm italic mb-4 flex-grow">"{combo.description}"</p>
 
-                    <div className="h-full flex flex-col relative z-10">
-                      <h3 className={`font-orbitron font-bold text-xl mb-2 ${selectedCombo === combo.id ? 'text-white drop-shadow-md' : 'text-slate-300'}`}>
-                        {combo.name}
-                      </h3>
-                      <div className="text-3xl font-bold text-white mb-4 font-orbitron">
-                        ₹{combo.price}
-                      </div>
-                      <div className="w-full h-[1px] bg-white/10 mb-4"></div>
-                      <p className="text-slate-400 text-sm italic mb-4 flex-grow">"{combo.description}"</p>
-
-                      <div className="bg-white/5 rounded-lg p-3 border border-white/5">
-                        <p className="text-xs text-white/60 uppercase tracking-widest font-bold mb-1">INCLUDES</p>
-                        <p className="text-xs text-white">{combo.condition}</p>
+                        <div className="bg-white/5 rounded-lg p-3 border border-white/5">
+                          <p className="text-xs text-white/60 uppercase tracking-widest font-bold mb-1">INCLUDES</p>
+                          <p className="text-xs text-white">{combo.condition}</p>
+                        </div>
                       </div>
                     </div>
-                  </div>
-                ))}
+                  )
+                })}
               </div>
 
               <div className="flex justify-center mt-8">
@@ -1044,18 +1062,26 @@ export default function Register({ onBack }: RegisterProps) {
 
 // Helper Components - Premium
 function EventCard({ event, selected, onToggle, isFlagship = false }: any) {
+  const isHackathonClosed = event.type === 'HACKATHON' && IS_HACKATHON_CLOSED;
+
+  const handleClick = () => {
+    if (isHackathonClosed) return;
+    onToggle();
+  };
+
   return (
     <div
-      onClick={onToggle}
+      onClick={handleClick}
       className={`
-                relative border rounded-3xl p-5 cursor-pointer transition-all duration-500 group overflow-hidden
-                ${selected
-          ? 'bg-white/10 border-white/50 shadow-[0_0_25px_rgba(255,255,255,0.15)] scale-[1.02]'
-          : 'bg-black/40 border-white/10 hover:border-white/30 hover:bg-white/5 hover:scale-[1.01]'}
+                relative border rounded-3xl p-5 transition-all duration-500 group overflow-hidden
+                ${isHackathonClosed ? 'bg-black/80 border-red-500/30 cursor-not-allowed opacity-75' :
+          selected
+            ? 'bg-white/10 border-white/50 shadow-[0_0_25px_rgba(255,255,255,0.15)] scale-[1.02] cursor-pointer'
+            : 'bg-black/40 border-white/10 hover:border-white/30 hover:bg-white/5 hover:scale-[1.01] cursor-pointer'}
             `}
     >
       {/* Selected Indicator - Premium Golden/Silver Tick in Top Right */}
-      {selected && (
+      {selected && !isHackathonClosed && (
         <div className="absolute top-0 right-0 p-2 bg-gradient-to-bl from-white via-slate-200 to-slate-400 rounded-bl-2xl z-20 shadow-[0_0_15px_rgba(255,255,255,0.3)]">
           <Check className="w-5 h-5 text-black drop-shadow-sm" strokeWidth={3.5} />
         </div>
@@ -1066,12 +1092,18 @@ function EventCard({ event, selected, onToggle, isFlagship = false }: any) {
 
       <div className="flex justify-between items-start gap-4">
         <div className="flex-1">
-          <h4 className={`font-orbitron font-bold text-lg mb-1 ${selected ? 'text-white' : 'text-slate-300'}`}>{event.name}</h4>
+          <h4 className={`font-orbitron font-bold text-lg mb-1 ${selected ? 'text-white' : 'text-slate-300'} ${isHackathonClosed ? 'text-slate-500' : ''}`}>{event.name}</h4>
           <p className="text-[10px] text-white/50 uppercase tracking-widest">{event.type}</p>
         </div>
       </div>
 
-      {isFlagship && (
+      {isHackathonClosed && (
+        <div className="mt-4 inline-block px-3 py-1 bg-red-500/20 border border-red-500/30 rounded-lg">
+          <p className="text-[10px] font-bold text-red-400 uppercase tracking-widest">Registration Closed</p>
+        </div>
+      )}
+
+      {isFlagship && !isHackathonClosed && (
         <div className="absolute bottom-2 right-2 flex gap-1">
           <Star size={12} className="text-yellow-500 fill-yellow-500 animate-pulse" />
         </div>
