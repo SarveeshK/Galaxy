@@ -4,7 +4,6 @@ import { useState } from 'react';
 import ShinyText from '../components/ShinyText'; // Trigger HMR
 
 
-import Countdown from '../components/Countdown';
 import StarBorder from '../components/StarBorder';
 
 interface HeroProps {
@@ -139,10 +138,6 @@ export default function Hero({ onRegister, onViewEvents }: HeroProps) {
           FEB 27, 2026
         </motion.p>
 
-        {/* Countdown Timer */}
-        <div className="flex justify-center w-full mb-8">
-          <Countdown />
-        </div>
 
         {/* Registration Deadline Badge */}
         <div className="flex justify-center w-full mb-10">
@@ -167,31 +162,49 @@ export default function Hero({ onRegister, onViewEvents }: HeroProps) {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 1.1 }}
-          className="flex flex-col sm:flex-row items-center justify-center gap-6 mb-16"
+          className="flex flex-col items-center justify-center gap-6 mb-16 w-full max-w-2xl mx-auto px-4"
         >
-          <button
-            onClick={IS_REGISTRATION_CLOSED ? undefined : onRegister}
-            className={`group relative px-12 py-5 overflow-hidden rounded-lg border border-white/20 backdrop-blur-md font-orbitron tracking-[0.2em] text-lg font-bold uppercase transition-all duration-300 flex flex-col items-center justify-center ${IS_REGISTRATION_CLOSED
-              ? 'bg-red-500/20 text-white/50 cursor-not-allowed'
-              : 'bg-white/10 text-white hover:bg-white/20 hover:border-white/40 hover:shadow-[0_0_40px_rgba(255,255,255,0.2)]'
-              }`}
-          >
-            {!IS_REGISTRATION_CLOSED && <div className="absolute inset-0 w-1 bg-white transition-all duration-[250ms] ease-out group-hover:w-full opacity-5" />}
-            <span className="relative flex flex-col items-center gap-1">
-              <span>{IS_REGISTRATION_CLOSED ? 'REGISTRATION CLOSED' : 'REGISTER NOW'}</span>
-              {IS_REGISTRATION_CLOSED && <span className="text-[12px] tracking-normal text-yellow-400 normal-case">On-spot Registration is available!</span>}
-            </span>
-          </button>
+          {IS_REGISTRATION_CLOSED && (
+            <div className="flex flex-col w-full gap-4 mb-2">
+              <div className="w-full relative px-6 py-8 overflow-hidden rounded-2xl border border-white/20 bg-[linear-gradient(135deg,rgba(255,255,255,0.05)_0%,rgba(0,0,0,0.8)_100%)] backdrop-blur-md flex shadow-[0_0_30px_rgba(255,255,255,0.08)] justify-center group transition-all duration-300 hover:border-white/40">
+                <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-white/50 to-transparent opacity-70"></div>
+                <div className="absolute inset-0 bg-white/5 group-hover:bg-white/10 transition-colors duration-300"></div>
+                <span className="relative font-orbitron tracking-[0.3em] md:tracking-[0.5em] text-xl md:text-2xl font-bold uppercase text-white text-center drop-shadow-[0_0_15px_rgba(255,255,255,0.4)]">
+                  REGISTRATION CLOSED
+                </span>
+              </div>
+              <div className="w-full relative px-6 py-5 overflow-hidden rounded-2xl border border-slate-500/30 bg-[linear-gradient(135deg,rgba(148,163,184,0.1)_0%,rgba(0,0,0,0.6)_100%)] backdrop-blur-md flex items-center justify-center shadow-[0_0_20px_rgba(255,255,255,0.05)] gap-3 transition-colors hover:border-slate-400/50">
+                <div className="w-2 h-2 rounded-full bg-slate-300 shadow-[0_0_10px_rgba(255,255,255,0.8)] animate-pulse"></div>
+                <span className="font-orbitron tracking-widest text-sm md:text-base font-bold text-slate-200 normal-case text-center">
+                  On-spot Registration is available!
+                </span>
+              </div>
+            </div>
+          )}
 
-          <button
-            onClick={onViewEvents}
-            className="group relative px-12 py-5 overflow-hidden rounded-lg border border-white/20 bg-white/10 backdrop-blur-md text-white font-orbitron tracking-[0.2em] text-lg font-bold uppercase transition-all duration-300 hover:bg-white/20 hover:border-white/40 hover:shadow-[0_0_40px_rgba(255,255,255,0.2)]"
-          >
-            <div className="absolute inset-0 w-1 bg-white transition-all duration-[250ms] ease-out group-hover:w-full opacity-5" />
-            <span className="relative flex items-center gap-3">
-              VIEW EVENTS
-            </span>
-          </button>
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-6 w-full sm:w-auto">
+            {!IS_REGISTRATION_CLOSED && (
+              <button
+                onClick={onRegister}
+                className="w-full sm:w-auto group relative px-12 py-5 overflow-hidden rounded-lg border border-white/20 bg-white/10 backdrop-blur-md text-white font-orbitron tracking-[0.2em] text-lg font-bold uppercase transition-all duration-300 hover:bg-white/20 hover:border-white/40 hover:shadow-[0_0_40px_rgba(255,255,255,0.2)]"
+              >
+                <div className="absolute inset-0 w-1 bg-white transition-all duration-[250ms] ease-out group-hover:w-full opacity-5" />
+                <span className="relative flex justify-center items-center gap-3 whitespace-nowrap">
+                  REGISTER NOW
+                </span>
+              </button>
+            )}
+
+            <button
+              onClick={onViewEvents}
+              className="w-full sm:w-auto group relative px-12 py-5 overflow-hidden rounded-lg border border-white/20 bg-white/10 backdrop-blur-md text-white font-orbitron tracking-[0.2em] text-lg font-bold uppercase transition-all duration-300 hover:bg-white/20 hover:border-white/40 hover:shadow-[0_0_40px_rgba(255,255,255,0.2)]"
+            >
+              <div className="absolute inset-0 w-1 bg-white transition-all duration-[250ms] ease-out group-hover:w-full opacity-5" />
+              <span className="relative flex justify-center items-center gap-3 whitespace-nowrap">
+                VIEW EVENTS
+              </span>
+            </button>
+          </div>
         </motion.div>
       </div>
 
