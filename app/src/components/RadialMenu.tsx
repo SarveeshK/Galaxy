@@ -14,6 +14,8 @@ interface RadialMenuProps {
   onAuthNavigate: (view: 'home' | 'register') => void;
 }
 
+const IS_REGISTRATION_CLOSED = new Date() > new Date('2026-02-26T18:00:00+05:30');
+
 const menuItems = [
   { icon: Home, label: 'HOME', section: 'home', angle: 0, color: 'from-slate-100 to-slate-400' },
   { icon: Calendar, label: 'EVENTS', section: 'events', angle: 120, color: 'from-gray-300 to-gray-500' },
@@ -136,11 +138,19 @@ export default function RadialMenu({ onClose, onNavigate, onAuthNavigate }: Radi
         className="mt-12"
       >
         <button
-          onClick={() => onAuthNavigate('register')}
-          className="px-12 py-3 rounded-full bg-gradient-to-r from-gray-800 via-gray-700 to-gray-600 border border-white/10 hover:border-white/30 text-white font-orbitron tracking-[0.2em] text-sm flex items-center gap-3 hover:shadow-[0_0_30px_rgba(255,255,255,0.1)] transition-all hover:scale-105 active:scale-95"
+          onClick={IS_REGISTRATION_CLOSED ? undefined : () => onAuthNavigate('register')}
+          className={`px-12 py-3 rounded-full border border-white/10 text-white font-orbitron tracking-[0.2em] text-sm flex items-center justify-center gap-3 transition-all ${IS_REGISTRATION_CLOSED
+              ? 'bg-red-900/50 text-white/50 cursor-not-allowed border-red-500/30'
+              : 'bg-gradient-to-r from-gray-800 via-gray-700 to-gray-600 hover:border-white/30 hover:shadow-[0_0_30px_rgba(255,255,255,0.1)] hover:scale-105 active:scale-95'
+            }`}
         >
-          <UserPlus className="w-4 h-4" />
-          <span>REGISTER</span>
+          <div className="flex flex-col items-center">
+            <div className="flex items-center gap-3">
+              <UserPlus className="w-4 h-4" />
+              <span>{IS_REGISTRATION_CLOSED ? 'REGISTRATION CLOSED' : 'REGISTER'}</span>
+            </div>
+            {IS_REGISTRATION_CLOSED && <span className="text-[10px] text-yellow-400 mt-1 tracking-normal">On-spot available!</span>}
+          </div>
         </button>
       </motion.div>
     </motion.div>

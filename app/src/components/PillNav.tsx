@@ -20,6 +20,8 @@ export interface PillNavProps {
     pillTextColor?: string;
 }
 
+const IS_REGISTRATION_CLOSED = new Date() > new Date('2026-02-26T18:00:00+05:30');
+
 const PillNav: React.FC<PillNavProps> = ({
     items,
     activeId,
@@ -244,13 +246,17 @@ const PillNav: React.FC<PillNavProps> = ({
                             ))}
                             {/* Explicit Register Option for Mobile if not in items */}
                             <button
-                                onClick={() => {
+                                onClick={IS_REGISTRATION_CLOSED ? undefined : () => {
                                     onNavigate('register');
                                     setIsMobileMenuOpen(false);
                                 }}
-                                className="px-8 py-3 mt-4 bg-white text-black font-orbitron font-bold rounded-full hover:bg-slate-200 transition-colors"
+                                className={`px-8 py-3 mt-4 font-orbitron font-bold rounded-full transition-colors flex flex-col items-center justify-center ${IS_REGISTRATION_CLOSED
+                                        ? 'bg-red-900/50 text-white/50 cursor-not-allowed border border-red-500/30'
+                                        : 'bg-white text-black hover:bg-slate-200'
+                                    }`}
                             >
-                                REGISTER
+                                <span>{IS_REGISTRATION_CLOSED ? 'REGISTRATION CLOSED' : 'REGISTER'}</span>
+                                {IS_REGISTRATION_CLOSED && <span className="text-[10px] tracking-normal text-yellow-400 mt-1">On-spot available!</span>}
                             </button>
                         </div>
                     </div>
