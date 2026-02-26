@@ -11,6 +11,8 @@ interface EventDetailProps {
   onRegister: () => void;
 }
 
+const IS_REGISTRATION_CLOSED = new Date() > new Date('2026-02-26T18:00:00+05:30');
+
 export default function EventDetail({ eventId, onBack, onRegister }: EventDetailProps) {
   const event = eventData[eventId] || eventData['project-war'];
   const Icon = event.icon;
@@ -103,12 +105,16 @@ export default function EventDetail({ eventId, onBack, onRegister }: EventDetail
 
             {/* Register Button - Mobile (Visible only on small screens) */}
             <motion.button
-              onClick={onRegister}
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              className="lg:hidden w-full max-w-sm py-4 rounded-xl bg-gradient-to-r from-gray-700 via-gray-600 to-gray-500 text-white font-orbitron tracking-wider font-bold hover:shadow-lg hover:shadow-white/20 transition-all duration-300 mb-8"
+              onClick={IS_REGISTRATION_CLOSED ? undefined : onRegister}
+              whileHover={IS_REGISTRATION_CLOSED ? {} : { scale: 1.05 }}
+              whileTap={IS_REGISTRATION_CLOSED ? {} : { scale: 0.95 }}
+              className={`lg:hidden w-full max-w-sm py-4 rounded-xl font-orbitron tracking-wider font-bold transition-all duration-300 mb-8 flex flex-col items-center justify-center ${IS_REGISTRATION_CLOSED
+                ? 'bg-red-900/50 text-white/50 cursor-not-allowed border border-red-500/30'
+                : 'bg-gradient-to-r from-gray-700 via-gray-600 to-gray-500 text-white hover:shadow-lg hover:shadow-white/20'
+                }`}
             >
-              REGISTER NOW
+              <span>{IS_REGISTRATION_CLOSED ? 'REGISTRATION CLOSED' : 'REGISTER NOW'}</span>
+              {IS_REGISTRATION_CLOSED && <span className="text-[10px] tracking-normal text-yellow-400 mt-1">On-spot Registration is available!</span>}
             </motion.button>
 
           </motion.div>
@@ -182,12 +188,16 @@ export default function EventDetail({ eventId, onBack, onRegister }: EventDetail
           >
             {/* Register Button - Desktop (Hidden on mobile) */}
             <motion.button
-              onClick={onRegister}
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              className="hidden lg:block w-full mb-8 py-4 rounded-xl bg-gradient-to-r from-gray-700 via-gray-600 to-gray-500 text-white font-orbitron tracking-wider font-bold hover:shadow-lg hover:shadow-white/20 transition-all duration-300"
+              onClick={IS_REGISTRATION_CLOSED ? undefined : onRegister}
+              whileHover={IS_REGISTRATION_CLOSED ? {} : { scale: 1.05 }}
+              whileTap={IS_REGISTRATION_CLOSED ? {} : { scale: 0.95 }}
+              className={`hidden lg:flex w-full mb-8 py-4 rounded-xl font-orbitron tracking-wider font-bold transition-all duration-300 flex-col items-center justify-center ${IS_REGISTRATION_CLOSED
+                ? 'bg-red-900/50 text-white/50 cursor-not-allowed border border-red-500/30'
+                : 'bg-gradient-to-r from-gray-700 via-gray-600 to-gray-500 text-white hover:shadow-lg hover:shadow-white/20'
+                }`}
             >
-              REGISTER NOW
+              <span>{IS_REGISTRATION_CLOSED ? 'REGISTRATION CLOSED' : 'REGISTER NOW'}</span>
+              {IS_REGISTRATION_CLOSED && <span className="text-[10px] tracking-normal text-yellow-400 mt-1">On-spot Registration is available!</span>}
             </motion.button>
 
             <div className="flex items-center justify-between mb-6">

@@ -17,6 +17,7 @@ const events = Object.entries(eventData).map(([id, data]) => ({
 }));
 
 const IS_HACKATHON_CLOSED = new Date() > new Date('2026-02-25T17:00:00+05:30');
+const IS_REGISTRATION_CLOSED = new Date() > new Date('2026-02-26T18:00:00+05:30');
 
 export default function Events({ onEventClick, onRegister }: EventsProps) {
   const techEvents = events.filter(e => e.type === 'TECHNICAL');
@@ -26,7 +27,7 @@ export default function Events({ onEventClick, onRegister }: EventsProps) {
 
 
   const EventCard = ({ event, index }: { event: typeof events[0], index: number }) => {
-    const isEventClosed = event.type === 'HACKATHON' && IS_HACKATHON_CLOSED;
+    const isEventClosed = IS_REGISTRATION_CLOSED || (event.type === 'HACKATHON' && IS_HACKATHON_CLOSED);
     return (
       <motion.div
         initial={{ opacity: 0, y: 30 }}
@@ -251,7 +252,7 @@ export default function Events({ onEventClick, onRegister }: EventsProps) {
           <div className="overflow-x-auto pb-8 -mx-4 px-4 scrollbar-hide">
             <div className="flex gap-6 w-max md:w-full md:grid md:grid-cols-2 lg:grid-cols-3">
               {COMBOS.map((combo, index) => {
-                const isComboClosed = combo.id === 'HACKATHON' && IS_HACKATHON_CLOSED;
+                const isComboClosed = IS_REGISTRATION_CLOSED || (combo.id === 'HACKATHON' && IS_HACKATHON_CLOSED);
                 return (
                   <motion.div
                     key={combo.id}
@@ -301,9 +302,10 @@ export default function Events({ onEventClick, onRegister }: EventsProps) {
                             if (!isComboClosed && onRegister) onRegister(combo.id);
                           }}
                           disabled={isComboClosed}
-                          className={`w-full py-3 bg-white/10 border border-white/20 rounded-lg text-white font-orbitron font-bold tracking-wider transition-all uppercase text-sm ${isComboClosed ? 'opacity-50 cursor-not-allowed' : 'hover:bg-white hover:text-black hover:border-white'}`}
+                          className={`w-full py-3 bg-white/10 border border-white/20 rounded-lg text-white font-orbitron font-bold tracking-wider transition-all uppercase text-sm flex flex-col items-center justify-center ${isComboClosed ? 'opacity-70 cursor-not-allowed bg-red-900/30 border-red-500/30' : 'hover:bg-white hover:text-black hover:border-white'}`}
                         >
-                          {isComboClosed ? 'CLOSED' : 'GET PASS'}
+                          <span>{isComboClosed ? 'REGISTRATION CLOSED' : 'GET PASS'}</span>
+                          {IS_REGISTRATION_CLOSED && <span className="text-[10px] text-yellow-400 tracking-normal mt-1 leading-none normal-case">On-spot available!</span>}
                         </button>
                       </div>
                     </SpotlightCard>

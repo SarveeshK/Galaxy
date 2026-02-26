@@ -13,6 +13,7 @@ import { COMBOS, type ComboType } from '../data/combos';
 import { useToast } from '../context/ToastContext';
 
 const IS_HACKATHON_CLOSED = new Date() > new Date('2026-02-25T17:00:00+05:30');
+const IS_REGISTRATION_CLOSED = new Date() > new Date('2026-02-26T18:00:00+05:30');
 
 // PLACHOLDER - User needs to replace this after deploying their script
 const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwCo3tZj_kgV4j47V-tX8p6QTcIG5oPeKxYLgv1fweO_ygorCALjV-owziVvj1xXAMQ/exec';
@@ -70,7 +71,6 @@ export default function Register({ onBack }: RegisterProps) {
     department: '',
     year: '',
     food: '',
-    accommodation: '',
     events: [] as string[],
     transactionId: '',
     paymentScreenshot: '',
@@ -283,7 +283,6 @@ export default function Register({ onBack }: RegisterProps) {
     if (!formData.year) newErrors.year = "Year is required";
     if (!formData.gender) newErrors.gender = "Gender is required";
     if (!formData.food) newErrors.food = "Food preference is required";
-    if (!formData.accommodation) newErrors.accommodation = "Accommodation preference is required";
 
     // Validate Team Details ONCE if any team event is selected
     const hasTeamEvent = formData.events.some(id => eventData[id]?.maxMembers > 1);
@@ -422,10 +421,6 @@ export default function Register({ onBack }: RegisterProps) {
     // Price calculation logic: Fixed price per participant based on selected combo.
     let total = combo.price * getParticipantCount();
 
-    if (formData.accommodation === 'Yes') {
-      total += 300 * getParticipantCount();
-    }
-
     return total;
   };
 
@@ -455,6 +450,31 @@ export default function Register({ onBack }: RegisterProps) {
         <h2 className="font-orbitron text-2xl font-bold text-white mb-4">REGISTRATION SUCCESSFUL!</h2>
         <p className="text-white/70 mb-8 font-light">
           Thank you for registering for Galaxy 2k26. A confirmation email has been sent to {formData.email}.
+        </p>
+        <button
+          onClick={onBack}
+          className="px-8 py-3 bg-white text-black font-orbitron text-sm font-bold tracking-widest hover:bg-slate-200 transition-colors rounded-none skew-x-[-10deg]"
+        >
+          <span className="skew-x-[10deg] inline-block">BACK TO HOME</span>
+        </button>
+      </motion.div>
+    );
+  }
+
+  if (IS_REGISTRATION_CLOSED) {
+    return (
+      <motion.div
+        initial={{ opacity: 0, scale: 0.9 }}
+        animate={{ opacity: 1, scale: 1 }}
+        className="w-full max-w-lg mx-auto p-8 glass-strong rounded-3xl border border-white/20 text-center shadow-[0_0_50px_rgba(255,255,255,0.1)] mt-24"
+      >
+        <div className="flex items-center justify-center mx-auto mb-6">
+          <AlertCircle className="w-16 h-16 text-yellow-500" />
+        </div>
+        <h2 className="font-orbitron text-2xl font-bold text-white mb-4">REGISTRATION CLOSED</h2>
+        <p className="text-white/70 mb-8 font-light">
+          Online registration for Galaxy 2k26 is now closed. <br /><br />
+          <strong className="text-yellow-400">On-spot Registration is available at the venue!</strong>
         </p>
         <button
           onClick={onBack}
@@ -794,18 +814,6 @@ export default function Register({ onBack }: RegisterProps) {
                     error={errors.food}
                   />
                 </div>
-
-                <div className="space-y-2">
-                  <CustomSelect
-                    label="Accommodation"
-                    required
-                    value={formData.accommodation}
-                    onChange={(val) => setFormData(prev => ({ ...prev, accommodation: val }))}
-                    options={[{ value: 'Yes', label: 'Yes' }, { value: 'No', label: 'No' }]}
-                    placeholder="ACCOMMODATION REQUIRED?"
-                    error={errors.accommodation}
-                  />
-                </div>
               </div>
 
               {/* SHARED TEAM DETAILS SECTION */}
@@ -950,14 +958,6 @@ export default function Register({ onBack }: RegisterProps) {
                     <span>Participants</span>
                     <span className="text-white font-bold">{getParticipantCount()} (Covered in Pass)</span>
                   </div>
-                  {formData.accommodation === 'Yes' && (
-                    <div className="flex justify-between text-sm text-slate-300 mb-2">
-                      <span>Accommodation</span>
-                      <span className="text-white font-bold text-yellow-400">
-                        ₹300 x {getParticipantCount()} = ₹{300 * getParticipantCount()}
-                      </span>
-                    </div>
-                  )}
                   <div className="space-y-2 mt-4">
                     <p className="text-xs text-white/50 uppercase">Events Selected</p>
                     {formData.events.map(id => (

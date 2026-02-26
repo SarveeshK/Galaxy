@@ -12,6 +12,8 @@ interface HeroProps {
   onViewEvents: () => void;
 }
 
+const IS_REGISTRATION_CLOSED = new Date() > new Date('2026-02-26T18:00:00+05:30');
+
 export default function Hero({ onRegister, onViewEvents }: HeroProps) {
   const [isFlipped, setIsFlipped] = useState(false);
 
@@ -168,12 +170,16 @@ export default function Hero({ onRegister, onViewEvents }: HeroProps) {
           className="flex flex-col sm:flex-row items-center justify-center gap-6 mb-16"
         >
           <button
-            onClick={onRegister}
-            className="group relative px-12 py-5 overflow-hidden rounded-lg border border-white/20 bg-white/10 backdrop-blur-md text-white font-orbitron tracking-[0.2em] text-lg font-bold uppercase transition-all duration-300 hover:bg-white/20 hover:border-white/40 hover:shadow-[0_0_40px_rgba(255,255,255,0.2)]"
+            onClick={IS_REGISTRATION_CLOSED ? undefined : onRegister}
+            className={`group relative px-12 py-5 overflow-hidden rounded-lg border border-white/20 backdrop-blur-md font-orbitron tracking-[0.2em] text-lg font-bold uppercase transition-all duration-300 flex flex-col items-center justify-center ${IS_REGISTRATION_CLOSED
+              ? 'bg-red-500/20 text-white/50 cursor-not-allowed'
+              : 'bg-white/10 text-white hover:bg-white/20 hover:border-white/40 hover:shadow-[0_0_40px_rgba(255,255,255,0.2)]'
+              }`}
           >
-            <div className="absolute inset-0 w-1 bg-white transition-all duration-[250ms] ease-out group-hover:w-full opacity-5" />
-            <span className="relative flex items-center gap-3">
-              REGISTER NOW
+            {!IS_REGISTRATION_CLOSED && <div className="absolute inset-0 w-1 bg-white transition-all duration-[250ms] ease-out group-hover:w-full opacity-5" />}
+            <span className="relative flex flex-col items-center gap-1">
+              <span>{IS_REGISTRATION_CLOSED ? 'REGISTRATION CLOSED' : 'REGISTER NOW'}</span>
+              {IS_REGISTRATION_CLOSED && <span className="text-[12px] tracking-normal text-yellow-400 normal-case">On-spot Registration is available!</span>}
             </span>
           </button>
 
